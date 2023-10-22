@@ -17,30 +17,27 @@ app.get('/', async (req, res) => {
 });
 
 app.post('/sendMessage', async (req, res) => {
-
-    let post = postMessage(req.body);
-
+    let post = await postMessage(req.body);
     return res.json({ success: post });
+});
+
+app.post('/isWebhook', async (req, res) => {
+    try {
+        await axios.get(req.body.webhookUrl);
+    } catch (e) {
+        return res.json({ success: false });
+    }
+    return res.json({ success: true });
 });
 
 app.listen(PORT, () => {
     console.log(`NortHook on, port: ${PORT}`);
 });
 
-function isValidURL(string) {
-    var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
-    return (res !== null)
-};
-
-export function postMessage(JSONMessage) {
-    if(!isValidURL(JSONMessage.webhookUrl)) {
-        return false;
-    }
-
+export async function postMessage(JSONMessage) {
     try {
-        axios.post(JSONMessage.webhookUrl, JSONMessage);
+        await axios.post(JSONMessage.webhookUrl, JSONMessage);
     } catch (e) {
-        console.log(e);
         return false;
     }
     return true;

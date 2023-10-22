@@ -21,7 +21,7 @@
         </div>
         <hr>
         <label>Content</label>
-        <textarea type="text" id="content" maxlength="2048" rows="10" required></textarea>
+        <textarea type="text" id="content" maxlength="2048" rows="10"></textarea>
         <hr>
         <label>Profile</label><br>
         <label>Username</label><br>
@@ -38,9 +38,26 @@
     const avatar_url = document.getElementById("avatar_url");
 
     const sendButton = document.getElementById("sendButton");
+    sendButton.disabled = true;
 
-    const invalidUrl = document.getElementById("invalidUrl").style.display = "block";
+    const invalidUrl = document.getElementById("invalidUrl");
 
+    webhookUrl.addEventListener("input", () => {
+        if (!isValidURL(webhookUrl.value)) {
+            fetch("/isWebhook", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ webhookUrl: webhookUrl.value })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    sendButton.disabled = !data.success;
+                    invalidUrl.style.display = data.success ? "none" : "block";
+                })
+        }
+    });
 
     sendButton.addEventListener("click", () => {
         console.log(webhookUrl.value);
@@ -49,11 +66,11 @@
 
         data.webhookUrl = webhookUrl.value;
 
-        if (content.value.replaceAll(/\s/g,'') != "")
+        if (content.value.replaceAll(/\s/g, '') != "")
             data.content = content.value;
-        if (username.value.replaceAll(/\s/g,'') != "")
+        if (username.value.replaceAll(/\s/g, '') != "")
             data.username = username.value;
-        if (avatar_url.value.replaceAll(/\s/g,'') != "")
+        if (avatar_url.value.replaceAll(/\s/g, '') != "")
             data.avatar_url = avatar_url.value
 
         fetch("/sendMessage", {
@@ -69,17 +86,30 @@
             .then(data => {
                 const successDiv = document.getElementById("successMessage");
 
-                if(data.success == true){
+                if (data.success == true) {
                     successDiv.innerHTML = "Message Send";
                     successDiv.style.background = "green";
                 } else {
                     successDiv.innerHTML = "Message Not Send";
                     successDiv.style.background = "red";
                 }
-                successDiv.style.animation = "successAnimation 5s linear";
+                successDiv.style.animation = "successAnimation 3s linear";
+
+                setTimeout(() => {
+                    successDiv.style.animation = "";
+                }, 3000);
                 console.log('odpowiedz serwera ', data)
             })
     });
+
+    function isValidURL(string) {
+        var res = string.replaceAll(/\s/g, '').startsWith("https://discord.com/api/webhooks/");
+        if (string.length > 0)
+            invalidUrl.style.display = res ? "none" : "block";
+        else
+            invalidUrl.style.display = "none";
+        return (res == false)
+    };
 </script>
 
 </html>

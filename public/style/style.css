@@ -2,6 +2,12 @@ body {
     background-color: #2e2d2d;
     color: white;
     margin: 0;
+    font-family: "Rubik";
+}
+
+@font-face {
+    font-family: "Rubik";
+    src: url("../fonts/Rubik-Regular.ttf");
 }
 
 header {
@@ -44,6 +50,14 @@ header {
     transition: color .5s;
 }
 
+#sendButton:disabled {
+    opacity: 0.5;
+}
+
+#sendButton:disabled:hover {
+    background-color: rgb(54, 54, 54);
+}
+
 #sendButton:hover {
     background-color: rgb(70, 70, 70);
 }
@@ -68,6 +82,10 @@ textarea {
 input:focus,
 textarea:focus {
     outline: 2px solid #66a1ff;
+}
+
+textarea {
+    padding: 0 3px 0 3px;
 }
 
 hr {
