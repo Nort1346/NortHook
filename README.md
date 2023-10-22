@@ -1,2 +1,2 @@
 # NortHook
-NortHook is basic app to manage Discord WebHooks
+NortHook is a simple web app for managaing Discord Webhooks

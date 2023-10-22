@@ -1,13 +1,13 @@
+@font-face {
+    font-family: "Rubik";
+    src: url("../fonts/Rubik-Regular.ttf");
+}
+
 body {
     background-color: #2e2d2d;
     color: white;
     margin: 0;
     font-family: "Rubik";
-}
-
-@font-face {
-    font-family: "Rubik";
-    src: url("../fonts/Rubik-Regular.ttf");
 }
 
 header {
