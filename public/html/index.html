@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../style/style.css">
+    <title>NortHook</title>
+</head>
+
+<body>
+    <header>NortHook</header>
+    <div id="inputs">
+        <label>Webhook Url</label><Br>
+        <div id="inlineDiv">
+            <input type="url" id="webhookUrl" placeholder="Url of Webhook" required>
+            <button id="sendButton">Send</button>
+            <div style="padding: 5px;display: none;transition: all 0.5s;" id="invalidUrl">
+                Invalid URL!
+            </div>
+        </div>
+        <hr>
+        <label>Content</label>
+        <textarea type="text" id="content" maxlength="2048" rows="10" required></textarea>
+        <hr>
+        <label>Profile</label><br>
+        <label>Username</label><br>
+        <input type="text" id="username" maxlength="80"><br>
+        <label>Avatar Url</label><br>
+        <input type="url" id="avatar_url" maxlength="2048">
+    </div>
+    <div id="successMessage">Message Sended</div>
+</body>
+<script>
+    const webhookUrl = document.getElementById("webhookUrl");
+    const content = document.getElementById("content");
+    const username = document.getElementById("username");
+    const avatar_url = document.getElementById("avatar_url");
+
+    const sendButton = document.getElementById("sendButton");
+
+    const invalidUrl = document.getElementById("invalidUrl").style.display = "block";
+
+
+    sendButton.addEventListener("click", () => {
+        console.log(webhookUrl.value);
+
+        const data = {};
+
+        data.webhookUrl = webhookUrl.value;
+
+        if (content.value.replaceAll(/\s/g,'') != "")
+            data.content = content.value;
+        if (username.value.replaceAll(/\s/g,'') != "")
+            data.username = username.value;
+        if (avatar_url.value.replaceAll(/\s/g,'') != "")
+            data.avatar_url = avatar_url.value
+
+        fetch("/sendMessage", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(
+                data
+            ),
+        })
+            .then(response => response.json())
+            .then(data => {
+                const successDiv = document.getElementById("successMessage");
+
+                if(data.success == true){
+                    successDiv.innerHTML = "Message Send";
+                    successDiv.style.background = "green";
+                } else {
+                    successDiv.innerHTML = "Message Not Send";
+                    successDiv.style.background = "red";
+                }
+                successDiv.style.animation = "successAnimation 5s linear";
+                console.log('odpowiedz serwera ', data)
+            })
+    });
+</script>
+
+</html>
