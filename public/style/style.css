@@ -143,10 +143,6 @@ hr {
     border-top: 1px solid wheat;
 }
 
-label {
-    font-weight: bold;
-}
-
 textarea::-webkit-scrollbar {
     width: 1em;
     cursor: grabbing;

@@ -12,8 +12,9 @@
 
 <body>
   <header>NortHook</header>
+
   <div style="display: table-row; width: 1080px">
-    <div id="inputs">
+    <div id="inputs" class="overflow-auto">
       <label>Webhook Url</label><br />
       <div id="inlineDiv">
         <input type="url" id="webhookUrl" placeholder="Url of Webhook" required />
@@ -32,7 +33,8 @@
       <label>Avatar Url</label><br />
       <input type="url" id="avatar_url" maxlength="2048" />
     </div>
-    <div id="messageView">
+
+    <div id="messageView" class="overflow-auto">
       <div id="viewTableRow">
         <div id="avatarView">
           <img
