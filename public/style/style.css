@@ -3,6 +3,11 @@
     src: url("../fonts/Rubik-Regular.ttf");
 }
 
+* {
+    padding: 0;
+    margin: 0;
+}
+
 body {
     background-color: #2e2d2d;
     color: white;
@@ -23,13 +28,18 @@ header {
 }
 
 #inputs {
-    display: block;
-    width: 50%;
+    min-width: 50vw;
     padding: 20px;
+    display: table-cell;
+}
+
+#messageView {
+    padding: 20px;
+    display: table-cell;
 }
 
 #webhookUrl {
-    width: 50%;
+    width: 100%;
 }
 
 #content {
@@ -39,9 +49,9 @@ header {
 }
 
 #sendButton {
-    width: 80px;
+    width: 95%;
     justify-content: left;
-    font-size: 16px;
+    font-size: 17px;
     background-color: rgb(54, 54, 54);
     border-radius: 5px;
     border: 1px solid wheat;
@@ -64,6 +74,11 @@ header {
 
 #inlineDiv {
     display: inline;
+}
+
+#usernameView {
+    font-weight: 600;
+    width: 100%;
 }
 
 input,

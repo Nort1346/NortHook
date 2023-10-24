@@ -1,37 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="../style/style.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="../style/style.css" />
     <title>NortHook</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <header>NortHook</header>
-    <div id="inputs">
-        <label>Webhook Url</label><Br>
+    <div style="display: table-row; width: 1080px">
+      <div id="inputs">
+        <label>Webhook Url</label><br />
         <div id="inlineDiv">
-            <input type="url" id="webhookUrl" placeholder="Url of Webhook" required>
+          <div style="width: 70%; float: left">
+            <input
+              type="url"
+              id="webhookUrl"
+              placeholder="Url of Webhook"
+              required
+            />
+          </div>
+          <div style="width: 30%; float: left; text-align: center">
             <button id="sendButton">Send</button>
-            <div style="padding: 5px;display: none;transition: all 0.5s;" id="invalidUrl">
-                Invalid URL!
-            </div>
+          </div>
+          <div
+            style="padding: 5px; display: none; transition: all 0.5s"
+            id="invalidUrl"
+          >
+            Invalid URL!
+          </div>
         </div>
-        <hr>
+        <hr />
         <label>Content</label>
-        <textarea type="text" id="content" maxlength="2048" rows="10"></textarea>
-        <hr>
-        <label>Profile</label><br>
-        <label>Username</label><br>
-        <input type="text" id="username" maxlength="80"><br>
-        <label>Avatar Url</label><br>
-        <input type="url" id="avatar_url" maxlength="2048">
+        <textarea
+          type="text"
+          id="content"
+          maxlength="2048"
+          rows="10"
+        ></textarea>
+        <hr />
+        <label style="font-size: 20px">Profile</label><br />
+        <label>Username</label><br />
+        <input type="text" id="username" maxlength="80" /><br />
+        <label>Avatar Url</label><br />
+        <input type="url" id="avatar_url" maxlength="2048" />
+      </div>
+      <div id="messageView">
+        <div id="avatarView">
+          <img
+            src="https://www.svgrepo.com/show/353655/discord-icon.svg"
+            width="60px"
+            height="60px"
+          />
+        </div>
+        <div id="usernameView"></div>
+        <div id="contentView"></div>
+      </div>
     </div>
     <div id="successMessage">Message Sended</div>
-</body>
-<script>
+  </body>
+  <script>
     const webhookUrl = document.getElementById("webhookUrl");
     const content = document.getElementById("content");
     const username = document.getElementById("username");
@@ -40,76 +69,89 @@
     const sendButton = document.getElementById("sendButton");
     sendButton.disabled = true;
 
+    /**
+     * Message View Parameters
+     * */
+    const contentView = document.getElementById("contentView");
+    const usernameView = document.getElementById("usernameView");
+
     const invalidUrl = document.getElementById("invalidUrl");
 
+    content.addEventListener("input", changeView);
+    username.addEventListener("input", changeView);
+    avatar_url.addEventListener("input", changeView);
+
     webhookUrl.addEventListener("input", () => {
-        if (!isValidURL(webhookUrl.value)) {
-            fetch("/isWebhook", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ webhookUrl: webhookUrl.value })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    sendButton.disabled = !data.success;
-                    invalidUrl.style.display = data.success ? "none" : "block";
-                })
-        }
+      if (!isValidURL(webhookUrl.value)) {
+        fetch("/isWebhook", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ webhookUrl: webhookUrl.value }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            sendButton.disabled = !data.success;
+            invalidUrl.style.display = data.success ? "none" : "block";
+          });
+      }
+      changeView();
     });
 
     sendButton.addEventListener("click", () => {
-        console.log(webhookUrl.value);
+      console.log(webhookUrl.value);
 
-        const data = {};
+      const data = {};
 
-        data.webhookUrl = webhookUrl.value;
+      data.webhookUrl = webhookUrl.value;
 
-        if (content.value.replaceAll(/\s/g, '') != "")
-            data.content = content.value;
-        if (username.value.replaceAll(/\s/g, '') != "")
-            data.username = username.value;
-        if (avatar_url.value.replaceAll(/\s/g, '') != "")
-            data.avatar_url = avatar_url.value
+      if (content.value.replaceAll(/\s/g, "") != "")
+        data.content = content.value;
+      if (username.value.replaceAll(/\s/g, "") != "")
+        data.username = username.value;
+      if (avatar_url.value.replaceAll(/\s/g, "") != "")
+        data.avatar_url = avatar_url.value;
 
-        fetch("/sendMessage", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(
-                data
-            ),
-        })
-            .then(response => response.json())
-            .then(data => {
-                const successDiv = document.getElementById("successMessage");
+      fetch("/sendMessage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const successDiv = document.getElementById("successMessage");
 
-                if (data.success == true) {
-                    successDiv.innerHTML = "Message Send";
-                    successDiv.style.background = "green";
-                } else {
-                    successDiv.innerHTML = "Message Not Send";
-                    successDiv.style.background = "red";
-                }
-                successDiv.style.animation = "successAnimation 3s linear";
+          if (data.success == true) {
+            successDiv.innerHTML = "Message Send";
+            successDiv.style.background = "green";
+          } else {
+            successDiv.innerHTML = "Message Not Send";
+            successDiv.style.background = "red";
+          }
+          successDiv.style.animation = "successAnimation 3s linear";
 
-                setTimeout(() => {
-                    successDiv.style.animation = "";
-                }, 3000);
-                console.log('odpowiedz serwera ', data)
-            })
+          setTimeout(() => {
+            successDiv.style.animation = "";
+          }, 3000);
+          console.log("odpowiedz serwera ", data);
+        });
     });
 
     function isValidURL(string) {
-        var res = string.replaceAll(/\s/g, '').startsWith("https://discord.com/api/webhooks/");
-        if (string.length > 0)
-            invalidUrl.style.display = res ? "none" : "block";
-        else
-            invalidUrl.style.display = "none";
-        return (res == false)
-    };
-</script>
+      var res = string
+        .replaceAll(/\s/g, "")
+        .startsWith("https://discord.com/api/webhooks/");
+      if (string.length > 0) invalidUrl.style.display = res ? "none" : "block";
+      else invalidUrl.style.display = "none";
+      return res == false;
+    }
 
+    function changeView() {
+      contentView.innerText = content.value;
+      usernameView.innerText = username.value;
+    }
+  </script>
 </html>
