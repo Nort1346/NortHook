@@ -1,157 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="../style/style.css" />
-    <title>NortHook</title>
-  </head>
 
-  <body>
-    <header>NortHook</header>
-    <div style="display: table-row; width: 1080px">
-      <div id="inputs">
-        <label>Webhook Url</label><br />
-        <div id="inlineDiv">
-          <div style="width: 70%; float: left">
-            <input
-              type="url"
-              id="webhookUrl"
-              placeholder="Url of Webhook"
-              required
-            />
-          </div>
-          <div style="width: 30%; float: left; text-align: center">
-            <button id="sendButton">Send</button>
-          </div>
-          <div
-            style="padding: 5px; display: none; transition: all 0.5s"
-            id="invalidUrl"
-          >
-            Invalid URL!
-          </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="author" content="_nort_" />
+  <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../style/style.css" />
+  <title>NortHook</title>
+</head>
+
+<body>
+  <header>NortHook</header>
+  <div style="display: table-row; width: 1080px">
+    <div id="inputs">
+      <label>Webhook Url</label><br />
+      <div id="inlineDiv">
+        <input type="url" id="webhookUrl" placeholder="Url of Webhook" required />
+        <button id="sendButton" data-bs-toggle="modal" data-bs-target="#exampleModal">Send</button>
+        <div style="padding: 15px 5px 0 5px; display: none; color: #F03333;" id="invalidUrl">
+          Invalid Webhook URL
         </div>
-        <hr />
-        <label>Content</label>
-        <textarea
-          type="text"
-          id="content"
-          maxlength="2048"
-          rows="10"
-        ></textarea>
-        <hr />
-        <label style="font-size: 20px">Profile</label><br />
-        <label>Username</label><br />
-        <input type="text" id="username" maxlength="80" /><br />
-        <label>Avatar Url</label><br />
-        <input type="url" id="avatar_url" maxlength="2048" />
       </div>
-      <div id="messageView">
+      <hr />
+      <label>Content</label>
+      <textarea type="text" id="content" maxlength="2048" rows="10"></textarea>
+      <hr />
+      <label style="font-size: 20px">Profile</label><br />
+      <label>Username</label><br />
+      <input type="text" id="username" maxlength="80" /><br />
+      <label>Avatar Url</label><br />
+      <input type="url" id="avatar_url" maxlength="2048" />
+    </div>
+    <div id="messageView">
+      <div id="viewTableRow">
         <div id="avatarView">
           <img
-            src="https://www.svgrepo.com/show/353655/discord-icon.svg"
-            width="60px"
-            height="60px"
-          />
+            src="https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024"
+            id="avatarIcon" />
         </div>
-        <div id="usernameView"></div>
-        <div id="contentView"></div>
+        <div style="padding: 0px;">
+          <div id="usernameView"></div>
+          <div id="contentView"></div>
+        </div>
       </div>
     </div>
-    <div id="successMessage">Message Sended</div>
-  </body>
-  <script>
-    const webhookUrl = document.getElementById("webhookUrl");
-    const content = document.getElementById("content");
-    const username = document.getElementById("username");
-    const avatar_url = document.getElementById("avatar_url");
+  </div>
 
-    const sendButton = document.getElementById("sendButton");
-    sendButton.disabled = true;
+  <footer class="bg-dark text-center text-lg-start white-text">
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+      © 2023 Copyright: Nort Studios
+    </div>
+  </footer>
 
-    /**
-     * Message View Parameters
-     * */
-    const contentView = document.getElementById("contentView");
-    const usernameView = document.getElementById("usernameView");
+  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-success text-white">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="successModalLabel">Message Send</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    const invalidUrl = document.getElementById("invalidUrl");
-
-    content.addEventListener("input", changeView);
-    username.addEventListener("input", changeView);
-    avatar_url.addEventListener("input", changeView);
-
-    webhookUrl.addEventListener("input", () => {
-      if (!isValidURL(webhookUrl.value)) {
-        fetch("/isWebhook", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ webhookUrl: webhookUrl.value }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            sendButton.disabled = !data.success;
-            invalidUrl.style.display = data.success ? "none" : "block";
-          });
-      }
-      changeView();
-    });
-
-    sendButton.addEventListener("click", () => {
-      console.log(webhookUrl.value);
-
-      const data = {};
-
-      data.webhookUrl = webhookUrl.value;
-
-      if (content.value.replaceAll(/\s/g, "") != "")
-        data.content = content.value;
-      if (username.value.replaceAll(/\s/g, "") != "")
-        data.username = username.value;
-      if (avatar_url.value.replaceAll(/\s/g, "") != "")
-        data.avatar_url = avatar_url.value;
-
-      fetch("/sendMessage", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          const successDiv = document.getElementById("successMessage");
-
-          if (data.success == true) {
-            successDiv.innerHTML = "Message Send";
-            successDiv.style.background = "green";
-          } else {
-            successDiv.innerHTML = "Message Not Send";
-            successDiv.style.background = "red";
-          }
-          successDiv.style.animation = "successAnimation 3s linear";
-
-          setTimeout(() => {
-            successDiv.style.animation = "";
-          }, 3000);
-          console.log("odpowiedz serwera ", data);
-        });
-    });
-
-    function isValidURL(string) {
-      var res = string
-        .replaceAll(/\s/g, "")
-        .startsWith("https://discord.com/api/webhooks/");
-      if (string.length > 0) invalidUrl.style.display = res ? "none" : "block";
-      else invalidUrl.style.display = "none";
-      return res == false;
+  <div class="modal fade" id="failModal" tabindex="-1" aria-labelledby="failModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-danger text-white">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="failModalLabel">Message Not Send</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="failEmbedErrorContent">
+          Error:
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script src="../bootstrap/js/bootstrap.min.js"></script>
+<script type="importmap">
+  {
+    "imports": {
+      "@popperjs/core": "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/esm/popper.min.js",
+      "bootstrap": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.esm.min.js"
     }
-
-    function changeView() {
-      contentView.innerText = content.value;
-      usernameView.innerText = username.value;
-    }
+  }
   </script>
+<script src="../js/index.js" type="module"></script>
+
 </html>

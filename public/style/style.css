@@ -6,6 +6,7 @@
 * {
     padding: 0;
     margin: 0;
+    transform: all 0.5s;
 }
 
 body {
@@ -28,28 +29,34 @@ header {
 }
 
 #inputs {
-    min-width: 50vw;
-    padding: 20px;
     display: table-cell;
+    min-width: 50vw;
+    height: 80vh;
+    padding: 20px;
 }
 
 #messageView {
-    padding: 20px;
     display: table-cell;
+    height: 80vh;
+    min-width: 50vw;
+    padding: 30px 20px 20px 20px;
 }
 
 #webhookUrl {
-    width: 100%;
+    width: 70%;
 }
 
 #content {
     width: 100%;
     max-width: 100%;
     min-width: 100%;
+    resize: vertical;
 }
 
 #sendButton {
-    width: 95%;
+    width: 25%;
+    max-width: 80px;
+    min-width: 70px;
     justify-content: left;
     font-size: 17px;
     background-color: rgb(54, 54, 54);
@@ -76,9 +83,38 @@ header {
     display: inline;
 }
 
+#viewTableRow {
+    display: table-row;
+    height: 100%;
+    padding: 0;
+}
+
+#avatarView {
+    display: table-cell;
+    height: 100%;
+}
+
+#avatarIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
 #usernameView {
+    padding: 0 0 0 10px;
+    font-size: 15px;
     font-weight: 600;
     width: 100%;
+    word-wrap: break-word;
+    word-break: break-all;
+    overflow-wrap: break-word;
+}
+
+#contentView {
+    padding: 5px 0 0 10px;
+    word-wrap: break-word;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 input,
@@ -111,36 +147,24 @@ label {
     font-weight: bold;
 }
 
-#successMessage {
-    display: block;
-    position: absolute;
-    margin: 0 auto;
-    left: 50%;
-    padding: 30px;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    background-color: green;
-    border-radius: 5px;
-    z-index: 0;
-    opacity: 0;
+textarea::-webkit-scrollbar {
+    width: 1em;
+    cursor: grabbing;
 }
 
-@keyframes successAnimation {
-    0% {
-        opacity: 1;
-        top: 120%;
-    }
+textarea::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    cursor: grabbing;
+}
 
-    30% {
-        top: 50%;
-    }
+textarea::-webkit-scrollbar-thumb {
+    background-color: rgb(122, 122, 122);
+    outline: 1px solid rgb(96, 97, 99);
+    cursor: grabbing;
+}
 
-    70% {
-        top: 50%;
-    }
-
-    100% {
-        opacity: 1;
-        top: 0%;
-    }
+textarea::-webkit-scrollbar-corner {
+    background-color: rgba(122, 122, 122, 0);
+    border: none;
+    outline: none;
 }

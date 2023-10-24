@@ -17,8 +17,14 @@ app.get('/', async (req, res) => {
 });
 
 app.post('/sendMessage', async (req, res) => {
-    let post = await postMessage(req.body);
-    return res.json({ success: post });
+    const JSONMessage = req.body;
+    try {
+        await axios.post(JSONMessage.webhookUrl, JSONMessage);
+    } catch (e) {
+        console.log(e.response.data.message);
+        return res.json({ success: false, error: e.response.data.message });
+    }
+    return res.json({ success: true });
 });
 
 app.post('/isWebhook', async (req, res) => {
