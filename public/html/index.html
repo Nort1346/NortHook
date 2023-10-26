@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -7,31 +7,50 @@
   <meta name="author" content="_nort_" />
   <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="../style/style.css" />
+  <script src="../bootstrap/js/bootstrap.bundle.js"></script>
   <title>NortHook</title>
 </head>
 
 <body>
+  <div class="position-absolute z-999 pointer-events-none user-select-none w-100 h-100 d-flex justify-content-center align-items-center visually-hidden" id="loadingMessage">
+    <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
+    </div>
+  </div>
+
   <header>NortHook</header>
 
   <div style="display: table-row; width: 1080px">
     <div id="inputs" class="overflow-auto">
-      <label>Webhook Url</label><br />
-      <div id="inlineDiv">
-        <input type="url" id="webhookUrl" placeholder="Url of Webhook" required />
-        <button id="sendButton" data-bs-toggle="modal" data-bs-target="#exampleModal">Send</button>
-        <div style="padding: 15px 5px 0 5px; display: none; color: #F03333;" id="invalidUrl">
-          Invalid Webhook URL
+      <label>Webhook URL</label><br />
+      <div class="input-group">
+        <input class="form-control" type="password" id="webhookUrl" placeholder="https://discord.com/api/webhooks/" required />
+        <button class="btn btn-outline-secondary" id="sendButton" data-bs-target="#exampleModal">Send</button>
+      </div>
+      <div class="collapse" id="InvalidWebhookUrlCollapse">
+        <div class="card card-body text-danger border-danger w-25 h-auto p-2 mt-3">
+          Invalid URL
         </div>
       </div>
       <hr />
       <label>Content</label>
-      <textarea type="text" id="content" maxlength="2048" rows="10"></textarea>
+      <textarea class="form-control" type="text" id="content" maxlength="2048" rows="10"></textarea>
       <hr />
       <label style="font-size: 20px">Profile</label><br />
       <label>Username</label><br />
-      <input type="text" id="username" maxlength="80" /><br />
-      <label>Avatar Url</label><br />
-      <input type="url" id="avatar_url" maxlength="2048" />
+      <input class="form-control" type="text" id="username" maxlength="80" />
+      <label>Avatar URL</label><br />
+      <input class="form-control" type="url" id="avatar_url" maxlength="2048" />
+      <div class="collapse" id="InvalidAvatarUrlCollapse">
+        <div class="card card-body text-danger border-danger w-25 h-auto p-2 mt-3">
+          Invalid URL
+        </div>
+      </div>
+      <hr>
+      <div class="mb-3">
+        <label for="formFile" class="form-label">Files <span class="badge bg-secondary">Max 25 MB</span></label>
+        <input class="form-control" type="file" id="files" multiple>
+      </div>
+      <hr>
     </div>
 
     <div id="messageView" class="overflow-auto">
@@ -85,8 +104,8 @@
       </div>
     </div>
   </div>
+
 </body>
-<script src="../bootstrap/js/bootstrap.min.js"></script>
 <script type="importmap">
   {
     "imports": {
