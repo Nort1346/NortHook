@@ -13,7 +13,7 @@ sendButton.disabled = true;
  * Message View Parameters
  */
 const contentView = document.getElementById("contentView");
-const usernameView = document.getElementById("usernameView");
+const usernameView = document.getElementById("usernameName");
 const avatarView = document.getElementById("avatarIcon");
 
 const alertInvalidWebhookUrl = new bootstrap.Collapse("#InvalidWebhookUrlCollapse", { toggle: false });
@@ -41,6 +41,16 @@ content.addEventListener("input", changeView);
 username.addEventListener("input", changeView);
 avatar_url.addEventListener("input", changeView);
 webhookUrl.addEventListener("input", checkWebhookUrl);
+
+const localTime = document.getElementById("localTime");
+
+localTime.innerText = `${(new Date()).toLocaleTimeString().slice(0,-3)}`;
+
+setInterval(() => {
+  let nowData = new Date();
+  localTime.innerText = `${nowData.toLocaleTimeString().slice(0,-3)}`
+  
+}, 30000);
 
 webhookUrl.addEventListener("focusin", (foc) => {
   webhookUrl.type = "text";

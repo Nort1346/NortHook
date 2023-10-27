@@ -7,113 +7,207 @@
   <meta name="author" content="_nort_" />
   <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="../style/style.css" />
-  <script src="../bootstrap/js/bootstrap.bundle.js"></script>
   <title>NortHook</title>
 </head>
 
 <body>
-  <div class="position-absolute z-999 pointer-events-none user-select-none w-100 h-100 d-flex justify-content-center align-items-center visually-hidden" id="loadingMessage">
+  <div
+    class="position-absolute z-999 pointer-events-none user-select-none w-100 h-100 d-flex justify-content-center align-items-center visually-hidden"
+    id="loadingMessage">
     <div class="spinner-border" role="status" style="width: 3rem; height: 3rem;">
     </div>
   </div>
 
   <header>NortHook</header>
 
-  <div style="display: table-row; width: 1080px">
-    <div id="inputs" class="overflow-auto">
-      <label>Webhook URL</label><br />
-      <div class="input-group">
-        <input class="form-control" type="password" id="webhookUrl" placeholder="https://discord.com/api/webhooks/" required />
-        <button class="btn btn-outline-secondary" id="sendButton" data-bs-target="#exampleModal">Send</button>
-      </div>
-      <div class="collapse" id="InvalidWebhookUrlCollapse">
-        <div class="card card-body text-danger border-danger w-25 h-auto p-2 mt-3">
-          Invalid URL
-        </div>
-      </div>
-      <hr />
-      <label>Content</label>
-      <textarea class="form-control" type="text" id="content" maxlength="2048" rows="10"></textarea>
-      <hr />
-      <label style="font-size: 20px">Profile</label><br />
-      <label>Username</label><br />
-      <input class="form-control" type="text" id="username" maxlength="80" />
-      <label>Avatar URL</label><br />
-      <input class="form-control" type="url" id="avatar_url" maxlength="2048" />
-      <div class="collapse" id="InvalidAvatarUrlCollapse">
-        <div class="card card-body text-danger border-danger w-25 h-auto p-2 mt-3">
-          Invalid URL
-        </div>
-      </div>
-      <hr>
-      <div class="mb-3">
-        <label for="formFile" class="form-label">Files <span class="badge bg-secondary">Max 25 MB</span></label>
-        <input class="form-control" type="file" id="files" multiple>
-      </div>
-      <hr>
-    </div>
+    <div class="container-fluid">
+      <div class="row">
 
-    <div id="messageView" class="overflow-auto">
-      <div id="viewTableRow">
-        <div id="avatarView">
-          <img
-            src="https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024"
-            id="avatarIcon" />
+        <div id="inputs" class="overflow-y-scroll col-md-6">
+          <label>Webhook URL</label><br />
+          <div class="input-group">
+            <input class="form-control" type="password" id="webhookUrl" placeholder="https://discord.com/api/webhooks/"
+              required />
+            <button class="btn btn-outline-secondary" id="sendButton" data-bs-target="#exampleModal">Send</button>
+          </div>
+          <div class="collapse" id="InvalidWebhookUrlCollapse">
+            <div class="card card-body text-danger border-danger w-25 h-auto p-2 mt-3">
+              Invalid URL
+            </div>
+          </div>
+          <hr />
+          <label>Content</label>
+          <textarea class="form-control" type="text" id="content" maxlength="2048" rows="10"></textarea>
+          <hr />
+          <label style="font-size: 20px">Profile</label><br />
+          <label>Username</label><br />
+          <input class="form-control" type="text" id="username" maxlength="80" />
+          <label>Avatar URL</label><br />
+          <input class="form-control" type="url" id="avatar_url" maxlength="2048" />
+          <div class="collapse" id="InvalidAvatarUrlCollapse">
+            <div class="card card-body text-danger border-danger w-25 h-auto p-2 mt-3">
+              Invalid URL
+            </div>
+          </div>
+          <hr>
+          <div class="mb-3">
+            <label for="formFile" class="form-label">Files <span class="badge bg-secondary">Max 25 MB</span></label>
+            <input class="form-control" type="file" id="files" multiple>
+          </div>
+          <hr>
+
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">
+                <button class="btn btn-dark" data-bs-toggle="collapse" data-bs-target="#embedContent">X</button>
+                <span>Embed 1</span>
+              </h5>
+            </div>
+            <div id="embedContent" class="collapse">
+              <div class="card-body">
+                <button class="btn btn-outline-primary text-start w-100 mb-2" data-bs-toggle="collapse"
+                  data-bs-target="#authorOptions">Author</button>
+                <div class="collapse" id="authorOptions">
+                  <div class="mb-3">
+                    <label for="authorName" class="form-label">Name</label>
+                    <input type="text" id="authorName" class="form-control">
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="authorUrl" class="form-label">Author Url</label>
+                    <input type="url" id="authorUrl" class="form-control">
+                  </div>
+                  <div class="mb-3">
+                    <label for="authorIconUrl" class="form-label">Author Icon Url</label>
+                    <input type="url" id="authorIconUrl" class="form-control">
+                  </div>
+                </div>
+
+                <button class="btn btn-outline-primary text-start w-100 mb-2" data-bs-toggle="collapse"
+                  data-bs-target="#bodyOptions">Body</button>
+                <div class="collapse" id="bodyOptions">
+                  <div class="mb-3">
+                    <label for="bodyTitle" class="form-label">Title</label>
+                    <input type="text" id="bodyTitle" class="form-control">
+                  </div>
+                  <div class="mb-3">
+                    <label for="bodyDescription" class="form-label">Description</label>
+                    <textarea id="bodyDescription" class="form-control"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label for="bodyUrl" class="form-label">URL</label>
+                    <input type="url" id="bodyUrl" class="form-control">
+                  </div>
+                  <div class="mb-3">
+                    <label for="bodyColor" class="form-label">Color</label>
+                    <input type="color" id="bodyColor" class="form-control">
+                  </div>
+                </div>
+
+                <button class="btn btn-outline-primary text-start w-100 mb-2" data-bs-toggle="collapse"
+                  data-bs-target="#imagesOptions">Images</button>
+                <div class="collapse" id="imagesOptions">
+                  <div class="mb-3">
+                    <label for="imagesUrl" class="form-label">Image URL</label>
+                    <input type="url" id="imagesUrl" class="form-control">
+                  </div>
+                  <div class="mb-3">
+                    <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
+                    <input type="url" id="thumbnailUrl" class="form-control">
+                  </div>
+                </div>
+
+                <button class="btn btn-outline-primary text-start w-100 mb-2" data-bs-toggle="collapse"
+                  data-bs-target="#footerOptions">Footer</button>
+                <div class="collapse" id="footerOptions">
+                  <div class="mb-3">
+                    <label for="footerText" class="form-label">Footer Text</label>
+                    <input type="text" id="footerText" class="form-control">
+                  </div>
+                  <div class="mb-3">
+                    <label for="footerTimestamp" class="form-label">Timestamp</label>
+                    <input type="datetime-local" id="footerTimestamp" class="form-control">
+                  </div>
+                  <div class="mb-3">
+                    <label for="footerIconUrl" class="form-label">Footer Icon URL</label>
+                    <input type="url" id="footerIconUrl" class="form-control">
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <hr>
+
+          <footer class="bg-dark text-center text-lg-start white-text rounded">
+            <div class="text-center p-3">
+              © 2023 Copyright: Nort Studios
+            </div>
+          </footer>
+
         </div>
-        <div style="padding: 0px;">
-          <div id="usernameView"></div>
-          <div id="contentView"></div>
+
+        <div id="messageView" class="col-md-6">
+          <div id="viewTableRow">
+            <div id="avatarView">
+              <img
+                src="https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024"
+                id="avatarIcon" />
+            </div>
+            <div style="padding: 0px;">
+              <div id="usernameView">
+                <div id="usernameName"></div> <span class="badge bg-primary" id="botBadge">BOT</span>&nbsp;<span
+                  id="messageTime">Today at <span id="localTime">12:00</span></span>
+              </div>
+              <div id="contentView"></div>
+            </div>
+          </div>
+        </div>
+
         </div>
       </div>
-    </div>
-  </div>
 
-  <footer class="bg-dark text-center text-lg-start white-text">
-    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-      © 2023 Copyright: Nort Studios
-    </div>
-  </footer>
-
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content bg-success text-white">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="successModalLabel">Message Send</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Ok</button>
+      <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content bg-success text-white">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="successModalLabel">Message Send</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Ok</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="modal fade" id="failModal" tabindex="-1" aria-labelledby="failModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content bg-danger text-white">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="failModalLabel">Message Not Send</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="failEmbedErrorContent">
-          Error:
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Ok</button>
+      <div class="modal fade" id="failModal" tabindex="-1" aria-labelledby="failModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content bg-danger text-white">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="failModalLabel">Message Not Send</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="failEmbedErrorContent">
+              Error:
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Ok</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
 
 </body>
 <script type="importmap">
   {
     "imports": {
-      "@popperjs/core": "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/esm/popper.min.js",
+      "@popperjs/core": "../popperjs/popper.min.js",
       "bootstrap": "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.esm.min.js"
     }
   }
   </script>
-<script src="../js/index.js" type="module"></script>
+<script src="../js/index.mjs" type="module"></script>
 
 </html>

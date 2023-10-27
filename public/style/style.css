@@ -3,6 +3,11 @@
     src: url("../fonts/Rubik-Regular.ttf");
 }
 
+@font-face {
+    font-family: "Rubik Light";
+    src: url("../fonts/Rubik-Light.ttf");
+}
+
 * {
     padding: 0;
     margin: 0;
@@ -22,22 +27,22 @@ header {
     text-align: center;
     font-size: 30px;
     width: 100%;
-    height: 50px;
+    min-height: 60px;
+    height: 60px;
+    max-height: 60px;
     box-shadow: 3px 3px 5px rgb(22, 22, 22);
     z-index: -2;
 }
 
 #inputs {
-    display: table-cell;
-    min-width: 50vw;
-    height: 80vh;
+    height: 95vh;
+    max-height: 95vh;
     padding: 20px;
 }
 
 #messageView {
-    display: table-cell;
-    height: 80vh;
-    min-width: 50vw;
+    height: auto;
+    min-height: 100px;
     padding: 30px 20px 20px 20px;
 }
 
@@ -90,6 +95,7 @@ header {
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    object-fit: cover;
 }
 
 #usernameView {
@@ -100,6 +106,25 @@ header {
     word-wrap: break-word;
     word-break: break-all;
     overflow-wrap: break-word;
+}
+
+#usernameName {
+    display: inline;
+    width: auto;
+}
+
+#botBadge{
+    width: auto;
+    height: 18px;
+    padding-bottom: 10px;
+}
+
+#messageTime {
+    font-family: 'Rubik Light';
+    font-size: 12px;
+    font-weight: 100;
+    height: auto;
+    width: auto;
 }
 
 #contentView {
@@ -119,7 +144,6 @@ textarea {
     color: white;
     outline: 2px solid rgba(red, green, blue, 0);
     transition: color 0.5s;
-    width: 100%;
 }
 
 input:focus,
@@ -155,4 +179,20 @@ textarea::-webkit-scrollbar-corner {
     background-color: rgba(122, 122, 122, 0);
     border: none;
     outline: none;
+}
+
+#inputs::-webkit-scrollbar {
+    width: 1em;
+    cursor: grabbing;
+}
+
+#inputs::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    cursor: grabbing;
+}
+
+#inputs::-webkit-scrollbar-thumb {
+    background-color: rgb(122, 122, 122);
+    outline: 1px solid rgb(96, 97, 99);
+    cursor: grabbing;
 }
