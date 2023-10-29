@@ -26,13 +26,24 @@ app.get('/', async (req, res) => {
 app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
     const JSONMessage = req.body;
     const form = new FormData();
+    const payload = {};
 
     if (JSONMessage?.content != null)
-        form.append('content', JSONMessage.content);
+        payload.content = JSONMessage.content
+
     if (JSONMessage?.avatar_url != null)
-        form.append('avatar_url', JSONMessage.avatar_url);
+        payload.avatar_url = JSONMessage.avatar_url;
+
     if (JSONMessage?.username != null)
-        form.append('username', JSONMessage.username);
+        payload.username = JSONMessage.username;
+
+    JSONMessage.embeds = await JSON.parse(JSONMessage.embeds);
+
+    if (JSONMessage?.embeds != null && Object.keys(JSONMessage.embeds[0]).length > 1) {
+        payload.embeds = JSONMessage.embeds;
+    }
+
+    form.append('payload_json', JSON.stringify(payload));
 
     for (let i = 0; i < req.files.length; i++) {
         form.append('files' + i, req.files[i].buffer, { filename: req.files[i].originalname });
@@ -41,7 +52,11 @@ app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
     try {
         await axios.post(JSONMessage.webhookUrl,
             form,
-            { headers: 'Content-Type: multipart/form-data' });
+            {
+                headers: {
+                    ...form.getHeaders(),
+                }
+            });
     } catch (e) {
         return res.json({ success: false, error: e.response.data.message ?? e.message });
     }

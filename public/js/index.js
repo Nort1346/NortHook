@@ -52,7 +52,7 @@ setInterval(() => {
   let nowData = new Date();
   localTime.innerText = `${nowData.toLocaleTimeString().slice(0, -3)}`
 
-}, 30000);
+}, 1000);
 
 webhookUrl.addEventListener("focusin", (foc) => {
   webhookUrl.type = "text";
@@ -83,6 +83,9 @@ sendButton.addEventListener("click", () => {
     sendButton.disabled = false;
     return failModal.show();
   }
+
+  console.log(JSON.stringify( embed1.getEmbed() ));
+  formData.append("embeds", JSON.stringify( [embed1.getEmbed()] ));
 
   for (let i = 0; i < files.files.length; i++) {
     formData.append("files", files.files[i]);
@@ -172,8 +175,4 @@ function isValidURL(string) {
   return res == false;
 }
 
-const embed1 = new Embed(document.getElementById("embedContent"));
-
-setInterval(() => {
-  console.log(embed1.getEmbed());
-}, 1000);
+const embed1 = new Embed(document.getElementById("embedContent"), document.getElementById("embed1"));

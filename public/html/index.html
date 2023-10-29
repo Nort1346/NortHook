@@ -37,13 +37,13 @@
         </div>
         <hr />
         <label>Content</label>
-        <textarea class="form-control" type="text" id="content" maxlength="2048" rows="10"></textarea>
+        <textarea class="form-control" type="text" id="content" maxlength=2000 rows=10></textarea>
         <hr />
         <label style="font-size: 20px">Profile</label><br />
         <label>Username</label><br />
-        <input class="form-control" type="text" id="username" maxlength="80" />
+        <input class="form-control" type="text" id="username" maxlength=80 />
         <label>Avatar URL</label><br />
-        <input class="form-control" type="url" id="avatar_url" maxlength="2048" />
+        <input class="form-control" type="url" id="avatar_url" maxlength=2048 />
         <div class="collapse" id="InvalidAvatarUrlCollapse">
           <div class="card card-body text-danger border-danger w-25 h-auto p-2 mt-3">
             Invalid URL
@@ -62,9 +62,9 @@
               <button class="btn btn-dark spin" data-bs-toggle="collapse" data-bs-target="#embedContent"
                 id="iconEmbed1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                  class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                  class="bi bi-caret-down-fill" viewBox="0 0 16 16">
                   <path
-                    d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                    d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
                 </svg>
               </button>
               <span>&nbsp;Embed 1</span>
@@ -78,16 +78,16 @@
               <div class="collapse" id="authorOptions">
                 <div class="mb-3">
                   <label for="authorName" class="form-label">Name</label>
-                  <input type="text" id="authorName" class="form-control">
+                  <input type="text" id="authorName" class="form-control" maxlength=256>
                 </div>
 
                 <div class="mb-3">
                   <label for="authorUrl" class="form-label">Author Url</label>
-                  <input type="url" id="authorUrl" class="form-control">
+                  <input type="url" id="authorUrl" class="form-control" maxlength=2048>
                 </div>
                 <div class="mb-3">
                   <label for="authorIconUrl" class="form-label">Author Icon Url</label>
-                  <input type="url" id="authorIconUrl" class="form-control">
+                  <input type="url" id="authorIconUrl" class="form-control" maxlength=2048>
                 </div>
               </div>
 
@@ -96,19 +96,19 @@
               <div class="collapse" id="bodyOptions">
                 <div class="mb-3">
                   <label for="title" class="form-label">Title</label>
-                  <input type="text" id="title" class="form-control">
+                  <input type="text" id="title" class="form-control" maxlength=256>
                 </div>
                 <div class="mb-3">
                   <label for="description" class="form-label">Description</label>
-                  <textarea id="description" class="form-control"></textarea>
+                  <textarea id="description" class="form-control" maxlength=2048></textarea>
                 </div>
                 <div class="mb-3">
                   <label for="url" class="form-label">URL</label>
-                  <input type="url" id="url" class="form-control">
+                  <input type="url" id="url" class="form-control" maxlength=2000>
                 </div>
                 <div class="mb-3">
-                  <label for="bodyColor" class="form-label">Color</label>
-                  <input type="color" id="bodyColor" class="form-control">
+                  <label for="color" class="form-label">Color</label>
+                  <input type="color" id="color" class="form-control">
                 </div>
               </div>
 
@@ -118,7 +118,7 @@
                 <div class="mb-3 row g-2">
                   <div class="col-md-6">
                     <label for="nameField" class="form-label">Name</label>
-                    <input type="text" id="nameField" class="form-control">
+                    <input type="text" id="nameField" class="form-control" maxlength=256>
                   </div>
 
                   <div class="col-md-2">
@@ -128,7 +128,7 @@
                 </div>
                 <div class="mb-3">
                   <label for="valueField" class="form-label">Value</label>
-                  <textarea id="valueField" class="form-control"></textarea>
+                  <textarea id="valueField" class="form-control" maxlength=1024></textarea>
                 </div>
               </div>
 
@@ -137,11 +137,11 @@
               <div class="collapse" id="imagesOptions">
                 <div class="mb-3">
                   <label for="imagesUrl" class="form-label">Image URL</label>
-                  <input type="url" id="imagesUrl" class="form-control">
+                  <input type="url" id="imagesUrl" class="form-control" maxlength=2048>
                 </div>
                 <div class="mb-3">
                   <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
-                  <input type="url" id="thumbnailUrl" class="form-control">
+                  <input type="url" id="thumbnailUrl" class="form-control" maxlength=2048>
                 </div>
               </div>
 
@@ -150,15 +150,15 @@
               <div class="collapse" id="footerOptions">
                 <div class="mb-3">
                   <label for="footerText" class="form-label">Footer Text</label>
-                  <input type="text" id="footerText" class="form-control">
+                  <input type="text" id="footerText" class="form-control" maxlength=2048>
                 </div>
                 <div class="mb-3">
                   <label for="timestamp" class="form-label">Timestamp</label>
-                  <input type="datetime-local" id="timestamp" class="form-control">
+                  <input type="datetime-local" id="timestamp" class="form-control fa fa-calendar">
                 </div>
                 <div class="mb-3">
                   <label for="footerIconUrl" class="form-label">Footer Icon URL</label>
-                  <input type="url" id="footerIconUrl" class="form-control">
+                  <input type="url" id="footerIconUrl" class="form-control" maxlength=2048>
                 </div>
               </div>
 
@@ -187,28 +187,37 @@
           <div style="padding: 0px;">
             <div id="usernameView">
               <div id="usernameName"></div> <span class="badge bg-primary" id="botBadge">BOT</span>&nbsp;<span
-                id="messageTime">Today at <span id="localTime">12:00</span></span>
+                id="messageTime">Today at <span id="localTime"></span></span>
             </div>
             <div id="contentView"></div>
 
-            <div class="row g-0" style="padding-left: 10px;" id="embed1">
+            <div class="row g-0" style="padding-left: 10px; max-width: 450px; width:fit-content;" id="embed1">
               <div class="col card border border-0"
-                style="width: 8px; max-width: 7px; border-radius: 5px 0 0 5px; background-color: blue;"
+                style="width: 8px; max-width: 7px; border-radius: 5px 0 0 5px; background-color: rgb(37, 37, 37);"
                 id="colorVisual"></div>
               <div class="col card border border-start-0" style="border-radius: 0 5px 5px 0;">
-                <div class="card-header bg-dark border-0 mb-0">
-                  <img
-                    src="https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024"
-                    class="rounded-circle" width="25" height="25" alt="Author Icon" style="object-fit: cover;">
-                  <span class="ms-1">Nort</span>
+
+                <div class="card-header bg-dark border-0 mb-0 pb-0 d-none" id="author">
+                  <div class="d-flex align-items-center">
+                    <img src="" class="rounded-circle me-2 d-none" width="25" height="25" alt="Author Icon"
+                      style="object-fit: cover;" id="authorIconUrlVisual">
+                    <a href="" target="_blank" onclick="return false;" class="text-decoration-none text-white" id="footerUrlVisual">
+                      <div id="authorNameVisual" class="card-text me-2 d-inline text-break text-wrap"></div>
+                    </a>
+                  </div>
                 </div>
-                <div class="card-body pb-0 pt-0" style="max-width: 512px;">
-                  <img
-                    src="https://cdn.discordapp.com/attachments/1113010775322263552/1155221871676096543/bot_ikona.png?ex=65469935&is=65342435&hm=f6a250f874dfd54224509a0c5f7a7408753c8d94e5af5e162ec301460b1d5f87&"
-                    alt="Thumbnail" width="65" height="65" style="position: absolute; top: 5px; right: 5px;">
-                  <h5 class="card-title">Best Bot Ever</h5>
-                  <p class="card-text">Nort Studios Introducing NortBot</p>
-                  <div class="row">
+
+                <div class="card-body pb-1 pt-1" style="max-width: 512px;">
+                  <img src="" alt="Thumbnail" width="65" height="auto" id="thumbnailVisual"
+                    class="rounded-4 ps-2 pb-1 pt-1 d-none" style="float: right;">
+
+                  <a href="" target="_blank" onclick="return false;" class="text-decoration-none text-white" id="urlVisual">
+                    <h5 class="mt-2 d-none" id="titleVisual"></h5>
+                  </a>
+
+                  <p class="card-text pt-0 mt-0 m-0" id="descriptionVisual"></p>
+
+                  <!--<div class="row" id="fields">
                     <div class="col-md-6 mb-2 w-100">
                       <h6 class="card-subtitle mb-2 text-muted">/Help</h6>
                       <p class="card-text">Display all commands</p>
@@ -217,18 +226,24 @@
                       <h6 class="card-subtitle mb-2 text-muted">/Contact</h6>
                       <p class="card-text">Display infomation about contant with NortBot's support</p>
                     </div>
-                  </div>
+                  </div>-->
+
+                  <img src="" alt="Image" class="rounded-4 w-100 py-1 d-none" id="imageVisual" width="100%"
+                    height="auto">
+
                 </div>
-                <div class="card-footer">
+
+                <div class="card-footer d-none" id="footer">
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
-                      <img
-                        src="https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024"
-                        class="rounded-circle" width="20" height="20" alt="Footer Icon" style="object-fit: cover;">
-                      <span class="ms-2 fs-6">NortBot Support</span>
+                      <img src="" class="rounded-circle me-2 d-none" width="20" height="20" alt="Footer Icon"
+                        style="object-fit: cover;" id="footerIconUrlVisual">
+                      <a href="" target="_top" onclick="return false;" class="text-decoration-none text-white" id="authorUrlVisual">
+                        <span class="fs-6 d-inline text-wrap text-break" id="footerTextVisual"></span>
+                      </a>
                     </div>
                     <div>
-                      <small class="text-muted">28.10.2023</small>
+                      <small class="text-muted ps-1" id="timestampVisual"></small>
                     </div>
                   </div>
                 </div>
@@ -246,7 +261,7 @@
     <div class="modal-dialog">
       <div class="modal-content bg-success text-white">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="successModalLabel">Message Send</h1>
+          <h1 class="modal-title fs-5" id="successModalLabel">Message Sent</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-footer">
@@ -260,7 +275,7 @@
     <div class="modal-dialog">
       <div class="modal-content bg-danger text-white">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="failModalLabel">Message Not Send</h1>
+          <h1 class="modal-title fs-5" id="failModalLabel">Message Not Sent</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" id="failEmbedErrorContent">
