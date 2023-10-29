@@ -1,4 +1,6 @@
-import * as bootstrap from 'bootstrap'
+import * as bootstrap from 'bootstrap';
+import { checkIfImageExists } from './functions.js'
+import { Embed } from './classes.js';
 
 const webhookUrl = document.getElementById("webhookUrl");
 const content = document.getElementById("content");
@@ -44,12 +46,12 @@ webhookUrl.addEventListener("input", checkWebhookUrl);
 
 const localTime = document.getElementById("localTime");
 
-localTime.innerText = `${(new Date()).toLocaleTimeString().slice(0,-3)}`;
+localTime.innerText = `${(new Date()).toLocaleTimeString().slice(0, -3)}`;
 
 setInterval(() => {
   let nowData = new Date();
-  localTime.innerText = `${nowData.toLocaleTimeString().slice(0,-3)}`
-  
+  localTime.innerText = `${nowData.toLocaleTimeString().slice(0, -3)}`
+
 }, 30000);
 
 webhookUrl.addEventListener("focusin", (foc) => {
@@ -64,44 +66,44 @@ sendButton.addEventListener("click", () => {
   const loading = document.getElementById("loadingMessage");
   loading.classList.remove("visually-hidden");
   sendButton.disabled = true;
-  
+
   const formData = new FormData();
-  
+
   formData.append("webhookUrl", webhookUrl.value)
   if (content.value.replaceAll(/\s/g, "") != "")
-  formData.append("content", content.value);
-if (username.value.replaceAll(/\s/g, "") != "")
+    formData.append("content", content.value);
+  if (username.value.replaceAll(/\s/g, "") != "")
     formData.append("username", username.value);
   if (avatar_url.value.replaceAll(/\s/g, "") != "")
-  formData.append("avatar_url", avatar_url.value);
+    formData.append("avatar_url", avatar_url.value);
 
-if (files.files.length > 10) {
-  failModalContent.innerText = `Error: Max files is 10`;
-  loading.classList.add("visually-hidden");
-  sendButton.disabled = false;
-  return failModal.show();
-}
-
-for (let i = 0; i < files.files.length; i++) {
-  formData.append("files", files.files[i]);
-}
-
-fetch("/sendMessage", {
-  method: "POST",
-  body: formData
-})
-.then((response) => response.json())
-.then((data) => {
-  loading.classList.add("visually-hidden");
-  sendButton.disabled = false;
-  
-  if (data.success == true) {
-    successModal.show();
-  } else {
-    failModalContent.innerText = `Error: ${data.error}`;
-    failModal.show();
+  if (files.files.length > 10) {
+    failModalContent.innerText = `Error: Max files is 10`;
+    loading.classList.add("visually-hidden");
+    sendButton.disabled = false;
+    return failModal.show();
   }
-});
+
+  for (let i = 0; i < files.files.length; i++) {
+    formData.append("files", files.files[i]);
+  }
+
+  fetch("/sendMessage", {
+    method: "POST",
+    body: formData
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      loading.classList.add("visually-hidden");
+      sendButton.disabled = false;
+
+      if (data.success == true) {
+        successModal.show();
+      } else {
+        failModalContent.innerText = `Error: ${data.error}`;
+        failModal.show();
+      }
+    });
 });
 
 function checkWebhookUrl() {
@@ -129,15 +131,6 @@ function checkWebhookUrl() {
     alertInvalidWebhookUrl.show()
   }
   changeView();
-}
-
-function isValidURL(string) {
-  var res = string
-  .replaceAll(/\s/g, "")
-  .startsWith("https://discord.com/api/webhooks/");
-  
-  if (string.length <= 0) alertInvalidWebhookUrl.hide();
-  return res == false;
 }
 
 function changeView() {
@@ -170,19 +163,17 @@ function setStandardValues() {
   changeView();
 }
 
-function checkIfImageExists(url, callback) {
-  const img = new Image();
-  img.src = url;
+function isValidURL(string) {
+  var res = string
+    .replaceAll(/\s/g, "")
+    .startsWith("https://discord.com/api/webhooks/");
 
-  if (img.complete) {
-    callback(true);
-  } else {
-    img.onload = () => {
-      callback(true);
-    };
-
-    img.onerror = () => {
-      callback(false);
-    };
-  }
+  if (string.length <= 0) alertInvalidWebhookUrl.hide();
+  return res == false;
 }
+
+const embed1 = new Embed(document.getElementById("embedContent"));
+
+setInterval(() => {
+  console.log(embed1.getEmbed());
+}, 1000);

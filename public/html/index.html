@@ -59,7 +59,8 @@
         <div class="card">
           <div class="card-header">
             <h5 class="mb-0 d-flex align-items-center">
-              <button class="btn btn-dark spin" data-bs-toggle="collapse" data-bs-target="#embedContent" id="iconEmbed1">
+              <button class="btn btn-dark spin" data-bs-toggle="collapse" data-bs-target="#embedContent"
+                id="iconEmbed1">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                   class="bi bi-caret-right-fill" viewBox="0 0 16 16">
                   <path
@@ -69,6 +70,7 @@
               <span>&nbsp;Embed 1</span>
             </h5>
           </div>
+
           <div id="embedContent" class="collapse">
             <div class="card-body">
               <button class="btn btn-outline-primary text-start w-100 mb-2" data-bs-toggle="collapse"
@@ -93,16 +95,16 @@
                 data-bs-target="#bodyOptions">Body</button>
               <div class="collapse" id="bodyOptions">
                 <div class="mb-3">
-                  <label for="bodyTitle" class="form-label">Title</label>
-                  <input type="text" id="bodyTitle" class="form-control">
+                  <label for="title" class="form-label">Title</label>
+                  <input type="text" id="title" class="form-control">
                 </div>
                 <div class="mb-3">
-                  <label for="bodyDescription" class="form-label">Description</label>
-                  <textarea id="bodyDescription" class="form-control"></textarea>
+                  <label for="description" class="form-label">Description</label>
+                  <textarea id="description" class="form-control"></textarea>
                 </div>
                 <div class="mb-3">
-                  <label for="bodyUrl" class="form-label">URL</label>
-                  <input type="url" id="bodyUrl" class="form-control">
+                  <label for="url" class="form-label">URL</label>
+                  <input type="url" id="url" class="form-control">
                 </div>
                 <div class="mb-3">
                   <label for="bodyColor" class="form-label">Color</label>
@@ -113,9 +115,16 @@
               <button class="btn btn-outline-primary text-start w-100 mb-2" data-bs-toggle="collapse"
                 data-bs-target="#fieldsOptions">Fields</button>
               <div class="collapse" id="fieldsOptions">
-                <div class="mb-3">
-                  <label for="nameField" class="form-label">Name</label>
-                  <input type="nameField" id="bodyTitle" class="form-control">
+                <div class="mb-3 row g-2">
+                  <div class="col-md-6">
+                    <label for="nameField" class="form-label">Name</label>
+                    <input type="text" id="nameField" class="form-control">
+                  </div>
+
+                  <div class="col-md-2">
+                    <label for="inlineField" class="form-label">Inline</label>
+                    <input type="checkbox" id="inlineField" class="form-check-input">
+                  </div>
                 </div>
                 <div class="mb-3">
                   <label for="valueField" class="form-label">Value</label>
@@ -144,8 +153,8 @@
                   <input type="text" id="footerText" class="form-control">
                 </div>
                 <div class="mb-3">
-                  <label for="footerTimestamp" class="form-label">Timestamp</label>
-                  <input type="datetime-local" id="footerTimestamp" class="form-control">
+                  <label for="timestamp" class="form-label">Timestamp</label>
+                  <input type="datetime-local" id="timestamp" class="form-control">
                 </div>
                 <div class="mb-3">
                   <label for="footerIconUrl" class="form-label">Footer Icon URL</label>
@@ -155,6 +164,7 @@
 
             </div>
           </div>
+
         </div>
 
         <hr>
@@ -181,17 +191,18 @@
             </div>
             <div id="contentView"></div>
 
-            <div class="row g-0" style="padding-left: 10px;">
-              <div class="col card bg-primary border border-0"
-                style="width: 8px; max-width: 8px; border-radius: 5px 0 0 5px;"></div>
+            <div class="row g-0" style="padding-left: 10px;" id="embed1">
+              <div class="col card border border-0"
+                style="width: 8px; max-width: 7px; border-radius: 5px 0 0 5px; background-color: blue;"
+                id="colorVisual"></div>
               <div class="col card border border-start-0" style="border-radius: 0 5px 5px 0;">
                 <div class="card-header bg-dark border-0 mb-0">
                   <img
                     src="https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024"
                     class="rounded-circle" width="25" height="25" alt="Author Icon" style="object-fit: cover;">
-                  <span class="ms-2">Nort</span>
+                  <span class="ms-1">Nort</span>
                 </div>
-                <div class="card-body pb-0 pt-0">
+                <div class="card-body pb-0 pt-0" style="max-width: 512px;">
                   <img
                     src="https://cdn.discordapp.com/attachments/1113010775322263552/1155221871676096543/bot_ikona.png?ex=65469935&is=65342435&hm=f6a250f874dfd54224509a0c5f7a7408753c8d94e5af5e162ec301460b1d5f87&"
                     alt="Thumbnail" width="65" height="65" style="position: absolute; top: 5px; right: 5px;">
@@ -213,7 +224,7 @@
                     <div class="d-flex align-items-center">
                       <img
                         src="https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024"
-                        class="rounded-circle" width="20" height="20" alt="Footer Icon">
+                        class="rounded-circle" width="20" height="20" alt="Footer Icon" style="object-fit: cover;">
                       <span class="ms-2 fs-6">NortBot Support</span>
                     </div>
                     <div>
@@ -271,6 +282,6 @@
     }
   }
   </script>
-<script src="../js/index.mjs" type="module"></script>
+<script src="../js/index.js" type="module"></script>
 
 </html>
