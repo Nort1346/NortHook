@@ -84,8 +84,15 @@ sendButton.addEventListener("click", () => {
     return failModal.show();
   }
 
-  console.log(JSON.stringify( embed1.getEmbed() ));
-  formData.append("embeds", JSON.stringify( [embed1.getEmbed()] ));
+  if (allembeds.length > 0) {
+    let embedArray = [];
+    for (const embed of allembeds) {
+      embedArray.push(embed.getEmbed());
+    }
+    formData.append("embeds", JSON.stringify(
+      embedArray
+    ));
+  }
 
   for (let i = 0; i < files.files.length; i++) {
     formData.append("files", files.files[i]);
@@ -175,4 +182,45 @@ function isValidURL(string) {
   return res == false;
 }
 
-const embed1 = new Embed(document.getElementById("embedContent"), document.getElementById("embed1"));
+const allembeds = [];
+
+const addEmbedButton = document.getElementById("addEmbed");
+
+addEmbedButton.addEventListener("click", async () => {
+  allembeds.push(new Embed(await getEmbedInput(), await getEmbedVisual()));
+});
+
+const embedsInput = document.getElementById("embedsInput");
+const embedsVisual = document.getElementById("embedsView");
+
+async function getEmbedInput() {
+  const response = await fetch('../html/embedInput.html');
+  const templateHTML = await response.text();
+
+  const embedInput = document.createElement('div');
+  embedInput.id = "embedInput" + allembeds.length;
+  embedInput.innerHTML = templateHTML;
+  embedInput.classList.add("py-1");
+  embedInput.querySelector(".embedButtonCollapse").setAttribute("data-bs-target", `#${embedInput.id} .embedCollapse`)
+
+  embedInput.querySelector("#embedName").innerHTML = "Embed";
+
+  embedsInput.appendChild(embedInput);
+
+  return embedInput;
+}
+
+async function getEmbedVisual() {
+  const response = await fetch('../html/embedVisual.html');
+  const templateHTML = await response.text();
+
+  const embedVisual = document.createElement('div');
+  embedVisual.id = "embedVisual" + allembeds.length;
+  embedVisual.innerHTML = templateHTML;
+  embedVisual.classList.add("py-1");
+
+
+  embedsVisual.appendChild(embedVisual);
+
+  return embedVisual;
+}
