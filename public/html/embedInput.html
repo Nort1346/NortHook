@@ -1,8 +1,7 @@
 <div class="card">
-  <div class="card-header">
-    <h5 class="mb-0 d-flex align-items-center">
+  <div class="card-header px-1">
       <div class="row w-100">
-        <div class="col-2">
+        <div class="col-9 px-4 d-flex align-items-center">
           <button
             class="btn btn-dark spin embedButtonCollapse"
             data-bs-toggle="collapse"
@@ -20,12 +19,11 @@
                 d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"
               />
             </svg>
-          </button>
+          </button>&nbsp;
+          <span id="embedId">Embed 1</span>&nbsp;
+          <span id="embedName"></span>
         </div>
-        <div class="col-7 d-flex align-items-center">
-          <span id="embedName">Embed 1</span>
-        </div>
-        <div class="col-3 d-flex justify-content-end float-end text-end">
+        <div class="col-3 d-flex justify-content-end float-end text-end p-0">
           <button class="btn btn-outline-danger d-flex align-items-center embedButtonRemove">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +40,6 @@
           </button>
         </div>
       </div>
-    </h5>
   </div>
 
   <div class="collapse embedCollapse">
@@ -123,29 +120,9 @@
         Fields
       </button>
       <div class="collapse fieldsOptions">
-        <div class="mb-3 row g-2">
-          <div class="col-md-6">
-            <label for="nameField" class="form-label">Name</label>
-            <input
-              type="text"
-              id="nameField"
-              class="form-control"
-              maxlength="256"
-            />
-          </div>
-
-          <div class="col-md-2">
-            <label for="inlineField" class="form-label">Inline</label>
-            <input type="checkbox" id="inlineField" class="form-check-input" />
-          </div>
-        </div>
-        <div class="mb-3">
-          <label for="valueField" class="form-label">Value</label>
-          <textarea
-            id="valueField"
-            class="form-control"
-            maxlength="1024"
-          ></textarea>
+        <div class="fieldsContent"></div>
+        <div class="addField">
+          <button class="btn btn-primary my-2">Add Field</button>
         </div>
       </div>
 

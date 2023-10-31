@@ -1,6 +1,7 @@
 export class Embed {
     constructor(inputEmbed, visualEmbed, id) {
         this.id = id;
+        this.embedId = inputEmbed.querySelector("#embedId");
         this.embedName = inputEmbed.querySelector("#embedName");
         this.removeButton = inputEmbed.querySelector(".embedButtonRemove");
 
@@ -84,10 +85,12 @@ export class Embed {
          * EMBED NAME
          */
         if (this.title.value) {
-            this.embedName.innerText = this.title.value.substring(0, 25);
+            this.embedName.innerText = `- ${this.title.value.substring(0, 25)}`;
         } else {
-            this.embedName.innerText = `Embed ${this.id+1}`;
+            this.embedName.innerText = '';
         }
+
+        this.embedId.innerText = `Embed ${this.id+1}`
 
         /**
          * COLOR

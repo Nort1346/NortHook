@@ -20,15 +20,15 @@
 
   <header>NortHook</header>
 
-  <div class="container-fluid">
-    <div class="row">
+  <div class="container-fluid" style="height: calc(100vh - 55px);">
+    <div class="row h-100 d-block-inline">
 
-      <div id="inputs" class="overflow-y-scroll col-md-6">
+      <div id="inputs" class="col-md-6 overflow-y-scroll">
         <label>Webhook URL</label><br />
         <div class="input-group">
           <input class="form-control" type="password" id="webhookUrl" placeholder="https://discord.com/api/webhooks/"
             required />
-          <button class="btn btn-outline-secondary" id="sendButton" data-bs-target="#exampleModal">Send</button>
+          <button class="btn btn-outline-secondary" id="sendButton">Send</button>
         </div>
         <div class="collapse" id="InvalidWebhookUrlCollapse">
           <div class="card card-body text-danger border-danger w-25 h-auto p-2 mt-3">
@@ -59,6 +59,7 @@
         <div class="row mb-3">
           <div class="col-6 d-flex align-items-center">
             <label class="fs-5">Embeds</label>
+            &nbsp;<span class="badge bg-secondary">Max 10</span>
           </div>
           <div class="col-6">
             <button class="btn btn-primary float-end d-flex align-items-center" id="addEmbed">
@@ -84,7 +85,7 @@
 
       </div>
 
-      <div id="messageView" class="overflow-y-scroll col-md-6">
+      <div id="messageView" class="col-md-6 overflow-y-scroll">
         <div id="viewTableRow">
           <div id="avatarView">
             <img
