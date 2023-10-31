@@ -1,5 +1,9 @@
 export class Embed {
-    constructor(inputEmbed, visualEmbed) {
+    constructor(inputEmbed, visualEmbed, id) {
+        this.id = id;
+        this.embedName = inputEmbed.querySelector("#embedName");
+        this.removeButton = inputEmbed.querySelector(".embedButtonRemove");
+
         this.author = {
             name: inputEmbed.querySelector("#authorName"),
             url: inputEmbed.querySelector("#authorUrl"),
@@ -23,7 +27,6 @@ export class Embed {
             text: inputEmbed.querySelector("#footerText"),
             icon_url: inputEmbed.querySelector("#footerIconUrl")
         };
-
         this.viewObjects = {
             color: visualEmbed.querySelector("#colorVisual"),
             title: visualEmbed.querySelector("#titleVisual"),
@@ -77,6 +80,15 @@ export class Embed {
     }
 
     async refreshEmbedVisual() {
+        /**
+         * EMBED NAME
+         */
+        if (this.title.value) {
+            this.embedName.innerText = this.title.value.substring(0, 25);
+        } else {
+            this.embedName.innerText = `Embed ${this.id+1}`;
+        }
+
         /**
          * COLOR
          */

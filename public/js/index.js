@@ -20,6 +20,7 @@ const avatarView = document.getElementById("avatarIcon");
 
 const alertInvalidWebhookUrl = new bootstrap.Collapse("#InvalidWebhookUrlCollapse", { toggle: false });
 const alertInvalidAvatarUrl = new bootstrap.Collapse("#InvalidAvatarUrlCollapse", { toggle: false });
+
 /**
  * WebHookInfo
  */
@@ -187,40 +188,80 @@ const allembeds = [];
 const addEmbedButton = document.getElementById("addEmbed");
 
 addEmbedButton.addEventListener("click", async () => {
-  allembeds.push(new Embed(await getEmbedInput(), await getEmbedVisual()));
+  const inputEmbed = await getEmbedInput();
+  const visualEmbed = await getEmbedVisual();
+  const newEmbed = new Embed(inputEmbed, visualEmbed, allembeds.length);
+  allembeds.push(newEmbed);
+
+  newEmbed.removeButton.addEventListener("click", () => {
+    allembeds.splice(allembeds.indexOf(newEmbed), 1);
+
+    inputEmbed.remove();
+    visualEmbed.remove();
+
+    for(let i = 0; i < allembeds.length; i++) {
+      allembeds[i].id = i;
+      allembeds[i].refreshEmbedVisual();
+    }
+
+    if (allembeds.length < 10) {
+      addEmbedButton.disabled = false;
+    }
+  });
+
+  if (allembeds.length >= 10) {
+    addEmbedButton.disabled = true;
+  };
+
 });
 
-const embedsInput = document.getElementById("embedsInput");
-const embedsVisual = document.getElementById("embedsView");
+  const embedsInput = document.getElementById("embedsInput");
+  const embedsVisual = document.getElementById("embedsView");
 
-async function getEmbedInput() {
-  const response = await fetch('../html/embedInput.html');
-  const templateHTML = await response.text();
+  async function getEmbedInput() {
+    const response = await fetch('../html/embedInput.html');
+    const templateHTML = await response.text();
 
-  const embedInput = document.createElement('div');
-  embedInput.id = "embedInput" + allembeds.length;
-  embedInput.innerHTML = templateHTML;
-  embedInput.classList.add("py-1");
-  embedInput.querySelector(".embedButtonCollapse").setAttribute("data-bs-target", `#${embedInput.id} .embedCollapse`)
+    const embedInput = document.createElement('div');
+    embedInput.id = "embedInput" + allembeds.length;
+    embedInput.innerHTML = templateHTML;
+    embedInput.classList.add("py-1");
+    embedInput.querySelector(".embedButtonCollapse")
+      .setAttribute("data-bs-target", `#${embedInput.id} .embedCollapse`)
 
-  embedInput.querySelector("#embedName").innerHTML = "Embed";
+    embedInput.querySelector(".authorButtonOptions")
+      .setAttribute("data-bs-target", `#${embedInput.id} .authorOptions`)
 
-  embedsInput.appendChild(embedInput);
+    embedInput.querySelector(".bodyButtonOptions")
+      .setAttribute("data-bs-target", `#${embedInput.id} .bodyOptions`)
 
-  return embedInput;
-}
+    embedInput.querySelector(".fieldsButtonOptions")
+      .setAttribute("data-bs-target", `#${embedInput.id} .fieldsOptions`)
 
-async function getEmbedVisual() {
-  const response = await fetch('../html/embedVisual.html');
-  const templateHTML = await response.text();
+    embedInput.querySelector(".imagesButtonOptions")
+      .setAttribute("data-bs-target", `#${embedInput.id} .imagesOptions`)
 
-  const embedVisual = document.createElement('div');
-  embedVisual.id = "embedVisual" + allembeds.length;
-  embedVisual.innerHTML = templateHTML;
-  embedVisual.classList.add("py-1");
+    embedInput.querySelector(".footerButtonOptions")
+      .setAttribute("data-bs-target", `#${embedInput.id} .footerOptions`)
+
+    embedInput.querySelector("#embedName").innerHTML = "Embed";
+
+    embedsInput.appendChild(embedInput);
+
+    return embedInput;
+  }
+
+  async function getEmbedVisual() {
+    const response = await fetch('../html/embedVisual.html');
+    const templateHTML = await response.text();
+
+    const embedVisual = document.createElement('div');
+    embedVisual.id = "embedVisual" + allembeds.length;
+    embedVisual.innerHTML = templateHTML;
+    embedVisual.classList.add("py-1");
 
 
-  embedsVisual.appendChild(embedVisual);
+    embedsVisual.appendChild(embedVisual);
 
-  return embedVisual;
-}
+    return embedVisual;
+  }
