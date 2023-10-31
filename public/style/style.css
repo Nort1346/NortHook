@@ -39,14 +39,15 @@ header {
 }
 
 #inputs {
-    height: 95vh;
+    height: 90vh;
     max-height: 95vh;
     padding: 20px;
 }
 
 #messageView {
-    height: auto;
+    height: 90vh;
     min-height: 100px;
+    max-height: 95vh;
     padding: 30px 20px 20px 20px;
 }
 
