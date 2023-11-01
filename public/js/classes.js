@@ -4,6 +4,7 @@ export class Embed {
         this.embedId = inputEmbed.querySelector("#embedId");
         this.embedName = inputEmbed.querySelector("#embedName");
         this.removeButton = inputEmbed.querySelector(".embedButtonRemove");
+        this.addFieldButton = inputEmbed.querySelector(".addFieldButton");
 
         this.author = {
             name: inputEmbed.querySelector("#authorName"),
@@ -14,13 +15,7 @@ export class Embed {
         this.description = inputEmbed.querySelector("#description");
         this.color = inputEmbed.querySelector("#color");
         this.url = inputEmbed.querySelector("#url");
-        this.fields = [
-            {
-                name: inputEmbed.querySelector("#nameField"),
-                value: inputEmbed.querySelector("#valueField"),
-                inline: inputEmbed.querySelector("#inlineField")
-            }
-        ];
+        this.fields = [];
         this.timestamp = inputEmbed.querySelector("#timestamp");
         this.image = { url: inputEmbed.querySelector("#imagesUrl") };
         this.thumbnail = { url: inputEmbed.querySelector("#thumbnailUrl") };
@@ -47,9 +42,10 @@ export class Embed {
                 iconUrl: visualEmbed.querySelector("#authorIconUrlVisual"),
                 url: visualEmbed.querySelector("#authorUrlVisual"),
                 allElements: visualEmbed.querySelector("#author"),
-            }
+            },
+
         }
-        this.addListenersToInput();
+        this.addListeners();
         this.refreshEmbedVisual();
     };
 
@@ -90,7 +86,7 @@ export class Embed {
             this.embedName.innerText = '';
         }
 
-        this.embedId.innerText = `Embed ${this.id+1}`
+        this.embedId.innerText = `Embed ${this.id + 1}`
 
         /**
          * COLOR
@@ -180,7 +176,7 @@ export class Embed {
         }
     }
 
-    addListenersToInput() {
+    addListeners() {
         this.author.name.addEventListener("input", () => this.refreshEmbedVisual());
         this.author.url.addEventListener("input", () => this.refreshEmbedVisual());
         this.author.iconUrl.addEventListener("input", () => this.refreshEmbedVisual());
@@ -193,7 +189,45 @@ export class Embed {
         this.thumbnail.url.addEventListener("input", () => this.refreshEmbedVisual());
         this.footer.text.addEventListener("input", () => this.refreshEmbedVisual());
         this.footer.icon_url.addEventListener("input", () => this.refreshEmbedVisual());
+
+        this.addFieldButton.addEventListener("click", async () => this.addField());
     }
+
+    async addField() {
+        const response = await fetch('../html/field.html');
+        const templateHTML = await response.text();
+
+        const fieldInputElement = document.createElement('div');
+        fieldInputElement.id = `field_${generateUniqueId()}`;
+        fieldInputElement.innerHTML = templateHTML;
+
+        fieldInputElement.querySelector(".fieldButtonParameters")
+            .setAttribute("data-bs-target", `#${fieldInputElement.id} .fieldBody`);
+
+        document.querySelector(`#embedInput${this.id} .fieldsContent`).appendChild(fieldInputElement);
+
+        this.fields.push(
+            {
+                name: fieldInputElement.querySelector(".fieldName"),
+                value: fieldInputElement.querySelector(".fieldValue"),
+                inline: fieldInputElement.querySelector(".fieldInline"),
+                fieldNumber: fieldInputElement.querySelector(".fieldNumber")
+            }
+        )
+        await this.countAllFields();
+    }
+
+    async countAllFields() {
+        let i = 1;
+        for (const field of this.fields) {
+            field.fieldNumber.innerText = `Field ${i}`;
+            i++;
+        }
+    }
+}
+
+function generateUniqueId() {
+    return Math.random().toString(36).substr(2, 9);
 }
 
 function isImageURLValid(imageUrl) {

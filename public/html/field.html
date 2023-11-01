@@ -1,0 +1,30 @@
+<div class="card my-2">
+    <div class="card-header d-flex align-items-center">
+        <button class="btn btn-dark btn-sm bg-transparent fieldButtonParameters" data-bs-toggle="collapse" data-bs-target="">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                <path
+                    d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+            </svg>
+        </button>
+        <span class="ms-2 fieldNumber">Filed 1</span>
+    </div>
+    <div class="collapse fieldBody">
+        <div class="card-body">
+
+            <div class="mb-3">
+                <label class="form-label">Field Name</label>
+                <div class="d-flex align-items-center">
+                    <input type="text" class="form-control fieldName" maxlength="256" />
+                    <input type="checkbox" id="fieldInline" class="btn-check" checked autocomplete="off">
+                    <label class="btn ms-2" for="fieldInline">Inline</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Field Value</label>
+                <textarea class="form-control fieldValue" maxlength="2048"></textarea>
+            </div>
+        </div>
+    </div>
+</div>

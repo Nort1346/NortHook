@@ -1,92 +1,54 @@
 <div class="card">
   <div class="card-header px-1">
-      <div class="row w-100">
-        <div class="col-9 px-4 d-flex align-items-center">
-          <button
-            class="btn btn-dark spin embedButtonCollapse"
-            data-bs-toggle="collapse"
-            data-bs-target=""
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              class="bi bi-caret-down-fill"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"
-              />
-            </svg>
-          </button>&nbsp;
-          <span id="embedId">Embed 1</span>&nbsp;
-          <span id="embedName"></span>
-        </div>
-        <div class="col-3 d-flex justify-content-end float-end text-end p-0">
-          <button class="btn btn-outline-danger d-flex align-items-center embedButtonRemove">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="currentColor"
-              class="bi bi-x-circle-fill"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"
-              />
-            </svg>
-          </button>
-        </div>
+    <div class="row w-100">
+      <div class="col-9 px-4 d-flex align-items-center">
+        <button class="btn btn-dark spin embedButtonCollapse" data-bs-toggle="collapse" data-bs-target="">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+            class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+            <path
+              d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+          </svg>
+        </button>&nbsp;
+        <span id="embedId">Embed 1</span>&nbsp;
+        <span id="embedName"></span>
       </div>
+      <div class="col-3 d-flex justify-content-end float-end text-end p-0">
+        <button class="btn btn-outline-danger d-flex align-items-center embedButtonRemove">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill"
+            viewBox="0 0 16 16">
+            <path
+              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z" />
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 
   <div class="collapse embedCollapse">
     <div class="card-body">
-      <button
-        class="btn btn-outline-primary text-start w-100 mb-2 authorButtonOptions"
-        data-bs-toggle="collapse"
-        data-bs-target=""
-      >
+      <button class="btn btn-outline-primary text-start w-100 mb-2 authorButtonOptions" data-bs-toggle="collapse"
+        data-bs-target="">
         Author
       </button>
       <div class="collapse authorOptions">
         <div class="mb-3">
           <label for="authorName" class="form-label">Name</label>
-          <input
-            type="text"
-            id="authorName"
-            class="form-control"
-            maxlength="256"
-          />
+          <input type="text" id="authorName" class="form-control" maxlength="256" />
         </div>
 
         <div class="mb-3">
           <label for="authorUrl" class="form-label">Author Url</label>
-          <input
-            type="url"
-            id="authorUrl"
-            class="form-control"
-            maxlength="2048"
-          />
+          <input type="url" id="authorUrl" class="form-control" maxlength="2048" />
         </div>
+
         <div class="mb-3">
           <label for="authorIconUrl" class="form-label">Author Icon Url</label>
-          <input
-            type="url"
-            id="authorIconUrl"
-            class="form-control"
-            maxlength="2048"
-          />
+          <input type="url" id="authorIconUrl" class="form-control" maxlength="2048" />
         </div>
       </div>
 
-      <button
-        class="btn btn-outline-primary text-start w-100 mb-2 bodyButtonOptions"
-        data-bs-toggle="collapse"
-        data-bs-target=""
-      >
+      <button class="btn btn-outline-primary text-start w-100 mb-2 bodyButtonOptions" data-bs-toggle="collapse"
+        data-bs-target="">
         Body
       </button>
       <div class="collapse bodyOptions">
@@ -96,11 +58,7 @@
         </div>
         <div class="mb-3">
           <label for="description" class="form-label">Description</label>
-          <textarea
-            id="description"
-            class="form-control"
-            maxlength="2048"
-          ></textarea>
+          <textarea id="description" class="form-control" maxlength="2048"></textarea>
         </div>
         <div class="mb-3">
           <label for="url" class="form-label">URL</label>
@@ -112,81 +70,49 @@
         </div>
       </div>
 
-      <button
-        class="btn btn-outline-primary text-start w-100 mb-2 fieldsButtonOptions"
-        data-bs-toggle="collapse"
-        data-bs-target=""
-      >
+      <button class="btn btn-outline-primary text-start w-100 mb-2 fieldsButtonOptions" data-bs-toggle="collapse"
+        data-bs-target="">
         Fields
       </button>
       <div class="collapse fieldsOptions">
-        <div class="fieldsContent"></div>
+        <div class="fieldsContent">
+        </div>
         <div class="addField">
-          <button class="btn btn-primary my-2">Add Field</button>
+          <button class="btn btn-primary my-2 addFieldButton">Add Field</button>
         </div>
       </div>
 
-      <button
-        class="btn btn-outline-primary text-start w-100 mb-2 imagesButtonOptions"
-        data-bs-toggle="collapse"
-        data-bs-target=""
-      >
+      <button class="btn btn-outline-primary text-start w-100 mb-2 imagesButtonOptions" data-bs-toggle="collapse"
+        data-bs-target="">
         Images
       </button>
       <div class="collapse imagesOptions">
         <div class="mb-3">
           <label for="imagesUrl" class="form-label">Image URL</label>
-          <input
-            type="url"
-            id="imagesUrl"
-            class="form-control"
-            maxlength="2048"
-          />
+          <input type="url" id="imagesUrl" class="form-control" maxlength="2048" />
         </div>
         <div class="mb-3">
           <label for="thumbnailUrl" class="form-label">Thumbnail URL</label>
-          <input
-            type="url"
-            id="thumbnailUrl"
-            class="form-control"
-            maxlength="2048"
-          />
+          <input type="url" id="thumbnailUrl" class="form-control" maxlength="2048" />
         </div>
       </div>
 
-      <button
-        class="btn btn-outline-primary text-start w-100 mb-2 footerButtonOptions"
-        data-bs-toggle="collapse"
-        data-bs-target=""
-      >
+      <button class="btn btn-outline-primary text-start w-100 mb-2 footerButtonOptions" data-bs-toggle="collapse"
+        data-bs-target="">
         Footer
       </button>
       <div class="collapse footerOptions">
         <div class="mb-3">
           <label for="footerText" class="form-label">Footer Text</label>
-          <input
-            type="text"
-            id="footerText"
-            class="form-control"
-            maxlength="2048"
-          />
+          <input type="text" id="footerText" class="form-control" maxlength="2048" />
         </div>
         <div class="mb-3">
           <label for="timestamp" class="form-label">Timestamp</label>
-          <input
-            type="datetime-local"
-            id="timestamp"
-            class="form-control fa fa-calendar"
-          />
+          <input type="datetime-local" id="timestamp" class="form-control fa fa-calendar" />
         </div>
         <div class="mb-3">
           <label for="footerIconUrl" class="form-label">Footer Icon URL</label>
-          <input
-            type="url"
-            id="footerIconUrl"
-            class="form-control"
-            maxlength="2048"
-          />
+          <input type="url" id="footerIconUrl" class="form-control" maxlength="2048" />
         </div>
       </div>
     </div>
