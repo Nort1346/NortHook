@@ -1,50 +1,48 @@
 <div class="row g-0" style="padding-left: 10px; max-width: 450px; min-height: 30px; width:fit-content;">
-    <div class="col card border border-0"
-      style="width: 8px; max-width: 7px; border-radius: 5px 0 0 5px; background-color: rgb(37, 37, 37);"
-      id="colorVisual"></div>
-    <div class="col card border border-start-0" style="border-radius: 0 5px 5px 0;">
+  <div class="col card border border-0 colorVisual"
+    style="width: 8px; max-width: 7px; border-radius: 5px 0 0 5px; background-color: rgb(37, 37, 37);"></div>
+  <div class="col card border border-start-0" style="border-radius: 0 5px 5px 0;">
 
-      <div class="card-header bg-dark border-0 mb-0 pb-0 d-none" id="author">
+    <div class="card-header bg-dark border-0 mb-0 pb-0 d-none author">
+      <div class="d-flex align-items-center">
+        <img src="" class="rounded-circle me-2 d-none authorIconUrlVisual" width="25" height="25" alt="Author Icon"
+          style="object-fit: cover;">
+        <a href="" target="_blank" onclick="return false;" class="text-decoration-none text-white footerUrlVisual">
+          <div class="card-text me-2 d-inline text-break text-wrap authorNameVisual"></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="card-body pb-1 pt-1" style="max-width: 512px;">
+      <img src="" alt="Thumbnail" width="65" height="auto" class="rounded-4 ps-2 pb-1 pt-1 d-none thumbnailVisual"
+        style="float: right;">
+
+      <a href="" target="_blank" onclick="return false;" class="text-decoration-none text-white urlVisual">
+        <h5 class="mt-2 d-none titleVisual"></h5>
+      </a>
+
+      <p class="card-text pt-0 mt-0 m-0 descriptionVisual"></p>
+
+      <div class="row gx-2 fieldsContent">
+      </div>
+
+      <img src="" alt="Image" class="rounded-4 w-100 py-1 d-none imageVisual" width="100%" height="auto">
+
+    </div>
+
+    <div class="card-footer d-none footer">
+      <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-          <img src="" class="rounded-circle me-2 d-none" width="25" height="25" alt="Author Icon"
-            style="object-fit: cover;" id="authorIconUrlVisual">
-          <a href="" target="_blank" onclick="return false;" class="text-decoration-none text-white" id="footerUrlVisual">
-            <div id="authorNameVisual" class="card-text me-2 d-inline text-break text-wrap"></div>
+          <img src="" class="rounded-circle me-2 d-none footerIconUrlVisual" width="20" height="20" alt="Footer Icon"
+            style="object-fit: cover;">
+          <a href="" target="_top" onclick="return false;" class="text-decoration-none text-white authorUrlVisual">
+            <span class="fs-6 d-inline text-wrap text-break footerTextVisual"></span>
           </a>
         </div>
-      </div>
-
-      <div class="card-body pb-1 pt-1" style="max-width: 512px;">
-        <img src="" alt="Thumbnail" width="65" height="auto" id="thumbnailVisual"
-          class="rounded-4 ps-2 pb-1 pt-1 d-none" style="float: right;">
-
-        <a href="" target="_blank" onclick="return false;" class="text-decoration-none text-white" id="urlVisual">
-          <h5 class="mt-2 d-none" id="titleVisual"></h5>
-        </a>
-
-        <p class="card-text pt-0 mt-0 m-0" id="descriptionVisual"></p>
-
-        <div class="row fieldsContent">
-        </div>
-
-        <img src="" alt="Image" class="rounded-4 w-100 py-1 d-none" id="imageVisual" width="100%"
-          height="auto">
-
-      </div>
-
-      <div class="card-footer d-none" id="footer">
-        <div class="d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center">
-            <img src="" class="rounded-circle me-2 d-none" width="20" height="20" alt="Footer Icon"
-              style="object-fit: cover;" id="footerIconUrlVisual">
-            <a href="" target="_top" onclick="return false;" class="text-decoration-none text-white" id="authorUrlVisual">
-              <span class="fs-6 d-inline text-wrap text-break" id="footerTextVisual"></span>
-            </a>
-          </div>
-          <div>
-            <small class="text-muted ps-1" id="timestampVisual"></small>
-          </div>
+        <div>
+          <small class="text-muted ps-1 timestampVisual"></small>
         </div>
       </div>
     </div>
   </div>
+</div>

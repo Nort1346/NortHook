@@ -2,47 +2,49 @@ export class Embed {
     constructor(inputEmbed, visualEmbed, id) {
         this.id = id;
         this.inputEmbed = inputEmbed;
-        this.embedId = inputEmbed.querySelector("#embedId");
-        this.embedName = inputEmbed.querySelector("#embedName");
+        this.visualEmbed = visualEmbed;
+
+        this.embedId = inputEmbed.querySelector(".embedId");
+        this.embedName = inputEmbed.querySelector(".embedName");
         this.removeButton = inputEmbed.querySelector(".embedButtonRemove");
         this.addFieldButton = inputEmbed.querySelector(".addFieldButton");
 
         this.author = {
-            name: inputEmbed.querySelector("#authorName"),
-            url: inputEmbed.querySelector("#authorUrl"),
-            iconUrl: inputEmbed.querySelector("#authorIconUrl")
+            name: inputEmbed.querySelector(".authorName"),
+            url: inputEmbed.querySelector(".authorUrl"),
+            iconUrl: inputEmbed.querySelector(".authorIconUrl")
         };
-        this.title = inputEmbed.querySelector("#title");
-        this.description = inputEmbed.querySelector("#description");
-        this.color = inputEmbed.querySelector("#color");
-        this.url = inputEmbed.querySelector("#url");
+        this.title = inputEmbed.querySelector(".title");
+        this.description = inputEmbed.querySelector(".description");
+        this.color = inputEmbed.querySelector(".color");
+        this.url = inputEmbed.querySelector(".url");
         this.fields = [];
-        this.timestamp = inputEmbed.querySelector("#timestamp");
-        this.image = { url: inputEmbed.querySelector("#imagesUrl") };
-        this.thumbnail = { url: inputEmbed.querySelector("#thumbnailUrl") };
+        this.timestamp = inputEmbed.querySelector(".timestamp");
+        this.image = { url: inputEmbed.querySelector(".imagesUrl") };
+        this.thumbnail = { url: inputEmbed.querySelector(".thumbnailUrl") };
         this.footer = {
-            text: inputEmbed.querySelector("#footerText"),
-            icon_url: inputEmbed.querySelector("#footerIconUrl")
+            text: inputEmbed.querySelector(".footerText"),
+            icon_url: inputEmbed.querySelector(".footerIconUrl")
         };
         this.viewObjects = {
-            color: visualEmbed.querySelector("#colorVisual"),
-            title: visualEmbed.querySelector("#titleVisual"),
-            description: visualEmbed.querySelector("#descriptionVisual"),
-            url: visualEmbed.querySelector("#urlVisual"),
-            timestamp: visualEmbed.querySelector("#timestampVisual"),
+            color: visualEmbed.querySelector(".colorVisual"),
+            title: visualEmbed.querySelector(".titleVisual"),
+            description: visualEmbed.querySelector(".descriptionVisual"),
+            url: visualEmbed.querySelector(".urlVisual"),
+            timestamp: visualEmbed.querySelector(".timestampVisual"),
             footer: {
-                text: visualEmbed.querySelector("#footerTextVisual"),
-                iconUrl: visualEmbed.querySelector("#footerIconUrlVisual"),
-                url: visualEmbed.querySelector("#footerUrlVisual"),
-                allElements: visualEmbed.querySelector("#footer")
+                text: visualEmbed.querySelector(".footerTextVisual"),
+                iconUrl: visualEmbed.querySelector(".footerIconUrlVisual"),
+                url: visualEmbed.querySelector(".footerUrlVisual"),
+                allElements: visualEmbed.querySelector(".footer")
             },
-            thumbnail: { url: visualEmbed.querySelector("#thumbnailVisual") },
-            image: { url: visualEmbed.querySelector("#imageVisual") },
+            thumbnail: { url: visualEmbed.querySelector(".thumbnailVisual") },
+            image: { url: visualEmbed.querySelector(".imageVisual") },
             author: {
-                name: visualEmbed.querySelector("#authorNameVisual"),
-                iconUrl: visualEmbed.querySelector("#authorIconUrlVisual"),
-                url: visualEmbed.querySelector("#authorUrlVisual"),
-                allElements: visualEmbed.querySelector("#author"),
+                name: visualEmbed.querySelector(".authorNameVisual"),
+                iconUrl: visualEmbed.querySelector(".authorIconUrlVisual"),
+                url: visualEmbed.querySelector(".authorUrlVisual"),
+                allElements: visualEmbed.querySelector(".author"),
             },
             fields: []
         }
@@ -71,8 +73,13 @@ export class Embed {
             embedObject.thumbnail = { url: this.thumbnail.url.value };
         if (this.footer.text.value)
             embedObject.footer = { text: this.footer.text.value, icon_url: this.footer.icon_url.value }
-        //if (this.fields[0].name.value && this.fields[0].value.value)
-        //  embedObject.fields = { name: this.fields[0].name.value, value: this.fields[0].value.value, inline: this.fields[0].inline.value }
+        if (this.fields.length > 0) {
+            embedObject.fields = this.fields.map(field => ({
+                name: field.name.value,
+                value: field.value.value,
+                inline: field.inline.checked
+            }));
+        }
 
         return embedObject;
     }
@@ -175,31 +182,20 @@ export class Embed {
                 this.viewObjects.author.iconUrl.classList.add("d-none");
             }
         }
+
         for (let i = 0; i < this.fields.length; i++) {
             this.viewObjects.fields[i].name.innerText = this.fields[i].name.value;
             this.viewObjects.fields[i].value.innerText = this.fields[i].value.value;
-              if (this.fields[i].inline.checked)
-                  this.viewObjects.fields[i].colElementInline.classList.remove("col-12");
-              else
-                  this.viewObjects.fields[i].colElementInline.classList.add("col-12");
+
+            if (this.fields[i].inline.checked)
+                this.viewObjects.fields[i].colElementInline.classList.remove("col-12");
+            else
+                this.viewObjects.fields[i].colElementInline.classList.add("col-12");
         }
     }
 
     addListeners() {
-        /*  this.author.name.addEventListener("input", () => this.refreshEmbedVisual());
-          this.author.url.addEventListener("input", () => this.refreshEmbedVisual());
-          this.author.iconUrl.addEventListener("input", () => this.refreshEmbedVisual());
-          this.title.addEventListener("input", () => this.refreshEmbedVisual());
-          this.description.addEventListener("input", () => this.refreshEmbedVisual());
-          this.color.addEventListener("input", () => this.refreshEmbedVisual());
-          this.url.addEventListener("input", () => this.refreshEmbedVisual());
-          this.timestamp.addEventListener("input", () => this.refreshEmbedVisual());
-          this.image.url.addEventListener("input", () => this.refreshEmbedVisual());
-          this.thumbnail.url.addEventListener("input", () => this.refreshEmbedVisual());
-          this.footer.text.addEventListener("input", () => this.refreshEmbedVisual());
-          this.footer.icon_url.addEventListener("input", () => this.refreshEmbedVisual());*/
         this.inputEmbed.addEventListener("input", () => this.refreshEmbedVisual());
-
 
         this.addFieldButton.addEventListener("click", async () => this.addField());
     }
@@ -207,6 +203,7 @@ export class Embed {
     async addField() {
         const uniqueFieldId = generateUniqueId();
 
+        //FIELD INPUT
         const fieldInputFetch = await fetch('../html/fieldInput.html');
         const fieldInputHTML = await fieldInputFetch.text();
 
@@ -216,21 +213,38 @@ export class Embed {
 
         fieldInputElement.querySelector(".fieldButtonParameters")
             .setAttribute("data-bs-target", `#${fieldInputElement.id} .fieldBody`);
-
         fieldInputElement.querySelector(".fieldInline")
             .setAttribute(`id`, `fieldInline_${uniqueFieldId}`);
         fieldInputElement.querySelector(".fieldInlineLabel")
             .setAttribute(`for`, `fieldInline_${uniqueFieldId}`);
+
+        fieldInputElement.querySelector(".fieldButtonRemove").addEventListener("click", () => {
+            this.fields.splice(
+                this.fields.findIndex((obj) => obj.name == fieldInputElement.querySelector(".fieldName"))
+                , 1
+            );
+            this.viewObjects.fields.splice(
+                this.viewObjects.fields.findIndex((obj) => obj.name == fieldVisualElement.querySelector(".fieldVisualName"))
+                , 1
+            )
+            fieldInputElement.remove();
+            fieldVisualElement.remove();
+
+            this.countAllFields();
+            this.checkMaxFields();
+        });
 
         this.fields.push(
             {
                 name: fieldInputElement.querySelector(".fieldName"),
                 value: fieldInputElement.querySelector(".fieldValue"),
                 inline: fieldInputElement.querySelector(".fieldInline"),
-                fieldNumber: fieldInputElement.querySelector(".fieldNumber")
+                fieldNumber: fieldInputElement.querySelector(".fieldNumber"),
+                fieldRemoveButton: fieldInputElement.querySelector(".fieldButtonRemove")
             }
         )
 
+        //FIELD VISUAL
         const fieldVisualFetch = await fetch('../html/fieldVisual.html');
         const fieldVisualHTML = await fieldVisualFetch.text();
 
@@ -247,8 +261,9 @@ export class Embed {
             }
         )
 
+        //SHOW FIELDS
         await this.countAllFields();
-
+        await this.checkMaxFields();
         document.querySelector(`#embedInput${this.id} .fieldsContent`).appendChild(fieldInputElement);
         document.querySelector(`#embedVisual${this.id} .fieldsContent`).appendChild(fieldVisualElement);
     }
@@ -259,6 +274,40 @@ export class Embed {
             field.fieldNumber.innerText = `Field ${i}`;
             i++;
         }
+    }
+
+    async checkMaxFields() {
+        if (this.fields.length >= 25) {
+            this.addFieldButton.disabled = true;
+        } else {
+            this.addFieldButton.disabled = false;
+        }
+    }
+
+    setId(id) {
+        this.id = id;
+        this.inputEmbed.id = `embedInput${id}`;
+        this.visualEmbed.id = `embedVisual${id}`;
+
+        this.inputEmbed.querySelector(".embedButtonCollapse")
+            .setAttribute("data-bs-target", `#${this.inputEmbed.id} .embedCollapse`)
+
+        this.inputEmbed.querySelector(".authorButtonOptions")
+            .setAttribute("data-bs-target", `#${this.inputEmbed.id} .authorOptions`)
+
+        this.inputEmbed.querySelector(".bodyButtonOptions")
+            .setAttribute("data-bs-target", `#${this.inputEmbed.id} .bodyOptions`)
+
+        this.inputEmbed.querySelector(".fieldsButtonOptions")
+            .setAttribute("data-bs-target", `#${this.inputEmbed.id} .fieldsOptions`)
+
+        this.inputEmbed.querySelector(".imagesButtonOptions")
+            .setAttribute("data-bs-target", `#${this.inputEmbed.id} .imagesOptions`)
+
+        this.inputEmbed.querySelector(".footerButtonOptions")
+            .setAttribute("data-bs-target", `#${this.inputEmbed.id} .footerOptions`)
+
+        this.refreshEmbedVisual();
     }
 }
 
