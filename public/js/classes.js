@@ -1,6 +1,7 @@
 export class Embed {
     constructor(inputEmbed, visualEmbed, id) {
         this.id = id;
+        this.inputEmbed = inputEmbed;
         this.embedId = inputEmbed.querySelector("#embedId");
         this.embedName = inputEmbed.querySelector("#embedName");
         this.removeButton = inputEmbed.querySelector(".embedButtonRemove");
@@ -43,7 +44,7 @@ export class Embed {
                 url: visualEmbed.querySelector("#authorUrlVisual"),
                 allElements: visualEmbed.querySelector("#author"),
             },
-
+            fields: []
         }
         this.addListeners();
         this.refreshEmbedVisual();
@@ -174,37 +175,52 @@ export class Embed {
                 this.viewObjects.author.iconUrl.classList.add("d-none");
             }
         }
+        for (let i = 0; i < this.fields.length; i++) {
+            this.viewObjects.fields[i].name.innerText = this.fields[i].name.value;
+            this.viewObjects.fields[i].value.innerText = this.fields[i].value.value;
+              if (this.fields[i].inline.checked)
+                  this.viewObjects.fields[i].colElementInline.classList.remove("col-12");
+              else
+                  this.viewObjects.fields[i].colElementInline.classList.add("col-12");
+        }
     }
 
     addListeners() {
-        this.author.name.addEventListener("input", () => this.refreshEmbedVisual());
-        this.author.url.addEventListener("input", () => this.refreshEmbedVisual());
-        this.author.iconUrl.addEventListener("input", () => this.refreshEmbedVisual());
-        this.title.addEventListener("input", () => this.refreshEmbedVisual());
-        this.description.addEventListener("input", () => this.refreshEmbedVisual());
-        this.color.addEventListener("input", () => this.refreshEmbedVisual());
-        this.url.addEventListener("input", () => this.refreshEmbedVisual());
-        this.timestamp.addEventListener("input", () => this.refreshEmbedVisual());
-        this.image.url.addEventListener("input", () => this.refreshEmbedVisual());
-        this.thumbnail.url.addEventListener("input", () => this.refreshEmbedVisual());
-        this.footer.text.addEventListener("input", () => this.refreshEmbedVisual());
-        this.footer.icon_url.addEventListener("input", () => this.refreshEmbedVisual());
+        /*  this.author.name.addEventListener("input", () => this.refreshEmbedVisual());
+          this.author.url.addEventListener("input", () => this.refreshEmbedVisual());
+          this.author.iconUrl.addEventListener("input", () => this.refreshEmbedVisual());
+          this.title.addEventListener("input", () => this.refreshEmbedVisual());
+          this.description.addEventListener("input", () => this.refreshEmbedVisual());
+          this.color.addEventListener("input", () => this.refreshEmbedVisual());
+          this.url.addEventListener("input", () => this.refreshEmbedVisual());
+          this.timestamp.addEventListener("input", () => this.refreshEmbedVisual());
+          this.image.url.addEventListener("input", () => this.refreshEmbedVisual());
+          this.thumbnail.url.addEventListener("input", () => this.refreshEmbedVisual());
+          this.footer.text.addEventListener("input", () => this.refreshEmbedVisual());
+          this.footer.icon_url.addEventListener("input", () => this.refreshEmbedVisual());*/
+        this.inputEmbed.addEventListener("input", () => this.refreshEmbedVisual());
+
 
         this.addFieldButton.addEventListener("click", async () => this.addField());
     }
 
     async addField() {
-        const response = await fetch('../html/field.html');
-        const templateHTML = await response.text();
+        const uniqueFieldId = generateUniqueId();
+
+        const fieldInputFetch = await fetch('../html/fieldInput.html');
+        const fieldInputHTML = await fieldInputFetch.text();
 
         const fieldInputElement = document.createElement('div');
-        fieldInputElement.id = `field_${generateUniqueId()}`;
-        fieldInputElement.innerHTML = templateHTML;
+        fieldInputElement.id = `fieldInput_${uniqueFieldId}`;
+        fieldInputElement.innerHTML = fieldInputHTML;
 
         fieldInputElement.querySelector(".fieldButtonParameters")
             .setAttribute("data-bs-target", `#${fieldInputElement.id} .fieldBody`);
 
-        document.querySelector(`#embedInput${this.id} .fieldsContent`).appendChild(fieldInputElement);
+        fieldInputElement.querySelector(".fieldInline")
+            .setAttribute(`id`, `fieldInline_${uniqueFieldId}`);
+        fieldInputElement.querySelector(".fieldInlineLabel")
+            .setAttribute(`for`, `fieldInline_${uniqueFieldId}`);
 
         this.fields.push(
             {
@@ -214,7 +230,27 @@ export class Embed {
                 fieldNumber: fieldInputElement.querySelector(".fieldNumber")
             }
         )
+
+        const fieldVisualFetch = await fetch('../html/fieldVisual.html');
+        const fieldVisualHTML = await fieldVisualFetch.text();
+
+        const fieldVisualElement = document.createElement('div');
+        fieldVisualElement.id = `fieldVisual_${uniqueFieldId}`;
+        fieldVisualElement.innerHTML = fieldVisualHTML;
+        fieldVisualElement.classList.add("col");
+
+        this.viewObjects.fields.push(
+            {
+                name: fieldVisualElement.querySelector(".fieldVisualName"),
+                value: fieldVisualElement.querySelector(".fieldVisualValue"),
+                colElementInline: fieldVisualElement
+            }
+        )
+
         await this.countAllFields();
+
+        document.querySelector(`#embedInput${this.id} .fieldsContent`).appendChild(fieldInputElement);
+        document.querySelector(`#embedVisual${this.id} .fieldsContent`).appendChild(fieldVisualElement);
     }
 
     async countAllFields() {
