@@ -187,11 +187,20 @@ const allembeds = [];
 
 const addEmbedButton = document.getElementById("addEmbed");
 
-addEmbedButton.addEventListener("click", async () => {
+const embedsInput = document.getElementById("embedsInput");
+const embedsVisual = document.getElementById("embedsView");
+
+addEmbedButton.addEventListener("click", async () => addEmbed());
+
+async function addEmbed() {
   const inputEmbed = await getEmbedInput();
   const visualEmbed = await getEmbedVisual();
   const newEmbed = new Embed(inputEmbed, visualEmbed, allembeds.length);
   allembeds.push(newEmbed);
+
+  if (allembeds.length >= 10) {
+    addEmbedButton.disabled = true;
+  };
 
   newEmbed.removeButton.addEventListener("click", () => {
     allembeds.splice(allembeds.indexOf(newEmbed), 1);
@@ -207,14 +216,7 @@ addEmbedButton.addEventListener("click", async () => {
       addEmbedButton.disabled = false;
     }
   });
-
-  if (allembeds.length >= 10) {
-    addEmbedButton.disabled = true;
-  };
-});
-
-const embedsInput = document.getElementById("embedsInput");
-const embedsVisual = document.getElementById("embedsView");
+}
 
 async function getEmbedInput() {
   const response = await fetch('../html/embedInput.html');
@@ -257,7 +259,6 @@ async function getEmbedVisual() {
   embedVisual.id = "embedVisual" + allembeds.length;
   embedVisual.innerHTML = templateHTML;
   embedVisual.classList.add("py-1");
-
 
   embedsVisual.appendChild(embedVisual);
 
