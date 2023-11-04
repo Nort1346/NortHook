@@ -1,6 +1,6 @@
 import * as bootstrap from 'bootstrap';
-import { checkIfImageExists } from './functions.js'
-import { Embed } from './classes.js';
+import { checkIfImageExists, generateUniqueId, getEmbedInput, getEmbedVisual, insertAfter } from './functions.js'
+import { Embed } from './embed.js';
 
 const webhookUrl = document.getElementById("webhookUrl");
 const content = document.getElementById("content");
@@ -186,81 +186,62 @@ function isValidURL(string) {
 const allembeds = [];
 
 const addEmbedButton = document.getElementById("addEmbed");
+addEmbedButton.addEventListener("click", async () => addEmbed(await getEmbedInput(), await getEmbedVisual()));
 
-const embedsInput = document.getElementById("embedsInput");
-const embedsVisual = document.getElementById("embedsView");
+async function addEmbed(inputEmbed, visualEmbed) {
+  const uniqeId = generateUniqueId();
+  const newEmbed = new Embed(inputEmbed, visualEmbed, uniqeId);
+  await newEmbed.setNumber(allembeds.length);
 
-addEmbedButton.addEventListener("click", async () => addEmbed());
-
-async function addEmbed() {
-  const inputEmbed = await getEmbedInput();
-  const visualEmbed = await getEmbedVisual();
-  const newEmbed = new Embed(inputEmbed, visualEmbed, allembeds.length);
   allembeds.push(newEmbed);
 
+  checkAddEmbedButton();
+
+  newEmbed.removeButton.addEventListener("click", () => removeEmbed(newEmbed.id));
+  newEmbed.duplicateButton.addEventListener("click", () => duplicateEmbed(newEmbed.id));
+
+  function removeEmbed(id) {
+    const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
+    if (indexOfRemoveEmbed >= 0) {
+      allembeds[indexOfRemoveEmbed].removeEmbed();
+      allembeds.splice(indexOfRemoveEmbed, 1);
+
+      countEmbedNumbers();
+      checkAddEmbedButton();
+    }
+  }
+
+  function duplicateEmbed(id) {
+    const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
+    //  console.log("Duplicated " + id);
+    if (indexOfRemoveEmbed >= 0 && allembeds.length < 10) {
+      const embedInputClone = allembeds[indexOfRemoveEmbed].inputEmbed.cloneNode(true);
+      const embedVisualClone = allembeds[indexOfRemoveEmbed].visualEmbed.cloneNode(true);
+      const cloneEmbed = new Embed(embedInputClone, embedVisualClone, generateUniqueId());
+      allembeds.splice(indexOfRemoveEmbed + 1, 0, cloneEmbed);
+      console.log(allembeds);
+      insertAfter(embedInputClone, allembeds[indexOfRemoveEmbed].inputEmbed);
+      insertAfter(embedVisualClone, allembeds[indexOfRemoveEmbed].visualEmbed);
+
+      cloneEmbed.duplicateButton.addEventListener("click", () => duplicateEmbed(cloneEmbed.id));
+      cloneEmbed.removeButton.addEventListener("click", () => removeEmbed(cloneEmbed.id));
+
+      countEmbedNumbers();
+      checkAddEmbedButton();
+    }
+  }
+}
+
+function checkAddEmbedButton() {
   if (allembeds.length >= 10) {
     addEmbedButton.disabled = true;
-  };
-
-  newEmbed.removeButton.addEventListener("click", () => {
-    allembeds.splice(allembeds.indexOf(newEmbed), 1);
-
-    inputEmbed.remove();
-    visualEmbed.remove();
-
-    for (let i = 0; i < allembeds.length; i++) {
-      allembeds[i].setId(i);
-    }
-
-    if (allembeds.length < 10) {
-      addEmbedButton.disabled = false;
-    }
-  });
+  } else {
+    addEmbedButton.disabled = false;
+  }
 }
 
-async function getEmbedInput() {
-  const response = await fetch('../html/embedInput.html');
-  const templateHTML = await response.text();
-
-  const embedInput = document.createElement('div');
-  embedInput.id = "embedInput" + allembeds.length;
-  embedInput.innerHTML = templateHTML;
-  embedInput.classList.add("py-1");
-  embedInput.querySelector(".embedButtonCollapse")
-    .setAttribute("data-bs-target", `#${embedInput.id} .embedCollapse`)
-
-  embedInput.querySelector(".authorButtonOptions")
-    .setAttribute("data-bs-target", `#${embedInput.id} .authorOptions`)
-
-  embedInput.querySelector(".bodyButtonOptions")
-    .setAttribute("data-bs-target", `#${embedInput.id} .bodyOptions`)
-
-  embedInput.querySelector(".fieldsButtonOptions")
-    .setAttribute("data-bs-target", `#${embedInput.id} .fieldsOptions`)
-
-  embedInput.querySelector(".imagesButtonOptions")
-    .setAttribute("data-bs-target", `#${embedInput.id} .imagesOptions`)
-
-  embedInput.querySelector(".footerButtonOptions")
-    .setAttribute("data-bs-target", `#${embedInput.id} .footerOptions`)
-
-  embedInput.querySelector(".embedName").innerHTML = "Embed";
-
-  embedsInput.appendChild(embedInput);
-
-  return embedInput;
-}
-
-async function getEmbedVisual() {
-  const response = await fetch('../html/embedVisual.html');
-  const templateHTML = await response.text();
-
-  const embedVisual = document.createElement('div');
-  embedVisual.id = "embedVisual" + allembeds.length;
-  embedVisual.innerHTML = templateHTML;
-  embedVisual.classList.add("py-1");
-
-  embedsVisual.appendChild(embedVisual);
-
-  return embedVisual;
+function countEmbedNumbers() {
+  for (let i = 0; i < allembeds.length; i++) {
+    allembeds[i].setNumber(i);
+  }
 }

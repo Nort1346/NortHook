@@ -1,12 +1,18 @@
+/**
+ * Create Embed
+ * @param id Id of Embed
+ */
 export class Embed {
+
     constructor(inputEmbed, visualEmbed, id) {
         this.id = id;
         this.inputEmbed = inputEmbed;
         this.visualEmbed = visualEmbed;
 
-        this.embedId = inputEmbed.querySelector(".embedId");
+        this.embedNumber = inputEmbed.querySelector(".embedId");
         this.embedName = inputEmbed.querySelector(".embedName");
         this.removeButton = inputEmbed.querySelector(".embedButtonRemove");
+        this.duplicateButton = inputEmbed.querySelector(".embedButtonDuplicate")
         this.addFieldButton = inputEmbed.querySelector(".addFieldButton");
 
         this.author = {
@@ -27,27 +33,29 @@ export class Embed {
             icon_url: inputEmbed.querySelector(".footerIconUrl")
         };
         this.viewObjects = {
-            color: visualEmbed.querySelector(".colorVisual"),
-            title: visualEmbed.querySelector(".titleVisual"),
-            description: visualEmbed.querySelector(".descriptionVisual"),
-            url: visualEmbed.querySelector(".urlVisual"),
-            timestamp: visualEmbed.querySelector(".timestampVisual"),
+            color: this.visualEmbed.querySelector(".colorVisual"),
+            title: this.visualEmbed.querySelector(".titleVisual"),
+            description: this.visualEmbed.querySelector(".descriptionVisual"),
+            url: this.visualEmbed.querySelector(".urlVisual"),
+            timestamp: this.visualEmbed.querySelector(".timestampVisual"),
             footer: {
-                text: visualEmbed.querySelector(".footerTextVisual"),
-                iconUrl: visualEmbed.querySelector(".footerIconUrlVisual"),
-                url: visualEmbed.querySelector(".footerUrlVisual"),
-                allElements: visualEmbed.querySelector(".footer")
+                text: this.visualEmbed.querySelector(".footerTextVisual"),
+                iconUrl: this.visualEmbed.querySelector(".footerIconUrlVisual"),
+                url: this.visualEmbed.querySelector(".footerUrlVisual"),
+                allElements: this.visualEmbed.querySelector(".footer")
             },
-            thumbnail: { url: visualEmbed.querySelector(".thumbnailVisual") },
-            image: { url: visualEmbed.querySelector(".imageVisual") },
+            thumbnail: { url: this.visualEmbed.querySelector(".thumbnailVisual") },
+            image: { url: this.visualEmbed.querySelector(".imageVisual") },
             author: {
-                name: visualEmbed.querySelector(".authorNameVisual"),
-                iconUrl: visualEmbed.querySelector(".authorIconUrlVisual"),
-                url: visualEmbed.querySelector(".authorUrlVisual"),
-                allElements: visualEmbed.querySelector(".author"),
+                name: this.visualEmbed.querySelector(".authorNameVisual"),
+                iconUrl: this.visualEmbed.querySelector(".authorIconUrlVisual"),
+                url: this.visualEmbed.querySelector(".authorUrlVisual"),
+                allElements: this.visualEmbed.querySelector(".author"),
             },
             fields: []
         }
+
+        this.setId(id);
         this.addListeners();
         this.refreshEmbedVisual();
     };
@@ -93,8 +101,6 @@ export class Embed {
         } else {
             this.embedName.innerText = '';
         }
-
-        this.embedId.innerText = `Embed ${this.id + 1}`
 
         /**
          * COLOR
@@ -194,9 +200,8 @@ export class Embed {
         }
     }
 
-    addListeners() {
+    async addListeners() {
         this.inputEmbed.addEventListener("input", () => this.refreshEmbedVisual());
-
         this.addFieldButton.addEventListener("click", async () => this.addField());
     }
 
@@ -284,11 +289,14 @@ export class Embed {
         }
     }
 
-    setId(id) {
-        this.id = id;
-        this.inputEmbed.id = `embedInput${id}`;
-        this.visualEmbed.id = `embedVisual${id}`;
+    async setNumber(number) {
+        this.embedNumber.innerText = `Embed ${number + 1}`
+        this.refreshEmbedVisual();
+    }
 
+    setId(uniqeId) {
+        this.visualEmbed.id = "embedVisual" + uniqeId;
+        this.inputEmbed.id = "embedInput" + uniqeId;
         this.inputEmbed.querySelector(".embedButtonCollapse")
             .setAttribute("data-bs-target", `#${this.inputEmbed.id} .embedCollapse`)
 
@@ -306,8 +314,11 @@ export class Embed {
 
         this.inputEmbed.querySelector(".footerButtonOptions")
             .setAttribute("data-bs-target", `#${this.inputEmbed.id} .footerOptions`)
+    }
 
-        this.refreshEmbedVisual();
+    removeEmbed() {
+        this.inputEmbed.remove();
+        this.visualEmbed.remove();
     }
 }
 
