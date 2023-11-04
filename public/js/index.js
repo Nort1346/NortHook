@@ -1,5 +1,11 @@
 import * as bootstrap from 'bootstrap';
-import { checkIfImageExists, generateUniqueId, getEmbedInput, getEmbedVisual, insertAfter } from './functions.js'
+import {
+  checkIfImageExists,
+  generateUniqueId,
+  getEmbedInput,
+  getEmbedVisual,
+  insertAfter
+} from './functions.js'
 import { Embed } from './embed.js';
 
 const webhookUrl = document.getElementById("webhookUrl");
@@ -29,7 +35,10 @@ const WebHookInfo = { name: null, avatar: null };
 /**
  * Default WebHook Values
  */
-const DefaultWebhookInfo = { name: 'Nort', avatar: 'https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024' };
+const DefaultWebhookInfo = {
+  name: 'Nort',
+  avatar: 'https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024'
+};
 
 setStandardValues();
 
@@ -196,9 +205,46 @@ async function addEmbed(inputEmbed, visualEmbed) {
   allembeds.push(newEmbed);
 
   checkAddEmbedButton();
+  checkArrowsEmbeds();
 
   newEmbed.removeButton.addEventListener("click", () => removeEmbed(newEmbed.id));
   newEmbed.duplicateButton.addEventListener("click", () => duplicateEmbed(newEmbed.id));
+  newEmbed.upButton.addEventListener("click", () => upEmbed(newEmbed.id));
+  newEmbed.downButton.addEventListener("click", () => downEmbed(newEmbed.id));
+
+  function upEmbed(id) {
+    const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
+    if (indexOfRemoveEmbed >= 0) {
+      const temp = allembeds.splice(indexOfRemoveEmbed, 1)[0];
+      allembeds.splice(indexOfRemoveEmbed - 1, 0, temp);
+
+      allembeds[indexOfRemoveEmbed].inputEmbed
+        .insertAdjacentElement("beforebegin", allembeds[indexOfRemoveEmbed - 1].inputEmbed);
+
+      allembeds[indexOfRemoveEmbed].visualEmbed
+        .insertAdjacentElement("beforebegin", allembeds[indexOfRemoveEmbed - 1].visualEmbed);
+
+      checkArrowsEmbeds();
+      countEmbedNumbers();
+    }
+  }
+
+  function downEmbed(id) {
+    const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
+    if (indexOfRemoveEmbed >= 0) {
+      const temp = allembeds.splice(indexOfRemoveEmbed, 1)[0];
+      allembeds.splice(indexOfRemoveEmbed + 1, 0, temp);
+
+      allembeds[indexOfRemoveEmbed].inputEmbed
+        .insertAdjacentElement("afterend", allembeds[indexOfRemoveEmbed + 1].inputEmbed);
+
+      allembeds[indexOfRemoveEmbed].visualEmbed
+        .insertAdjacentElement("afterend", allembeds[indexOfRemoveEmbed + 1].visualEmbed);
+
+      checkArrowsEmbeds();
+      countEmbedNumbers();
+    }
+  }
 
   function removeEmbed(id) {
     const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
@@ -208,28 +254,56 @@ async function addEmbed(inputEmbed, visualEmbed) {
 
       countEmbedNumbers();
       checkAddEmbedButton();
+      checkArrowsEmbeds();
     }
   }
 
   function duplicateEmbed(id) {
     const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
-    //  console.log("Duplicated " + id);
+
     if (indexOfRemoveEmbed >= 0 && allembeds.length < 10) {
       const embedInputClone = allembeds[indexOfRemoveEmbed].inputEmbed.cloneNode(true);
       const embedVisualClone = allembeds[indexOfRemoveEmbed].visualEmbed.cloneNode(true);
+      embedInputClone.querySelector(`.fieldsContent`).innerHTML = "";
+      embedVisualClone.querySelector(`.fieldsContent`).innerHTML = "";
       const cloneEmbed = new Embed(embedInputClone, embedVisualClone, generateUniqueId());
-      allembeds.splice(indexOfRemoveEmbed + 1, 0, cloneEmbed);
-      console.log(allembeds);
-      insertAfter(embedInputClone, allembeds[indexOfRemoveEmbed].inputEmbed);
-      insertAfter(embedVisualClone, allembeds[indexOfRemoveEmbed].visualEmbed);
+
+      cloneEmbed.setFields(allembeds[indexOfRemoveEmbed].getFields());
 
       cloneEmbed.duplicateButton.addEventListener("click", () => duplicateEmbed(cloneEmbed.id));
       cloneEmbed.removeButton.addEventListener("click", () => removeEmbed(cloneEmbed.id));
+      cloneEmbed.upButton.addEventListener("click", () => upEmbed(cloneEmbed.id));
+      cloneEmbed.downButton.addEventListener("click", () => downEmbed(cloneEmbed.id));
+
+      allembeds.splice(indexOfRemoveEmbed + 1, 0, cloneEmbed);
 
       countEmbedNumbers();
       checkAddEmbedButton();
+      checkArrowsEmbeds();
+
+      insertAfter(embedInputClone, allembeds[indexOfRemoveEmbed].inputEmbed);
+      insertAfter(embedVisualClone, allembeds[indexOfRemoveEmbed].visualEmbed);
     }
   }
+}
+
+function checkArrowsEmbeds() {
+  allembeds.map((emb, index) => {
+    emb.upButton.disabled = false;
+    emb.upButton.classList.remove("d-none");
+
+    emb.downButton.disabled = false;
+    emb.downButton.classList.remove("d-none");
+
+    if (index == 0) {
+      emb.upButton.disabled = true;
+      emb.upButton.classList.add("d-none");
+    }
+    if (index == allembeds.length - 1) {
+      emb.downButton.disabled = true;
+      emb.downButton.classList.add("d-none");
+    }
+  });
 }
 
 function checkAddEmbedButton() {

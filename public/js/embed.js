@@ -1,3 +1,5 @@
+import { generateUniqueId } from './functions.js'
+
 /**
  * Create Embed
  * @param id Id of Embed
@@ -5,14 +7,17 @@
 export class Embed {
 
     constructor(inputEmbed, visualEmbed, id) {
-        this.id = id;
         this.inputEmbed = inputEmbed;
         this.visualEmbed = visualEmbed;
+        this.setId(id);
 
         this.embedNumber = inputEmbed.querySelector(".embedId");
         this.embedName = inputEmbed.querySelector(".embedName");
         this.removeButton = inputEmbed.querySelector(".embedButtonRemove");
         this.duplicateButton = inputEmbed.querySelector(".embedButtonDuplicate")
+        this.upButton = inputEmbed.querySelector(".embedButtonUp")
+        this.downButton = inputEmbed.querySelector(".embedButtonDown")
+
         this.addFieldButton = inputEmbed.querySelector(".addFieldButton");
 
         this.author = {
@@ -55,9 +60,7 @@ export class Embed {
             fields: []
         }
 
-        this.setId(id);
         this.addListeners();
-        this.refreshEmbedVisual();
     };
 
     getEmbed() {
@@ -82,11 +85,7 @@ export class Embed {
         if (this.footer.text.value)
             embedObject.footer = { text: this.footer.text.value, icon_url: this.footer.icon_url.value }
         if (this.fields.length > 0) {
-            embedObject.fields = this.fields.map(field => ({
-                name: field.name.value,
-                value: field.value.value,
-                inline: field.inline.checked
-            }));
+            embedObject.fields = this.getFields();
         }
 
         return embedObject;
@@ -200,9 +199,17 @@ export class Embed {
         }
     }
 
-    async addListeners() {
+    addListeners() {
         this.inputEmbed.addEventListener("input", () => this.refreshEmbedVisual());
         this.addFieldButton.addEventListener("click", async () => this.addField());
+    }
+
+    getFields() {
+        return this.fields.map(field => ({
+            name: field.name.value,
+            value: field.value.value,
+            inline: field.inline.checked
+        }));
     }
 
     async addField() {
@@ -273,6 +280,16 @@ export class Embed {
         document.querySelector(`#embedVisual${this.id} .fieldsContent`).appendChild(fieldVisualElement);
     }
 
+    async setFields(fields) {
+        for (let i = 0; i < fields.length; i++) {
+            await this.addField();
+            this.fields[i].name.value = fields[i].name;
+            this.fields[i].value.value = fields[i].value;
+            this.fields[i].inline.checked = fields[i].inline;
+        }
+        this.refreshEmbedVisual();
+    }
+
     async countAllFields() {
         let i = 1;
         for (const field of this.fields) {
@@ -294,9 +311,11 @@ export class Embed {
         this.refreshEmbedVisual();
     }
 
-    setId(uniqeId) {
-        this.visualEmbed.id = "embedVisual" + uniqeId;
-        this.inputEmbed.id = "embedInput" + uniqeId;
+    setId(id) {
+        this.id = id;
+        this.inputEmbed.id = "embedInput" + id;
+        this.visualEmbed.id = "embedVisual" + id;
+
         this.inputEmbed.querySelector(".embedButtonCollapse")
             .setAttribute("data-bs-target", `#${this.inputEmbed.id} .embedCollapse`)
 
@@ -320,10 +339,6 @@ export class Embed {
         this.inputEmbed.remove();
         this.visualEmbed.remove();
     }
-}
-
-function generateUniqueId() {
-    return Math.random().toString(36).substr(2, 9);
 }
 
 function isImageURLValid(imageUrl) {
