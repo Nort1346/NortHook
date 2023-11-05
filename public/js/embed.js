@@ -14,8 +14,8 @@ export class Embed {
         this.embedNumber = inputEmbed.querySelector(".embedId");
         this.embedName = inputEmbed.querySelector(".embedName");
         this.removeButton = inputEmbed.querySelector(".embedButtonRemove");
-        this.duplicateButton = inputEmbed.querySelector(".embedButtonDuplicate")
-        this.upButton = inputEmbed.querySelector(".embedButtonUp")
+        this.duplicateButton = inputEmbed.querySelector(".embedButtonDuplicate");
+        this.upButton = inputEmbed.querySelector(".embedButtonUp");
         this.downButton = inputEmbed.querySelector(".embedButtonDown")
 
         this.addFieldButton = inputEmbed.querySelector(".addFieldButton");
@@ -23,7 +23,7 @@ export class Embed {
         this.author = {
             name: inputEmbed.querySelector(".authorName"),
             url: inputEmbed.querySelector(".authorUrl"),
-            iconUrl: inputEmbed.querySelector(".authorIconUrl")
+            icon_url: inputEmbed.querySelector(".authorIconUrl")
         };
         this.title = inputEmbed.querySelector(".title");
         this.description = inputEmbed.querySelector(".description");
@@ -67,7 +67,7 @@ export class Embed {
         const embedObject = {};
 
         if (this.author.name.value)
-            embedObject.author = { name: this.author.name.value, url: this.author.url.value, icon_url: this.author.iconUrl.value };
+            embedObject.author = { name: this.author.name.value, url: this.author.url.value, icon_url: this.author.icon_url.value };
         if (this.title.value)
             embedObject.title = this.title.value;
         if (this.description.value)
@@ -89,6 +89,29 @@ export class Embed {
         }
 
         return embedObject;
+    }
+
+    async setEmbed(embed) {
+        this.author.name.value = embed?.author?.name ?? "";
+        this.author.url.value = embed?.author?.url ?? "";
+        this.author.icon_url.value = embed?.author?.icon_url ?? "";
+
+        this.title.value = embed?.title ?? "";
+        this.description.value = embed?.description ?? "";
+        this.color.value = "#" + embed?.color.toString(16).padStart(6, "0") ?? "";
+        this.url.value = embed?.url ?? "";
+        this.timestamp.value = embed?.timestamp ?? "";
+
+        this.image.url.value = embed?.image?.url ?? "";
+        this.thumbnail.url.value = embed?.thumbnail?.url ?? "";
+
+        this.footer.text.value = embed?.footer?.text ?? "";
+        this.footer.icon_url.value = embed?.footer?.icon_url ?? "";
+
+        if (embed?.fields != null && embed.fields?.length > 0) {
+            console.log(embed?.fields);
+            await this.setFields(embed?.fields)
+        }
     }
 
     async refreshEmbedVisual() {
@@ -180,8 +203,8 @@ export class Embed {
         } else {
             this.viewObjects.author.allElements.classList.remove("d-none");
             this.viewObjects.author.name.innerText = this.author.name.value;
-            this.viewObjects.author.iconUrl.src = this.author.iconUrl.value;
-            if (await isImageURLValid(this.author.iconUrl.value))
+            this.viewObjects.author.iconUrl.src = this.author.icon_url.value;
+            if (await isImageURLValid(this.author.icon_url.value))
                 this.viewObjects.author.iconUrl.classList.remove("d-none");
             else {
                 this.viewObjects.author.iconUrl.classList.add("d-none");
@@ -287,7 +310,6 @@ export class Embed {
             this.fields[i].value.value = fields[i].value;
             this.fields[i].inline.checked = fields[i].inline;
         }
-        this.refreshEmbedVisual();
     }
 
     async countAllFields() {

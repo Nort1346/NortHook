@@ -211,6 +211,7 @@ async function addEmbed(inputEmbed, visualEmbed) {
   newEmbed.duplicateButton.addEventListener("click", () => duplicateEmbed(newEmbed.id));
   newEmbed.upButton.addEventListener("click", () => upEmbed(newEmbed.id));
   newEmbed.downButton.addEventListener("click", () => downEmbed(newEmbed.id));
+  refreshTooltips();
 
   function upEmbed(id) {
     const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
@@ -226,6 +227,7 @@ async function addEmbed(inputEmbed, visualEmbed) {
 
       checkArrowsEmbeds();
       countEmbedNumbers();
+      refreshTooltips();
     }
   }
 
@@ -243,6 +245,7 @@ async function addEmbed(inputEmbed, visualEmbed) {
 
       checkArrowsEmbeds();
       countEmbedNumbers();
+      refreshTooltips();
     }
   }
 
@@ -255,20 +258,17 @@ async function addEmbed(inputEmbed, visualEmbed) {
       countEmbedNumbers();
       checkAddEmbedButton();
       checkArrowsEmbeds();
+      refreshTooltips();
     }
   }
 
-  function duplicateEmbed(id) {
+  async function duplicateEmbed(id) {
     const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
 
     if (indexOfRemoveEmbed >= 0 && allembeds.length < 10) {
-      const embedInputClone = allembeds[indexOfRemoveEmbed].inputEmbed.cloneNode(true);
-      const embedVisualClone = allembeds[indexOfRemoveEmbed].visualEmbed.cloneNode(true);
-      embedInputClone.querySelector(`.fieldsContent`).innerHTML = "";
-      embedVisualClone.querySelector(`.fieldsContent`).innerHTML = "";
-      const cloneEmbed = new Embed(embedInputClone, embedVisualClone, generateUniqueId());
-
-      cloneEmbed.setFields(allembeds[indexOfRemoveEmbed].getFields());
+      const cloneEmbed = new Embed(await getEmbedInput(), await getEmbedVisual(), generateUniqueId());
+      await cloneEmbed.setEmbed(allembeds[indexOfRemoveEmbed].getEmbed());
+      await cloneEmbed.refreshEmbedVisual();
 
       cloneEmbed.duplicateButton.addEventListener("click", () => duplicateEmbed(cloneEmbed.id));
       cloneEmbed.removeButton.addEventListener("click", () => removeEmbed(cloneEmbed.id));
@@ -281,8 +281,9 @@ async function addEmbed(inputEmbed, visualEmbed) {
       checkAddEmbedButton();
       checkArrowsEmbeds();
 
-      insertAfter(embedInputClone, allembeds[indexOfRemoveEmbed].inputEmbed);
-      insertAfter(embedVisualClone, allembeds[indexOfRemoveEmbed].visualEmbed);
+      insertAfter(cloneEmbed.inputEmbed, allembeds[indexOfRemoveEmbed].inputEmbed);
+      insertAfter(cloneEmbed.visualEmbed, allembeds[indexOfRemoveEmbed].visualEmbed);
+      refreshTooltips();
     }
   }
 }
@@ -318,4 +319,9 @@ function countEmbedNumbers() {
   for (let i = 0; i < allembeds.length; i++) {
     allembeds[i].setNumber(i);
   }
+}
+
+function refreshTooltips() {
+  //const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  //const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 }
