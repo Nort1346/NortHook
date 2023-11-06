@@ -36,10 +36,9 @@ app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
 
     if (JSONMessage?.username != null)
         payload.username = JSONMessage.username;
-
-    JSONMessage.embeds = await JSON.parse(JSONMessage.embeds);
-
-    if (JSONMessage?.embeds != null && Object.keys(JSONMessage.embeds[0]).length > 1) {
+    
+    if (JSONMessage?.embeds != null) {
+        JSONMessage.embeds = await JSON.parse(JSONMessage.embeds);
         payload.embeds = JSONMessage.embeds;
     }
 

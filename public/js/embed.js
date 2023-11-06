@@ -1,4 +1,4 @@
-import { generateUniqueId } from './functions.js'
+import { generateUniqueId, insertAfter } from './functions.js'
 
 /**
  * Create Embed
@@ -235,7 +235,7 @@ export class Embed {
         }));
     }
 
-    async addField() {
+    async addField(values = null) {
         const uniqueFieldId = generateUniqueId();
 
         //FIELD INPUT
@@ -253,24 +253,21 @@ export class Embed {
         fieldInputElement.querySelector(".fieldInlineLabel")
             .setAttribute(`for`, `fieldInline_${uniqueFieldId}`);
 
-        fieldInputElement.querySelector(".fieldButtonRemove").addEventListener("click", () => {
-            this.fields.splice(
-                this.fields.findIndex((obj) => obj.name == fieldInputElement.querySelector(".fieldName"))
-                , 1
-            );
-            this.viewObjects.fields.splice(
-                this.viewObjects.fields.findIndex((obj) => obj.name == fieldVisualElement.querySelector(".fieldVisualName"))
-                , 1
-            )
-            fieldInputElement.remove();
-            fieldVisualElement.remove();
+        fieldInputElement.querySelector(".fieldButtonRemove")
+            .addEventListener("click", async () => await this.removeField(fieldInputElement, fieldVisualElement));
 
-            this.countAllFields();
-            this.checkMaxFields();
-        });
+        fieldInputElement.querySelector(".fieldButtonDuplicate")
+            .addEventListener("click", async () => await this.duplicateField(uniqueFieldId));
+
+        if (values) {
+            fieldInputElement.querySelector(".fieldName").value = values.name;
+            fieldInputElement.querySelector(".fieldValue").value = values.value;
+            fieldInputElement.querySelector(".fieldInline").checked = values.inline;
+        }
 
         this.fields.push(
             {
+                id: uniqueFieldId,
                 name: fieldInputElement.querySelector(".fieldName"),
                 value: fieldInputElement.querySelector(".fieldValue"),
                 inline: fieldInputElement.querySelector(".fieldInline"),
@@ -290,6 +287,7 @@ export class Embed {
 
         this.viewObjects.fields.push(
             {
+                id: uniqueFieldId,
                 name: fieldVisualElement.querySelector(".fieldVisualName"),
                 value: fieldVisualElement.querySelector(".fieldVisualValue"),
                 colElementInline: fieldVisualElement
@@ -301,21 +299,59 @@ export class Embed {
         await this.checkMaxFields();
         document.querySelector(`#embedInput${this.id} .fieldsContent`).appendChild(fieldInputElement);
         document.querySelector(`#embedVisual${this.id} .fieldsContent`).appendChild(fieldVisualElement);
+
+        return uniqueFieldId;
+    }
+
+    removeField(fieldInputElement, fieldVisualElement) {
+        this.fields.splice(
+            this.fields.findIndex((obj) => obj.name == fieldInputElement.querySelector(".fieldName"))
+            , 1
+        );
+        this.viewObjects.fields.splice(
+            this.viewObjects.fields.findIndex((obj) => obj.name == fieldVisualElement.querySelector(".fieldVisualName"))
+            , 1
+        )
+        fieldInputElement.remove();
+        fieldVisualElement.remove();
+
+        this.countAllFields();
+        this.checkMaxFields();
+    }
+
+    async duplicateField(firstFieldid) {
+        if (this.fields.length < 25) {
+            const indexFirstField = this.fields.findIndex(ele => ele.id == firstFieldid);
+            const fieldId = await this.addField(
+                {
+                    name: this.fields[indexFirstField].name.value,
+                    value: this.fields[indexFirstField].value.value,
+                    inline: this.fields[indexFirstField].inline.checked
+                }
+            )
+
+            this.countAllFields();
+            this.checkMaxFields();
+            this.refreshEmbedVisual();
+        }
     }
 
     async setFields(fields) {
         for (let i = 0; i < fields.length; i++) {
-            await this.addField();
-            this.fields[i].name.value = fields[i].name;
-            this.fields[i].value.value = fields[i].value;
-            this.fields[i].inline.checked = fields[i].inline;
+            await this.addField(
+                {
+                    name: fields[i].name,
+                    value: fields[i].value,
+                    inline: fields[i].inline
+                }
+            );
         }
     }
 
     async countAllFields() {
         let i = 1;
         for (const field of this.fields) {
-            field.fieldNumber.innerText = `Field ${i}`;
+            field.fieldNumber.innerText = `Field ${i} `;
             i++;
         }
     }
@@ -329,7 +365,7 @@ export class Embed {
     }
 
     async setNumber(number) {
-        this.embedNumber.innerText = `Embed ${number + 1}`
+        this.embedNumber.innerText = `Embed ${number + 1} `
         this.refreshEmbedVisual();
     }
 

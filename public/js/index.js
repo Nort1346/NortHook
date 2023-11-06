@@ -194,6 +194,13 @@ function isValidURL(string) {
 
 const allembeds = [];
 
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,
+  {
+    trigger: "hover",
+    delay: { show: 100, hide: 100 }
+  }))
+
 const addEmbedButton = document.getElementById("addEmbed");
 addEmbedButton.addEventListener("click", async () => addEmbed(await getEmbedInput(), await getEmbedVisual()));
 
@@ -322,6 +329,14 @@ function countEmbedNumbers() {
 }
 
 function refreshTooltips() {
-  //const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-  //const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+  tooltipList.map(tooltipTriggerEl => {
+    tooltipTriggerEl.dispose()
+  })
+
+  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,
+    {
+      trigger: "hover",
+      delay: { show: 100, hide: 100 }
+    }))
 }
