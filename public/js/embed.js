@@ -305,7 +305,7 @@ export class Embed {
         //SHOW FIELDS
         await this.countAllFields();
         await this.checkMaxFields();
-        await this.disableMovingButtonsFields();
+        await this.checkArrowsFields();
         document.querySelector(`#embedInput${this.id} .fieldsContent`).appendChild(fieldInputElement);
         document.querySelector(`#embedVisual${this.id} .fieldsContent`).appendChild(fieldVisualElement);
 
@@ -327,7 +327,10 @@ export class Embed {
         this.countAllFields();
         this.checkMaxFields();
     }
-
+    /**
+     * Duplicate Field
+     * @param {*} firstFieldid 
+     */
     async duplicateField(firstFieldid) {
         if (this.fields.length < 25) {
             const indexFirstField = this.fields.findIndex(ele => ele.id == firstFieldid);
@@ -345,6 +348,10 @@ export class Embed {
         }
     }
 
+    /**
+     * Move field Up
+     * @param {Number} fieldId 
+     */
     fieldUp(fieldId) {
         const indexOfRemoveEmbed = this.fields.findIndex(ele => ele.id == fieldId);
         if (indexOfRemoveEmbed >= 0) {
@@ -361,10 +368,14 @@ export class Embed {
                 .insertAdjacentElement("afterend", document.getElementById(`fieldVisual_${this.fields[indexOfRemoveEmbed].id}`));
 
             this.countAllFields();
-            this.disableMovingButtonsFields();
+            this.checkArrowsFields();
         }
     }
 
+    /**
+     * Move field Down
+     * @param {Number} fieldId 
+     */
     fieldDown(fieldId) {
         const indexOfRemoveEmbed = this.fields.findIndex(ele => ele.id == fieldId);
         if (indexOfRemoveEmbed >= 0) {
@@ -381,7 +392,7 @@ export class Embed {
                 .insertAdjacentElement("beforebegin", document.getElementById(`fieldVisual_${this.fields[indexOfRemoveEmbed].id}`));
 
             this.countAllFields();
-            this.disableMovingButtonsFields();
+            this.checkArrowsFields();
         }
     }
 
@@ -397,7 +408,7 @@ export class Embed {
         }
     }
 
-    async disableMovingButtonsFields() {
+    async checkArrowsFields() {
         this.fields.map((emb, index) => {
             emb.fieldUpButton.disabled = false;
             emb.fieldUpButton.classList.remove("d-none");
