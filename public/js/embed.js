@@ -56,8 +56,7 @@ export class Embed {
                 iconUrl: this.visualEmbed.querySelector(".authorIconUrlVisual"),
                 url: this.visualEmbed.querySelector(".authorUrlVisual"),
                 allElements: this.visualEmbed.querySelector(".author"),
-            },
-            fields: []
+            }
         }
 
         this.addListeners();
@@ -212,13 +211,13 @@ export class Embed {
         }
 
         for (let i = 0; i < this.fields.length; i++) {
-            this.viewObjects.fields[i].name.innerText = this.fields[i].name.value;
-            this.viewObjects.fields[i].value.innerText = this.fields[i].value.value;
+            this.fields[i].fieldVisual.name.innerText = this.fields[i].name.value;
+            this.fields[i].fieldVisual.value.innerText = this.fields[i].value.value;
 
             if (this.fields[i].inline.checked)
-                this.viewObjects.fields[i].colElementInline.classList.remove("col-12");
+                this.fields[i].fieldVisual.colElementInline.classList.remove("col-12");
             else
-                this.viewObjects.fields[i].colElementInline.classList.add("col-12");
+                this.fields[i].fieldVisual.colElementInline.classList.add("col-12");
         }
     }
 
@@ -226,7 +225,10 @@ export class Embed {
         this.inputEmbed.addEventListener("input", () => this.refreshEmbedVisual());
         this.addFieldButton.addEventListener("click", async () => this.addField());
     }
-
+    /**
+     * Get array of field element
+     * @returns Array of field element
+     */
     getFields() {
         return this.fields.map(field => ({
             name: field.name.value,
@@ -234,7 +236,11 @@ export class Embed {
             inline: field.inline.checked
         }));
     }
-
+    /**
+     * Add new field in fields array
+     * @param {*} values Field Element
+     * @returns Id of field
+     */
     async addField(values = null) {
         const uniqueFieldId = generateUniqueId();
 
@@ -254,7 +260,7 @@ export class Embed {
             .setAttribute(`for`, `fieldInline_${uniqueFieldId}`);
 
         fieldInputElement.querySelector(".fieldButtonRemove")
-            .addEventListener("click", async () => await this.removeField(fieldInputElement, fieldVisualElement));
+            .addEventListener("click", async () => await this.removeField(uniqueFieldId));
 
         fieldInputElement.querySelector(".fieldButtonDuplicate")
             .addEventListener("click", async () => await this.duplicateField(uniqueFieldId));
@@ -271,6 +277,15 @@ export class Embed {
             fieldInputElement.querySelector(".fieldInline").checked = values.inline;
         }
 
+        //FIELD VISUAL
+        const fieldVisualFetch = await fetch('../html/fieldVisual.html');
+        const fieldVisualHTML = await fieldVisualFetch.text();
+
+        const fieldVisualElement = document.createElement('div');
+        fieldVisualElement.id = `fieldVisual_${uniqueFieldId}`;
+        fieldVisualElement.innerHTML = fieldVisualHTML;
+        fieldVisualElement.classList.add("col");
+
         this.fields.push(
             {
                 id: uniqueFieldId,
@@ -281,24 +296,12 @@ export class Embed {
                 fieldRemoveButton: fieldInputElement.querySelector(".fieldButtonRemove"),
                 fieldUpButton: fieldInputElement.querySelector(".fieldButtonUp"),
                 fieldDownButton: fieldInputElement.querySelector(".fieldButtonDown"),
-            }
-        )
-
-        //FIELD VISUAL
-        const fieldVisualFetch = await fetch('../html/fieldVisual.html');
-        const fieldVisualHTML = await fieldVisualFetch.text();
-
-        const fieldVisualElement = document.createElement('div');
-        fieldVisualElement.id = `fieldVisual_${uniqueFieldId}`;
-        fieldVisualElement.innerHTML = fieldVisualHTML;
-        fieldVisualElement.classList.add("col");
-
-        this.viewObjects.fields.push(
-            {
-                id: uniqueFieldId,
-                name: fieldVisualElement.querySelector(".fieldVisualName"),
-                value: fieldVisualElement.querySelector(".fieldVisualValue"),
-                colElementInline: fieldVisualElement
+                fieldVisual: {
+                    id: uniqueFieldId,
+                    name: fieldVisualElement.querySelector(".fieldVisualName"),
+                    value: fieldVisualElement.querySelector(".fieldVisualValue"),
+                    colElementInline: fieldVisualElement
+                }
             }
         )
 
@@ -312,17 +315,19 @@ export class Embed {
         return uniqueFieldId;
     }
 
-    removeField(fieldInputElement, fieldVisualElement) {
+    /**
+     * Remove Field
+     * @param {Number} fieldId Id of field
+     */
+    removeField(fieldId) {
+        const fieldIndex = this.fields.findIndex((obj) => obj.id == fieldId)
         this.fields.splice(
-            this.fields.findIndex((obj) => obj.name == fieldInputElement.querySelector(".fieldName"))
+            fieldIndex
             , 1
         );
-        this.viewObjects.fields.splice(
-            this.viewObjects.fields.findIndex((obj) => obj.name == fieldVisualElement.querySelector(".fieldVisualName"))
-            , 1
-        )
-        fieldInputElement.remove();
-        fieldVisualElement.remove();
+
+        document.getElementById(`fieldInput_${fieldId}`).remove();
+        document.getElementById(`fieldVisual_${fieldId}`).remove();
 
         this.countAllFields();
         this.checkMaxFields();
@@ -358,9 +363,6 @@ export class Embed {
             const temp = this.fields.splice(indexOfRemoveEmbed, 1)[0];
             this.fields.splice(indexOfRemoveEmbed - 1, 0, temp);
 
-            const temp1 = this.viewObjects.fields.splice(indexOfRemoveEmbed, 1)[0];
-            this.viewObjects.fields.splice(indexOfRemoveEmbed - 1, 0, temp1);
-
             document.getElementById(`fieldInput_${fieldId}`)
                 .insertAdjacentElement("afterend", document.getElementById(`fieldInput_${this.fields[indexOfRemoveEmbed].id}`));
 
@@ -382,9 +384,6 @@ export class Embed {
             const temp = this.fields.splice(indexOfRemoveEmbed, 1)[0];
             this.fields.splice(indexOfRemoveEmbed + 1, 0, temp);
 
-            const temp1 = this.viewObjects.fields.splice(indexOfRemoveEmbed, 1)[0];
-            this.viewObjects.fields.splice(indexOfRemoveEmbed + 1, 0, temp1);
-
             document.getElementById(`fieldInput_${fieldId}`)
                 .insertAdjacentElement("beforebegin", document.getElementById(`fieldInput_${this.fields[indexOfRemoveEmbed].id}`));
 
@@ -395,8 +394,12 @@ export class Embed {
             this.checkArrowsFields();
         }
     }
-
+    /**
+     * Set fields
+     * @param {*} fields  Fields array
+     */
     async setFields(fields) {
+        this.fields = [];
         for (let i = 0; i < fields.length; i++) {
             await this.addField(
                 {

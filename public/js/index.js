@@ -126,6 +126,9 @@ sendButton.addEventListener("click", () => {
     });
 });
 
+checkSize();
+window.addEventListener('resize', checkSize);
+
 function checkWebhookUrl() {
   if (!isValidURL(webhookUrl.value)) {
     const formData = new FormData();
@@ -339,4 +342,23 @@ function refreshTooltips() {
       trigger: "hover",
       delay: { show: 100, hide: 100 }
     }))
+}
+
+function checkSize() {
+  const currentWidth = window.innerWidth;
+  const input = document.getElementById('inputs');
+  const view = document.getElementById('messageView');
+  if (currentWidth >= 768) {
+    input.classList.add("show");
+    view.classList.add("show");
+    input.classList.add("overflow-y-scroll");
+    view.classList.add("overflow-y-scroll");
+    input.classList.remove("h-auto");
+    view.classList.remove("h-auto");
+  } else {
+    input.classList.remove("overflow-y-scroll");
+    view.classList.remove("overflow-y-scroll");
+    input.classList.add("h-auto");
+    view.classList.add("h-auto");
+  }
 }

@@ -24,16 +24,7 @@ body {
     font-family: "Rubik";
 }
 
-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 30px;
-    width: 100%;
-    min-height: 40px;
-    height: 55px;
-    max-height: 55px;
+#navbar-Northook {
     box-shadow: 3px 3px 5px rgb(22, 22, 22);
     z-index: -2;
 }

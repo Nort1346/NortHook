@@ -18,12 +18,28 @@
     </div>
   </div>
 
-  <header>NortHook</header>
+  <nav class="navbar-Northook navbar navbar-expand" style="box-shadow: 4px 4px 10px rgb(58, 58, 58);">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#" target="_blank">NortHook</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="nav nav-pills nav-justified me-3 d-md-none" id="v-pills-tab" role="tablist">
+          <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#inputs" type="button"
+            role="tab" aria-controls="v-pills-home" aria-selected="true">Editor</button>
+          <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#messageView"
+            type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Preview</button>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-  <div class="container-fluid" style="height: calc(100vh - 55px);">
-    <div class="row h-100 d-block-inline">
-
-      <div id="inputs" class="col-md-6 overflow-y-scroll">
+  <div class="container-fluid" style="height: calc(100vh - 56px);">
+    <div class="row h-100 d-block-inline tab-content">
+      <div id="inputs" class="col-md-6 overflow-y-scroll tab-pane fade show d-md-block active" role="tabpanel"
+        aria-labelledby="v-pills-home-tab" tabindex="0">
         <label class="fw-bold">Webhook URL</label><br />
         <div class="input-group">
           <input class="form-control" type="password" id="webhookUrl" placeholder="https://discord.com/api/webhooks/"
@@ -63,7 +79,8 @@
         </div>
         <hr>
         <div class="mb-3">
-          <label for="files" class="form-label fw-bold">Files <span class="badge bg-secondary">Max 25 MB</span></label>
+          <label for="files" class="form-label fw-bold">Files <span class="badge bg-secondary">Max 25
+              MB</span></label>
           <input class="form-control" type="file" id="files" multiple>
         </div>
 
@@ -96,7 +113,8 @@
         </footer>
       </div>
 
-      <div id="messageView" class="col-md-6 overflow-y-scroll">
+      <div id="messageView" class="col-md-6 overflow-y-scroll tab-pane fade show d-md-block" role="tabpanel"
+        aria-labelledby="v-pills-home-tab" tabindex="0">
         <div id="viewTableRow">
           <div id="avatarView">
             <img
@@ -113,7 +131,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
