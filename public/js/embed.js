@@ -259,6 +259,12 @@ export class Embed {
         fieldInputElement.querySelector(".fieldButtonDuplicate")
             .addEventListener("click", async () => await this.duplicateField(uniqueFieldId));
 
+        fieldInputElement.querySelector(".fieldButtonUp")
+            .addEventListener("click", async () => this.fieldUp(uniqueFieldId));
+
+        fieldInputElement.querySelector(".fieldButtonDown")
+            .addEventListener("click", async () => this.fieldDown(uniqueFieldId));
+
         if (values) {
             fieldInputElement.querySelector(".fieldName").value = values.name;
             fieldInputElement.querySelector(".fieldValue").value = values.value;
@@ -272,7 +278,9 @@ export class Embed {
                 value: fieldInputElement.querySelector(".fieldValue"),
                 inline: fieldInputElement.querySelector(".fieldInline"),
                 fieldNumber: fieldInputElement.querySelector(".fieldNumber"),
-                fieldRemoveButton: fieldInputElement.querySelector(".fieldButtonRemove")
+                fieldRemoveButton: fieldInputElement.querySelector(".fieldButtonRemove"),
+                fieldUpButton: fieldInputElement.querySelector(".fieldButtonUp"),
+                fieldDownButton: fieldInputElement.querySelector(".fieldButtonDown"),
             }
         )
 
@@ -297,6 +305,7 @@ export class Embed {
         //SHOW FIELDS
         await this.countAllFields();
         await this.checkMaxFields();
+        await this.disableMovingButtonsFields();
         document.querySelector(`#embedInput${this.id} .fieldsContent`).appendChild(fieldInputElement);
         document.querySelector(`#embedVisual${this.id} .fieldsContent`).appendChild(fieldVisualElement);
 
@@ -336,6 +345,46 @@ export class Embed {
         }
     }
 
+    fieldUp(fieldId) {
+        const indexOfRemoveEmbed = this.fields.findIndex(ele => ele.id == fieldId);
+        if (indexOfRemoveEmbed >= 0) {
+            const temp = this.fields.splice(indexOfRemoveEmbed, 1)[0];
+            this.fields.splice(indexOfRemoveEmbed - 1, 0, temp);
+
+            const temp1 = this.viewObjects.fields.splice(indexOfRemoveEmbed, 1)[0];
+            this.viewObjects.fields.splice(indexOfRemoveEmbed - 1, 0, temp1);
+
+            document.getElementById(`fieldInput_${fieldId}`)
+                .insertAdjacentElement("afterend", document.getElementById(`fieldInput_${this.fields[indexOfRemoveEmbed].id}`));
+
+            document.getElementById(`fieldVisual_${fieldId}`)
+                .insertAdjacentElement("afterend", document.getElementById(`fieldVisual_${this.fields[indexOfRemoveEmbed].id}`));
+
+            this.countAllFields();
+            this.disableMovingButtonsFields();
+        }
+    }
+
+    fieldDown(fieldId) {
+        const indexOfRemoveEmbed = this.fields.findIndex(ele => ele.id == fieldId);
+        if (indexOfRemoveEmbed >= 0) {
+            const temp = this.fields.splice(indexOfRemoveEmbed, 1)[0];
+            this.fields.splice(indexOfRemoveEmbed + 1, 0, temp);
+
+            const temp1 = this.viewObjects.fields.splice(indexOfRemoveEmbed, 1)[0];
+            this.viewObjects.fields.splice(indexOfRemoveEmbed + 1, 0, temp1);
+
+            document.getElementById(`fieldInput_${fieldId}`)
+                .insertAdjacentElement("beforebegin", document.getElementById(`fieldInput_${this.fields[indexOfRemoveEmbed].id}`));
+
+            document.getElementById(`fieldVisual_${fieldId}`)
+                .insertAdjacentElement("beforebegin", document.getElementById(`fieldVisual_${this.fields[indexOfRemoveEmbed].id}`));
+
+            this.countAllFields();
+            this.disableMovingButtonsFields();
+        }
+    }
+
     async setFields(fields) {
         for (let i = 0; i < fields.length; i++) {
             await this.addField(
@@ -346,6 +395,25 @@ export class Embed {
                 }
             );
         }
+    }
+
+    async disableMovingButtonsFields() {
+        this.fields.map((emb, index) => {
+            emb.fieldUpButton.disabled = false;
+            emb.fieldUpButton.classList.remove("d-none");
+
+            emb.fieldDownButton.disabled = false;
+            emb.fieldDownButton.classList.remove("d-none");
+
+            if (index == 0) {
+                emb.fieldUpButton.disabled = true;
+                emb.fieldUpButton.classList.add("d-none");
+            }
+            if (index == this.fields.length - 1) {
+                emb.fieldDownButton.disabled = true;
+                emb.fieldDownButton.classList.add("d-none");
+            }
+        });
     }
 
     async countAllFields() {
