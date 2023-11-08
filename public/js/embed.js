@@ -1,8 +1,10 @@
-import { generateUniqueId, insertAfter } from './functions.js'
+import { generateUniqueId, isImageURLValid } from './functions.js'
 
 /**
  * Create Embed
- * @param id Id of Embed
+ * @param {HTMLDivElement} inputEmbed Input Element
+ * @param {HTMLDivElement} visualEmbed Visual Element
+ * @param {Number} id Id of Embed
  */
 export class Embed {
 
@@ -62,6 +64,10 @@ export class Embed {
         this.addListeners();
     };
 
+    /**
+     * Get embed element
+     * @returns Embed element
+     */
     getEmbed() {
         const embedObject = {};
 
@@ -90,6 +96,10 @@ export class Embed {
         return embedObject;
     }
 
+    /**
+     * Set embed values
+     * @param {*} embed Embed element
+     */
     async setEmbed(embed) {
         this.author.name.value = embed?.author?.name ?? "";
         this.author.url.value = embed?.author?.url ?? "";
@@ -113,6 +123,9 @@ export class Embed {
         }
     }
 
+    /**
+     * Refresh embed visual
+     */
     async refreshEmbedVisual() {
         /**
          * EMBED NAME
@@ -165,8 +178,8 @@ export class Embed {
                 ? new Date(this.timestamp.value).toLocaleString() : "";
             this.viewObjects.footer.allElements.classList.remove("d-none");
             this.viewObjects.footer.text.innerText = this.footer.text.value;
-            this.viewObjects.footer.iconUrl.src = this.footer.icon_url.value;
             if (await isImageURLValid(this.footer.icon_url.value)) {
+                this.viewObjects.footer.iconUrl.src = this.footer.icon_url.value;
                 this.viewObjects.footer.iconUrl.classList.remove("d-none");
             }
             else {
@@ -177,20 +190,20 @@ export class Embed {
         /**
          * THUMBNAIL
          */
-        this.viewObjects.thumbnail.url.src = this.thumbnail.url.value;
-        if (await isImageURLValid(this.thumbnail.url.value))
+        if (await isImageURLValid(this.thumbnail.url.value)) {
+            this.viewObjects.thumbnail.url.src = this.thumbnail.url.value;
             this.viewObjects.thumbnail.url.classList.remove("d-none");
-        else {
+        } else {
             this.viewObjects.thumbnail.url.classList.add("d-none");
         }
 
         /**
          * IMAGES
          */
-        this.viewObjects.image.url.src = this.image.url.value;
-        if (await isImageURLValid(this.image.url.value))
+        if (await isImageURLValid(this.image.url.value)) {
+            this.viewObjects.image.url.src = this.image.url.value;
             this.viewObjects.image.url.classList.remove("d-none");
-        else {
+        } else {
             this.viewObjects.image.url.classList.add("d-none");
         }
 
@@ -202,10 +215,10 @@ export class Embed {
         } else {
             this.viewObjects.author.allElements.classList.remove("d-none");
             this.viewObjects.author.name.innerText = this.author.name.value;
-            this.viewObjects.author.iconUrl.src = this.author.icon_url.value;
-            if (await isImageURLValid(this.author.icon_url.value))
+            if (await isImageURLValid(this.author.icon_url.value)) {
+                this.viewObjects.author.iconUrl.src = this.author.icon_url.value;
                 this.viewObjects.author.iconUrl.classList.remove("d-none");
-            else {
+            } else {
                 this.viewObjects.author.iconUrl.classList.add("d-none");
             }
         }
@@ -410,7 +423,9 @@ export class Embed {
             );
         }
     }
-
+    /**
+     * Checking whether the field should have move down and move up options
+     */
     async checkArrowsFields() {
         this.fields.map((emb, index) => {
             emb.fieldUpButton.disabled = false;
@@ -429,7 +444,9 @@ export class Embed {
             }
         });
     }
-
+    /**
+     * Count all fields and change number in theirs headers
+     */
     async countAllFields() {
         let i = 1;
         for (const field of this.fields) {
@@ -437,7 +454,9 @@ export class Embed {
             i++;
         }
     }
-
+    /**
+     * Check whether the field is at its maximum and block the 'Add Field' button
+     */
     async checkMaxFields() {
         if (this.fields.length >= 25) {
             this.addFieldButton.disabled = true;
@@ -445,12 +464,18 @@ export class Embed {
             this.addFieldButton.disabled = false;
         }
     }
-
+    /**
+     * Set embed number in the header
+     * @param {Number} number Number of embed to display
+     */
     async setNumber(number) {
         this.embedNumber.innerText = `Embed ${number + 1} `
         this.refreshEmbedVisual();
     }
-
+    /**
+     * Set embed unique id
+     * @param {number} id Unique number of embed
+     */
     setId(id) {
         this.id = id;
         this.inputEmbed.id = "embedInput" + id;
@@ -474,22 +499,11 @@ export class Embed {
         this.inputEmbed.querySelector(".footerButtonOptions")
             .setAttribute("data-bs-target", `#${this.inputEmbed.id} .footerOptions`)
     }
-
+    /**
+     * Remove embed visual
+     */
     removeEmbed() {
         this.inputEmbed.remove();
         this.visualEmbed.remove();
     }
-}
-
-function isImageURLValid(imageUrl) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => {
-            resolve(true);
-        };
-        img.onerror = () => {
-            resolve(false);
-        };
-        img.src = imageUrl;
-    });
 }

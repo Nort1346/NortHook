@@ -1,6 +1,6 @@
 import * as bootstrap from 'bootstrap';
 import {
-  checkIfImageExists,
+  isImageURLValid,
   generateUniqueId,
   getEmbedInput,
   getEmbedVisual,
@@ -8,16 +8,29 @@ import {
 } from './functions.js'
 import { Embed } from './embed.js';
 
+
+/**
+ * WebHook URL Input Element
+ */
 const webhookUrl = document.getElementById("webhookUrl");
+
+/*
+ * Message Elements
+ */
 const content = document.getElementById("content");
 const username = document.getElementById("username");
 const avatar_url = document.getElementById("avatar_url");
 const files = document.getElementById("files");
+const addEmbedButton = document.getElementById("addEmbed");
+const embeds = [];
 
+/**
+ * Send Button
+ */
 const sendButton = document.getElementById("sendButton");
 sendButton.disabled = true;
 
-/**
+/*
  * Message View Parameters
  */
 const contentView = document.getElementById("contentView");
@@ -40,39 +53,57 @@ const DefaultWebhookInfo = {
   avatar: 'https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024'
 };
 
-setStandardValues();
-
-/**
+/*
  * Modals
  */
 const successModal = new bootstrap.Modal('#successModal', { focus: true });
 const failModal = new bootstrap.Modal('#failModal', { focus: true });
 const failModalContent = document.getElementById("failEmbedErrorContent");
 
+// Set standard Values
+setStandardValues();
+
+// Events for 
+sendButton.addEventListener("click", sendMessage);
+
+// Events for message
 content.addEventListener("input", changeView);
 username.addEventListener("input", changeView);
 avatar_url.addEventListener("input", changeView);
 webhookUrl.addEventListener("input", checkWebhookUrl);
+addEmbedButton.addEventListener("click", async () => addEmbed(await getEmbedInput(), await getEmbedVisual()));
 
+// Message Time Set
 const localTime = document.getElementById("localTime");
-
 localTime.innerText = `${(new Date()).toLocaleTimeString().slice(0, -3)}`;
 
 setInterval(() => {
   let nowData = new Date();
   localTime.innerText = `${nowData.toLocaleTimeString().slice(0, -3)}`
-
 }, 1000);
 
+// Check View For WebSite Width
+checkSize();
+window.addEventListener('resize', checkSize);
+
+// Webhook foucs options
 webhookUrl.addEventListener("focusin", (foc) => {
   webhookUrl.type = "text";
 });
-
 webhookUrl.addEventListener("focusout", (foc) => {
   webhookUrl.type = "password";
 });
 
-sendButton.addEventListener("click", () => {
+// Tooltips support
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,
+  {
+    trigger: "hover",
+    delay: { show: 100, hide: 100 }
+  }))
+
+// Functions
+function sendMessage() {
   const loading = document.getElementById("loadingMessage");
   loading.classList.remove("visually-hidden");
   sendButton.disabled = true;
@@ -94,9 +125,9 @@ sendButton.addEventListener("click", () => {
     return failModal.show();
   }
 
-  if (allembeds.length > 0) {
+  if (embeds.length > 0) {
     let embedArray = [];
-    for (const embed of allembeds) {
+    for (const embed of embeds) {
       embedArray.push(embed.getEmbed());
     }
     formData.append("embeds", JSON.stringify(
@@ -124,13 +155,10 @@ sendButton.addEventListener("click", () => {
         failModal.show();
       }
     });
-});
-
-checkSize();
-window.addEventListener('resize', checkSize);
+}
 
 function checkWebhookUrl() {
-  if (!isValidURL(webhookUrl.value)) {
+  if (!isValidWebhookURL(webhookUrl.value)) {
     const formData = new FormData();
     formData.append("webhookUrl", webhookUrl.value);
     console.log(formData.values);
@@ -166,15 +194,13 @@ function changeView() {
   }
 
   if (avatar_url.value.replaceAll(/\s/g, "") != "") {
-    checkIfImageExists(avatar_url.value, (is) => {
-      if (is) {
-        alertInvalidAvatarUrl.hide();
-        avatarView.src = avatar_url.value;
-      } else {
-        alertInvalidAvatarUrl.show();
-        avatarView.src = WebHookInfo.avatar ?? DefaultWebhookInfo.avatar;
-      }
-    });
+    if (isImageURLValid(avatar_url.value)) {
+      alertInvalidAvatarUrl.hide();
+      avatarView.src = avatar_url.value;
+    } else {
+      alertInvalidAvatarUrl.show();
+      avatarView.src = WebHookInfo.avatar ?? DefaultWebhookInfo.avatar;
+    }
   } else {
     alertInvalidAvatarUrl.hide();
     avatarView.src = WebHookInfo.avatar ?? DefaultWebhookInfo.avatar;
@@ -186,7 +212,7 @@ function setStandardValues() {
   changeView();
 }
 
-function isValidURL(string) {
+function isValidWebhookURL(string) {
   var res = string
     .replaceAll(/\s/g, "")
     .startsWith("https://discord.com/api/webhooks/");
@@ -195,24 +221,12 @@ function isValidURL(string) {
   return res == false;
 }
 
-const allembeds = [];
-
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,
-  {
-    trigger: "hover",
-    delay: { show: 100, hide: 100 }
-  }))
-
-const addEmbedButton = document.getElementById("addEmbed");
-addEmbedButton.addEventListener("click", async () => addEmbed(await getEmbedInput(), await getEmbedVisual()));
-
 async function addEmbed(inputEmbed, visualEmbed) {
   const uniqeId = generateUniqueId();
   const newEmbed = new Embed(inputEmbed, visualEmbed, uniqeId);
-  await newEmbed.setNumber(allembeds.length);
+  await newEmbed.setNumber(embeds.length);
 
-  allembeds.push(newEmbed);
+  embeds.push(newEmbed);
 
   checkAddEmbedButton();
   checkArrowsEmbeds();
@@ -224,16 +238,16 @@ async function addEmbed(inputEmbed, visualEmbed) {
   refreshTooltips();
 
   function upEmbed(id) {
-    const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
+    const indexOfRemoveEmbed = embeds.findIndex(ele => ele.id == id);
     if (indexOfRemoveEmbed >= 0) {
-      const temp = allembeds.splice(indexOfRemoveEmbed, 1)[0];
-      allembeds.splice(indexOfRemoveEmbed - 1, 0, temp);
+      const temp = embeds.splice(indexOfRemoveEmbed, 1)[0];
+      embeds.splice(indexOfRemoveEmbed - 1, 0, temp);
 
-      allembeds[indexOfRemoveEmbed].inputEmbed
-        .insertAdjacentElement("beforebegin", allembeds[indexOfRemoveEmbed - 1].inputEmbed);
+      embeds[indexOfRemoveEmbed].inputEmbed
+        .insertAdjacentElement("beforebegin", embeds[indexOfRemoveEmbed - 1].inputEmbed);
 
-      allembeds[indexOfRemoveEmbed].visualEmbed
-        .insertAdjacentElement("beforebegin", allembeds[indexOfRemoveEmbed - 1].visualEmbed);
+      embeds[indexOfRemoveEmbed].visualEmbed
+        .insertAdjacentElement("beforebegin", embeds[indexOfRemoveEmbed - 1].visualEmbed);
 
       checkArrowsEmbeds();
       countEmbedNumbers();
@@ -242,16 +256,16 @@ async function addEmbed(inputEmbed, visualEmbed) {
   }
 
   function downEmbed(id) {
-    const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
+    const indexOfRemoveEmbed = embeds.findIndex(ele => ele.id == id);
     if (indexOfRemoveEmbed >= 0) {
-      const temp = allembeds.splice(indexOfRemoveEmbed, 1)[0];
-      allembeds.splice(indexOfRemoveEmbed + 1, 0, temp);
+      const temp = embeds.splice(indexOfRemoveEmbed, 1)[0];
+      embeds.splice(indexOfRemoveEmbed + 1, 0, temp);
 
-      allembeds[indexOfRemoveEmbed].inputEmbed
-        .insertAdjacentElement("afterend", allembeds[indexOfRemoveEmbed + 1].inputEmbed);
+      embeds[indexOfRemoveEmbed].inputEmbed
+        .insertAdjacentElement("afterend", embeds[indexOfRemoveEmbed + 1].inputEmbed);
 
-      allembeds[indexOfRemoveEmbed].visualEmbed
-        .insertAdjacentElement("afterend", allembeds[indexOfRemoveEmbed + 1].visualEmbed);
+      embeds[indexOfRemoveEmbed].visualEmbed
+        .insertAdjacentElement("afterend", embeds[indexOfRemoveEmbed + 1].visualEmbed);
 
       checkArrowsEmbeds();
       countEmbedNumbers();
@@ -260,10 +274,10 @@ async function addEmbed(inputEmbed, visualEmbed) {
   }
 
   function removeEmbed(id) {
-    const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
+    const indexOfRemoveEmbed = embeds.findIndex(ele => ele.id == id);
     if (indexOfRemoveEmbed >= 0) {
-      allembeds[indexOfRemoveEmbed].removeEmbed();
-      allembeds.splice(indexOfRemoveEmbed, 1);
+      embeds[indexOfRemoveEmbed].removeEmbed();
+      embeds.splice(indexOfRemoveEmbed, 1);
 
       countEmbedNumbers();
       checkAddEmbedButton();
@@ -273,11 +287,11 @@ async function addEmbed(inputEmbed, visualEmbed) {
   }
 
   async function duplicateEmbed(id) {
-    const indexOfRemoveEmbed = allembeds.findIndex(ele => ele.id == id);
+    const indexOfRemoveEmbed = embeds.findIndex(ele => ele.id == id);
 
-    if (indexOfRemoveEmbed >= 0 && allembeds.length < 10) {
+    if (indexOfRemoveEmbed >= 0 && embeds.length < 10) {
       const cloneEmbed = new Embed(await getEmbedInput(), await getEmbedVisual(), generateUniqueId());
-      await cloneEmbed.setEmbed(allembeds[indexOfRemoveEmbed].getEmbed());
+      await cloneEmbed.setEmbed(embeds[indexOfRemoveEmbed].getEmbed());
       await cloneEmbed.refreshEmbedVisual();
 
       cloneEmbed.duplicateButton.addEventListener("click", () => duplicateEmbed(cloneEmbed.id));
@@ -285,21 +299,21 @@ async function addEmbed(inputEmbed, visualEmbed) {
       cloneEmbed.upButton.addEventListener("click", () => upEmbed(cloneEmbed.id));
       cloneEmbed.downButton.addEventListener("click", () => downEmbed(cloneEmbed.id));
 
-      allembeds.splice(indexOfRemoveEmbed + 1, 0, cloneEmbed);
+      embeds.splice(indexOfRemoveEmbed + 1, 0, cloneEmbed);
 
       countEmbedNumbers();
       checkAddEmbedButton();
       checkArrowsEmbeds();
 
-      insertAfter(cloneEmbed.inputEmbed, allembeds[indexOfRemoveEmbed].inputEmbed);
-      insertAfter(cloneEmbed.visualEmbed, allembeds[indexOfRemoveEmbed].visualEmbed);
+      insertAfter(cloneEmbed.inputEmbed, embeds[indexOfRemoveEmbed].inputEmbed);
+      insertAfter(cloneEmbed.visualEmbed, embeds[indexOfRemoveEmbed].visualEmbed);
       refreshTooltips();
     }
   }
 }
 
 function checkArrowsEmbeds() {
-  allembeds.map((emb, index) => {
+  embeds.map((emb, index) => {
     emb.upButton.disabled = false;
     emb.upButton.classList.remove("d-none");
 
@@ -310,7 +324,7 @@ function checkArrowsEmbeds() {
       emb.upButton.disabled = true;
       emb.upButton.classList.add("d-none");
     }
-    if (index == allembeds.length - 1) {
+    if (index == embeds.length - 1) {
       emb.downButton.disabled = true;
       emb.downButton.classList.add("d-none");
     }
@@ -318,7 +332,7 @@ function checkArrowsEmbeds() {
 }
 
 function checkAddEmbedButton() {
-  if (allembeds.length >= 10) {
+  if (embeds.length >= 10) {
     addEmbedButton.disabled = true;
   } else {
     addEmbedButton.disabled = false;
@@ -326,8 +340,8 @@ function checkAddEmbedButton() {
 }
 
 function countEmbedNumbers() {
-  for (let i = 0; i < allembeds.length; i++) {
-    allembeds[i].setNumber(i);
+  for (let i = 0; i < embeds.length; i++) {
+    embeds[i].setNumber(i);
   }
 }
 

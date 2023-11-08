@@ -16,6 +16,31 @@ export function checkIfImageExists(url, callback) {
   }
 }
 
+/**
+ * Check if image exists
+ * @param {*} imageUrl URL of image or gif
+ * @returns {boolean} Is image exists
+ */
+export function isImageURLValid(imageUrl) {
+  return new Promise((resolve) => {
+      if (!imageUrl.startsWith("https://") && !imageUrl.startsWith("http://")) return resolve(false);
+
+      const img = new Image();
+      img.onload = () => {
+          resolve(true);
+      };
+      img.onerror = () => {
+          resolve(false);
+      };
+
+      try {
+          img.src = imageUrl;
+      } catch (error) {
+          resolve(false);
+      }
+  });
+}
+
 export function generateUniqueId() {
   return Math.random().toString(36).substr(2, 9);
 }
