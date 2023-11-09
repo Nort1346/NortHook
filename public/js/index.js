@@ -8,11 +8,16 @@ import {
 } from './functions.js'
 import { Embed } from './embed.js';
 
-
 /**
  * WebHook URL Input Element
  */
 const webhookUrl = document.getElementById("webhookUrl");
+
+/**
+ * Send Button
+ */
+const sendButton = document.getElementById("sendButton");
+sendButton.disabled = true;
 
 /*
  * Message Elements
@@ -21,14 +26,9 @@ const content = document.getElementById("content");
 const username = document.getElementById("username");
 const avatar_url = document.getElementById("avatar_url");
 const files = document.getElementById("files");
+const messageLink = document.getElementById("messageLink")
 const addEmbedButton = document.getElementById("addEmbed");
 const embeds = [];
-
-/**
- * Send Button
- */
-const sendButton = document.getElementById("sendButton");
-sendButton.disabled = true;
 
 /*
  * Message View Parameters
@@ -66,11 +66,12 @@ setStandardValues();
 // Events for 
 sendButton.addEventListener("click", sendMessage);
 
-// Events for message
+// Events for message parameters
 content.addEventListener("input", changeView);
 username.addEventListener("input", changeView);
 avatar_url.addEventListener("input", changeView);
 webhookUrl.addEventListener("input", checkWebhookUrl);
+messageLink.addEventListener("input", checkMessageLink);
 addEmbedButton.addEventListener("click", async () => addEmbed(await getEmbedInput(), await getEmbedVisual()));
 
 // Message Time Set
@@ -161,7 +162,6 @@ function checkWebhookUrl() {
   if (!isValidWebhookURL(webhookUrl.value)) {
     const formData = new FormData();
     formData.append("webhookUrl", webhookUrl.value);
-    console.log(formData.values);
     fetch("/isWebhook", {
       method: "POST",
       body: formData
@@ -173,7 +173,6 @@ function checkWebhookUrl() {
 
         WebHookInfo.name = data?.name;
         WebHookInfo.avatar = data?.avatar;
-        changeView();
       });
   } else {
     sendButton.disabled = true;
@@ -181,6 +180,26 @@ function checkWebhookUrl() {
     WebHookInfo.avatar = null;
     alertInvalidWebhookUrl.show()
   }
+  changeView();
+}
+
+function checkMessageLink() {
+  // if (!isValidWebhookURL(webhookUrl.value)) {
+  const apiURL = `${webhookUrl.value}/messages/${messageLink.value.slice(messageLink.value.lastIndexOf("/") + 1)}`;
+  console.log(apiURL);
+  const formData = new FormData();
+  formData.append("messageLink", apiURL);
+  fetch("/isWebhookMessage", {
+    method: "POST",
+    body: formData
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data.success)
+    });
+  /*} else {
+
+  }*/
   changeView();
 }
 

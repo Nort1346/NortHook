@@ -27,8 +27,8 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <div class="nav nav-pills nav-justified me-3 d-md-none" id="v-pills-tab" role="tablist">
-          <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#inputs" type="button"
-            role="tab" aria-controls="v-pills-home" aria-selected="true">Editor</button>
+          <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#inputs"
+            type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">Editor</button>
           <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#messageView"
             type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">Preview</button>
         </div>
@@ -40,11 +40,11 @@
     <div class="row h-100 d-block-inline tab-content">
       <div id="inputs" class="col-md-6 overflow-y-scroll tab-pane fade show d-md-block active" role="tabpanel"
         aria-labelledby="v-pills-home-tab" tabindex="0">
-        <label class="fw-bold">Webhook URL</label><br />
+        <label class="fw-semibold">Webhook URL</label><br />
         <div class="input-group">
           <input class="form-control" type="password" id="webhookUrl" placeholder="https://discord.com/api/webhooks/"
-            required />
-          <button class="btn btn-outline-secondary" id="sendButton">Send</button>
+            required/>
+          <button class="btn btn-outline-secondary fw-medium northookButton" id="sendButton" disabled>Send</button>
         </div>
         <div class="collapse" id="InvalidWebhookUrlCollapse">
           <div class="card card-body text-danger border-danger w-25 h-auto p-2 mt-3">
@@ -52,10 +52,10 @@
           </div>
         </div>
         <hr />
-        <label class="fw-bold">Content</label>
+        <label class="fw-semibold">Content</label>
         <textarea class="form-control" type="text" id="content" maxlength=2000 rows=8></textarea>
         <hr />
-        <div class="fs-6 d-flex align-items-center fw-bold">
+        <div class="fs-6 d-flex align-items-center fw-semibold">
           Profile
           <button class="btn bg-transparent border-0 p-0 ms-2" data-bs-toggle="collapse"
             data-bs-target="#profileContent">
@@ -79,7 +79,7 @@
         </div>
         <hr>
         <div class="mb-3">
-          <label for="files" class="form-label fw-bold">Files <span class="badge bg-secondary">Max 25
+          <label for="files" class="form-label fw-semibold">Files <span class="badge bg-secondary">Max 25
               MB</span></label>
           <input class="form-control" type="file" id="files" multiple>
         </div>
@@ -87,22 +87,37 @@
         <hr>
         <div class="row mb-3">
           <div class="col-6 d-flex align-items-center">
-            <label class="fs-6 fw-bold">Embeds</label>
+            <label class="fs-6 fw-semibold">Embeds</label>
             &nbsp;<span class="badge bg-secondary">Max 10</span>
           </div>
           <div class="col-6">
             <button class="btn btn-primary float-end d-flex align-items-center" id="addEmbed">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg"
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="d-flex align-items-center justify-content-center"
                 viewBox="0 0 16 16">
                 <path fill-rule="evenodd"
                   d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
-              </svg>&nbsp;Add Embed</button>
+              </svg>
+              <span>&nbsp;Add Embed</span>
+            </button>
           </div>
         </div>
         <div class="row">
           <div class="col-12">
             <div id="embedsInput" class="d-block new-line"></div>
           </div>
+        </div>
+        <hr>
+        <div class="mb-3">
+          <label for="messageLink" class="fw-semibold">Message Link</label>
+          <div class="input-group">
+          <input
+          type="url" 
+          class="form-control" 
+          id="messageLink"
+          placeholder="https://discord.com/channels/"
+          >
+          <button class="btn btn-outline-secondary fw-medium northookButton" id="editButton" disabled>Edit</button>
+        </div>
         </div>
         <hr>
 

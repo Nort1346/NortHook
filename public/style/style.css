@@ -51,21 +51,21 @@ body {
     resize: vertical;
 }
 
-#sendButton {
+.northookButton {
     background-color: rgb(99, 99, 99);
     color: white;
 }
 
-#sendButton:disabled {
+#northookButton:disabled {
     background: none;
     opacity: 0.5;
 }
 
-#sendButton:disabled:hover {
+#northookButton:disabled:hover {
     background-color: rgb(54, 54, 54);
 }
 
-#sendButton:hover {
+#northookButton:hover {
     background-color: rgb(70, 70, 70);
 }
 

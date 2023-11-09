@@ -64,7 +64,7 @@ app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
     });
 });
 
-app.post('/isWebhook', upload.single('fileData'), async (req, res) => {
+app.post('/isWebhook', async (req, res) => {
     let webhookInfo;
     try {
         webhookInfo = (await axios.get(req.body.webhookUrl)).data;
@@ -75,6 +75,18 @@ app.post('/isWebhook', upload.single('fileData'), async (req, res) => {
         success: true,
         name: webhookInfo.name,
         avatar: webhookInfo.avatar != null ? `https://cdn.discordapp.com/avatars/${webhookInfo.id}/${webhookInfo.avatar}.webp?size=512` : "https://cdn.discordapp.com/embed/avatars/0.png",
+    });
+});
+
+app.post('/isWebhookMessage', async (req, res) => {
+    let messageData;
+    try {
+        messageData = (await axios.get(req.body.messageLink)).data;
+    } catch (e) {
+        return res.json({ success: false });
+    }
+    return res.json({
+        success: true
     });
 });
 
