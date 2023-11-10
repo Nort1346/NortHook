@@ -107,7 +107,7 @@ export class Embed {
 
         this.title.value = embed?.title ?? "";
         this.description.value = embed?.description ?? "";
-        this.color.value = "#" + embed?.color.toString(16).padStart(6, "0") ?? "";
+        this.color.value = "#" + embed?.color?.toString(16)?.padStart(6, "0") ?? "";
         this.url.value = embed?.url ?? "";
         this.timestamp.value = embed?.timestamp ?? "";
 
@@ -121,6 +121,8 @@ export class Embed {
             console.log(embed?.fields);
             await this.setFields(embed?.fields)
         }
+
+        await this.refreshEmbedVisual();
     }
 
     /**

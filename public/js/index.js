@@ -26,7 +26,8 @@ const content = document.getElementById("content");
 const username = document.getElementById("username");
 const avatar_url = document.getElementById("avatar_url");
 const files = document.getElementById("files");
-const messageLink = document.getElementById("messageLink")
+const messageLink = document.getElementById("messageLink");
+const loadMessageButton = document.getElementById("loadMessageButton");
 const addEmbedButton = document.getElementById("addEmbed");
 const embeds = [];
 
@@ -39,6 +40,7 @@ const avatarView = document.getElementById("avatarIcon");
 
 const alertInvalidWebhookUrl = new bootstrap.Collapse("#InvalidWebhookUrlCollapse", { toggle: false });
 const alertInvalidAvatarUrl = new bootstrap.Collapse("#InvalidAvatarUrlCollapse", { toggle: false });
+const alertInvalidMessageLink = new bootstrap.Collapse("#InvalidMessageLinkCollapse", { toggle: false });
 
 /**
  * WebHookInfo
@@ -72,6 +74,7 @@ username.addEventListener("input", changeView);
 avatar_url.addEventListener("input", changeView);
 webhookUrl.addEventListener("input", checkWebhookUrl);
 messageLink.addEventListener("input", checkMessageLink);
+loadMessageButton.addEventListener("click", loadMessage);
 addEmbedButton.addEventListener("click", async () => addEmbed(await getEmbedInput(), await getEmbedVisual()));
 
 // Message Time Set
@@ -158,8 +161,45 @@ function sendMessage() {
     });
 }
 
+function loadMessage() {
+  const loading = document.getElementById("loadingMessage");
+  loading.classList.remove("visually-hidden");
+  loadMessageButton.disabled = true;
+
+  const formData = new FormData();
+  formData.append("messageLink", `${webhookUrl.value}/messages/${messageLink.value.slice(messageLink.value.lastIndexOf("/") + 1)}`);
+
+  fetch("/getWebhookMessage", {
+    method: "POST",
+    body: formData
+  })
+    .then((response) => response.json())
+    .then(async (data) => {
+      loading.classList.add("visually-hidden");
+      loadMessageButton.disabled = false;
+
+      if (data.success == true) {
+        content.value = data.message.content;
+
+        username.value = data.message.author.username;
+        avatar_url.value = `https://cdn.discordapp.com/avatars/${data.message.author.id}/${data.message.author.avatar}.png`;
+
+        embeds.at(0, embeds.length);
+        for (let i = 0; i < data.message.embeds.length; i++) {
+          embeds[i] = await (new Embed(await getEmbedInput(), await getEmbedVisual(), generateUniqueId())).setEmbed(data.message.embeds[i])
+        }
+
+        changeView();
+      }
+    });
+}
+
+function setMessage() {
+
+}
+
 function checkWebhookUrl() {
-  if (!isValidWebhookURL(webhookUrl.value)) {
+  if (isCorrectWebhookURL(webhookUrl.value)) {
     const formData = new FormData();
     formData.append("webhookUrl", webhookUrl.value);
     fetch("/isWebhook", {
@@ -184,22 +224,23 @@ function checkWebhookUrl() {
 }
 
 function checkMessageLink() {
-  // if (!isValidWebhookURL(webhookUrl.value)) {
-  const apiURL = `${webhookUrl.value}/messages/${messageLink.value.slice(messageLink.value.lastIndexOf("/") + 1)}`;
-  console.log(apiURL);
-  const formData = new FormData();
-  formData.append("messageLink", apiURL);
-  fetch("/isWebhookMessage", {
-    method: "POST",
-    body: formData
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      console.log(data.success)
-    });
-  /*} else {
-
-  }*/
+  if (isCorrectMessageLink(messageLink.value) && isCorrectWebhookURL(webhookUrl.value)) {
+    const apiURL = `${webhookUrl.value}/messages/${messageLink.value.slice(messageLink.value.lastIndexOf("/") + 1)}`;
+    const formData = new FormData();
+    formData.append("messageLink", apiURL);
+    fetch("/isWebhookMessage", {
+      method: "POST",
+      body: formData
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        loadMessageButton.disabled = !data.success;
+        data.success == true ? alertInvalidMessageLink.hide() : alertInvalidMessageLink.show();
+      });
+  } else {
+    loadMessageButton.disabled = true;
+    alertInvalidMessageLink.show()
+  }
   changeView();
 }
 
@@ -231,13 +272,22 @@ function setStandardValues() {
   changeView();
 }
 
-function isValidWebhookURL(string) {
-  var res = string
+function isCorrectWebhookURL(WebhookUrl) {
+  let res = WebhookUrl
     .replaceAll(/\s/g, "")
     .startsWith("https://discord.com/api/webhooks/");
 
-  if (string.length <= 0) alertInvalidWebhookUrl.hide();
-  return res == false;
+  if (WebhookUrl.replaceAll(/\s/g, "") == "") alertInvalidWebhookUrl.hide();
+  return res == true;
+}
+
+function isCorrectMessageLink(link) {
+  let res = link
+    .replaceAll(/\s/g, "")
+    .startsWith("https://discord.com/channels/");
+
+  if (link.replaceAll(/\s/g, "") == "") alertInvalidMessageLink.hide();
+  return res == true;
 }
 
 async function addEmbed(inputEmbed, visualEmbed) {

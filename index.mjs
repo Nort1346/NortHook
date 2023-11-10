@@ -36,7 +36,7 @@ app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
 
     if (JSONMessage?.username != null)
         payload.username = JSONMessage.username;
-    
+
     if (JSONMessage?.embeds != null) {
         JSONMessage.embeds = await JSON.parse(JSONMessage.embeds);
         payload.embeds = JSONMessage.embeds;
@@ -64,7 +64,7 @@ app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
     });
 });
 
-app.post('/isWebhook', async (req, res) => {
+app.post('/isWebhook', upload.single(), async (req, res) => {
     let webhookInfo;
     try {
         webhookInfo = (await axios.get(req.body.webhookUrl)).data;
@@ -78,7 +78,7 @@ app.post('/isWebhook', async (req, res) => {
     });
 });
 
-app.post('/isWebhookMessage', async (req, res) => {
+app.post('/isWebhookMessage', upload.single(), async (req, res) => {
     let messageData;
     try {
         messageData = (await axios.get(req.body.messageLink)).data;
@@ -89,6 +89,21 @@ app.post('/isWebhookMessage', async (req, res) => {
         success: true
     });
 });
+
+app.post('/getWebhookMessage', upload.single(), async (req, res) => {
+    let messageData;
+    console.log(req.body.messageLink);
+    try {
+        messageData = (await axios.get(req.body.messageLink)).data;
+      //  console.log(messageData);
+    } catch (e) {
+        return res.json({ success: false });
+    }
+    return res.json({
+        success: true,
+        message: messageData
+    });
+})
 
 app.listen(PORT, () => {
     console.log(`NortHook on, port: ${PORT}`);
