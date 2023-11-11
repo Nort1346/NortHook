@@ -28,8 +28,7 @@ app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
     const form = new FormData();
     const payload = {};
 
-    if (JSONMessage?.content != null)
-        payload.content = JSONMessage.content
+    payload.content = JSONMessage.content ?? null;
 
     if (JSONMessage?.avatar_url != null)
         payload.avatar_url = JSONMessage.avatar_url;
@@ -69,8 +68,7 @@ app.post('/editMessage', upload.array('files', 10), async (req, res) => {
     const form = new FormData();
     const payload = {};
 
-    if (JSONMessage?.content != null)
-        payload.content = JSONMessage.content
+    payload.content = JSONMessage.content ?? null;
 
     if (JSONMessage?.embeds != null) {
         JSONMessage.embeds = await JSON.parse(JSONMessage.embeds);

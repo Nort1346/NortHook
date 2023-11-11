@@ -1,4 +1,4 @@
-import { generateUniqueId, isImageURLValid } from './functions.js'
+import { generateUniqueId, isImageURLValid, formatText } from './functions.js'
 
 /**
  * Create Embed
@@ -145,7 +145,7 @@ export class Embed {
         /**
          * TITLE
          */
-        this.viewObjects.title.innerText = this.title.value;
+        this.viewObjects.title.innerHTML = formatText(this.title.value);
         if (this.title.value) {
             this.viewObjects.title.classList.remove("d-none");
         } else {
@@ -167,7 +167,7 @@ export class Embed {
         /**
          * DESCRIPTION
          */
-        this.viewObjects.description.innerText = this.description.value;
+        this.viewObjects.description.innerHTML = formatText(this.description.value);
 
         /**
          * FOOTER AND TIMESTAMP
@@ -225,8 +225,8 @@ export class Embed {
         }
 
         for (let i = 0; i < this.fields.length; i++) {
-            this.fields[i].fieldVisual.name.innerText = this.fields[i].name.value;
-            this.fields[i].fieldVisual.value.innerText = this.fields[i].value.value;
+            this.fields[i].fieldVisual.name.innerHTML = formatText(this.fields[i].name.value);
+            this.fields[i].fieldVisual.value.innerHTML = formatText(this.fields[i].value.value);
 
             if (this.fields[i].inline.checked)
                 this.fields[i].fieldVisual.colElementInline.classList.remove("col-12");

@@ -5,8 +5,11 @@ import {
   getEmbedInput,
   getEmbedVisual,
   insertAfter,
-  TypeOfMessage
+  formatText
 } from './functions.js'
+import {
+  TypeOfMessage
+} from './classes.js'
 import { Embed } from './embed.js';
 
 /**
@@ -320,7 +323,7 @@ function checkMessageLink() {
 }
 
 async function changeView() {
-  contentView.innerText = content.value;
+  contentView.innerHTML = formatText(content.value);
 
   if (username.value.replaceAll(/\s/g, "") != "") {
     usernameView.innerText = username.value;

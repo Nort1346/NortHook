@@ -18,10 +18,10 @@ export function checkIfImageExists(url, callback) {
 
 /**
  * Check if image exists
- * @param {*} imageUrl URL of image or gif
- * @returns {boolean} Is image exists
+ * @param {string} imageUrl URL of image or gif
+ * @returns {Promise<boolean>} Is image exists
  */
-export function isImageURLValid(imageUrl) {
+export async function isImageURLValid(imageUrl) {
   return new Promise((resolve) => {
     if (!imageUrl.startsWith("https://") && !imageUrl.startsWith("http://")) return resolve(false);
 
@@ -77,7 +77,27 @@ export function insertAfter(newNode, referenceNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
-export class TypeOfMessage {
-  static get SEND() { return 'Send'; }
-  static get EDIT() { return 'Edit'; }
+export function formatText(text) {
+  // Bold **
+  text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+  // Italic *
+  text = text.replace(/\*(.*?)\*/g, '<i>$1</i>');
+
+  // Bold and Italic ***
+  text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<b><i>$1</i></b>');
+
+  // Delete ~~
+  text = text.replace(/~~(.*?)~~/g, '<del>$1</del>');
+
+  // Header 6 ###
+  text = text.replace(/^### (.*?$)/gm, '<h6><b>$1</b></h6>');
+
+  // Header 5 ##
+  text = text.replace(/^## (.*?$)/gm, '<h5><b>$1</b></h5>');
+
+  // Header 4 #
+  text = text.replace(/^# (.*?$)/gm, '<h4><b>$1</b></h4>');
+
+  return text;
 }
