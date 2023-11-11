@@ -64,6 +64,41 @@ app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
     });
 });
 
+app.post('/editMessage', upload.array('files', 10), async (req, res) => {
+    const JSONMessage = req.body;
+    const form = new FormData();
+    const payload = {};
+
+    if (JSONMessage?.content != null)
+        payload.content = JSONMessage.content
+
+    if (JSONMessage?.embeds != null) {
+        JSONMessage.embeds = await JSON.parse(JSONMessage.embeds);
+        payload.embeds = JSONMessage.embeds;
+    }
+
+    form.append('payload_json', JSON.stringify(payload));
+
+    for (let i = 0; i < req.files.length; i++) {
+        form.append('files' + i, req.files[i].buffer, { filename: req.files[i].originalname });
+    }
+
+    try {
+        await axios.patch(JSONMessage.messageLink,
+            form,
+            {
+                headers: {
+                    ...form.getHeaders(),
+                }
+            });
+    } catch (e) {
+        return res.json({ success: false, error: e.response.data.message ?? e.message });
+    }
+    return res.json({
+        success: true,
+    });
+});
+
 app.post('/isWebhook', upload.single(), async (req, res) => {
     let webhookInfo;
     try {
@@ -92,10 +127,8 @@ app.post('/isWebhookMessage', upload.single(), async (req, res) => {
 
 app.post('/getWebhookMessage', upload.single(), async (req, res) => {
     let messageData;
-    console.log(req.body.messageLink);
     try {
         messageData = (await axios.get(req.body.messageLink)).data;
-      //  console.log(messageData);
     } catch (e) {
         return res.json({ success: false });
     }

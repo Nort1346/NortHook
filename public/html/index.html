@@ -163,7 +163,7 @@
     </div>
   </div>
 
-  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal fade" id="successModalSend" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content bg-success text-white">
         <div class="modal-header">
@@ -177,14 +177,45 @@
     </div>
   </div>
 
-  <div class="modal fade" id="failModal" tabindex="-1" aria-labelledby="failModalLabel" aria-hidden="true">
+  <div class="modal fade" id="failModalSend" tabindex="-1" aria-labelledby="failModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content bg-danger text-white">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="failModalLabel">Message Not Sent</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body" id="failEmbedErrorContent">
+        <div class="modal-body" id="failEmbedErrorContentSend">
+          Error:
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="successModalEdit" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-success text-white">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="successModalLabel">Message Edited</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="failModalEdit" tabindex="-1" aria-labelledby="failModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-danger text-white">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="failModalLabel">Message Not Edited</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="failEmbedErrorContentEdit">
           Error:
         </div>
         <div class="modal-footer">

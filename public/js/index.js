@@ -4,7 +4,8 @@ import {
   generateUniqueId,
   getEmbedInput,
   getEmbedVisual,
-  insertAfter
+  insertAfter,
+  TypeOfMessage
 } from './functions.js'
 import { Embed } from './embed.js';
 
@@ -30,6 +31,7 @@ const messageLink = document.getElementById("messageLink");
 const loadMessageButton = document.getElementById("loadMessageButton");
 const addEmbedButton = document.getElementById("addEmbed");
 const embeds = [];
+let messageType = TypeOfMessage.SEND;
 
 /*
  * Message View Parameters
@@ -56,24 +58,37 @@ const DefaultWebhookInfo = {
 };
 
 /*
- * Modals
+ Modals for SEND and EDIT
  */
-const successModal = new bootstrap.Modal('#successModal', { focus: true });
-const failModal = new bootstrap.Modal('#failModal', { focus: true });
-const failModalContent = document.getElementById("failEmbedErrorContent");
+const successModalSend = new bootstrap.Modal('#successModalSend', { focus: true });
+const failModalSend = new bootstrap.Modal('#failModalSend', { focus: true });
+const failModalContentSend = document.getElementById("failEmbedErrorContentSend");
+const successModalEdit = new bootstrap.Modal('#successModalEdit', { focus: true });
+const failModalEdit = new bootstrap.Modal('#failModalEdit', { focus: true });
+const failModalContentEdit = document.getElementById("failEmbedErrorContentEdit");
 
 // Set standard Values
 setStandardValues();
 
-// Events for 
-sendButton.addEventListener("click", sendMessage);
+// Events for sendButton
+sendButton.addEventListener("click", () => {
+  if (messageType == TypeOfMessage.SEND)
+    sendMessage();
+  else
+    editMessage();
+});
 
 // Events for message parameters
 content.addEventListener("input", changeView);
 username.addEventListener("input", changeView);
 avatar_url.addEventListener("input", changeView);
+
 webhookUrl.addEventListener("input", checkWebhookUrl);
+webhookUrl.addEventListener("input", checkMessageLink);
+
+messageLink.addEventListener("input", checkWebhookUrl);
 messageLink.addEventListener("input", checkMessageLink);
+
 loadMessageButton.addEventListener("click", loadMessage);
 addEmbedButton.addEventListener("click", async () => addEmbed(await getEmbedInput(), await getEmbedVisual()));
 
@@ -123,21 +138,19 @@ function sendMessage() {
     formData.append("avatar_url", avatar_url.value);
 
   if (files.files.length > 10) {
-    failModalContent.innerText = `Error: Max files is 10`;
+    failModalContentSend.innerText = `Error: Max files is 10`;
     loading.classList.add("visually-hidden");
     sendButton.disabled = false;
-    return failModal.show();
+    return failModalSend.show();
   }
 
-  if (embeds.length > 0) {
-    let embedArray = [];
-    for (const embed of embeds) {
-      embedArray.push(embed.getEmbed());
-    }
-    formData.append("embeds", JSON.stringify(
-      embedArray
-    ));
+  let embedArray = [];
+  for (const embed of embeds) {
+    embedArray.push(embed.getEmbed());
   }
+  formData.append("embeds", JSON.stringify(
+    embedArray
+  ));
 
   for (let i = 0; i < files.files.length; i++) {
     formData.append("files", files.files[i]);
@@ -153,10 +166,59 @@ function sendMessage() {
       sendButton.disabled = false;
 
       if (data.success == true) {
-        successModal.show();
+        successModalSend.show();
       } else {
-        failModalContent.innerText = `Error: ${data.error}`;
-        failModal.show();
+        failModalContentSend.innerText = `Error: ${data.error}`;
+        failModalSend.show();
+      }
+    });
+}
+
+function editMessage() {
+  const loading = document.getElementById("loadingMessage");
+  loading.classList.remove("visually-hidden");
+  sendButton.disabled = true;
+
+  const formData = new FormData();
+
+  formData.append("messageLink", `${webhookUrl.value}/messages/${messageLink.value.slice(messageLink.value.lastIndexOf("/") + 1)}`)
+
+  if (content.value.replaceAll(/\s/g, "") != "")
+    formData.append("content", content.value);
+
+  if (files.files.length > 10) {
+    failModalContentSend.innerText = `Error: Max files is 10`;
+    loading.classList.add("visually-hidden");
+    sendButton.disabled = false;
+    return failModalSend.show();
+  }
+
+  let embedArray = [];
+  for (const embed of embeds) {
+    embedArray.push(embed.getEmbed());
+  }
+  formData.append("embeds", JSON.stringify(
+    embedArray
+  ));
+
+  for (let i = 0; i < files.files.length; i++) {
+    formData.append("files", files.files[i]);
+  }
+
+  fetch("/editMessage", {
+    method: "POST",
+    body: formData
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      loading.classList.add("visually-hidden");
+      sendButton.disabled = false;
+
+      if (data.success == true) {
+        successModalEdit.show();
+      } else {
+        failModalContentEdit.innerText = `Error: ${data.error}`;
+        failModalEdit.show();
       }
     });
 }
@@ -179,23 +241,31 @@ function loadMessage() {
       loadMessageButton.disabled = false;
 
       if (data.success == true) {
-        content.value = data.message.content;
-
-        username.value = data.message.author.username;
-        avatar_url.value = `https://cdn.discordapp.com/avatars/${data.message.author.id}/${data.message.author.avatar}.png`;
-
-        embeds.at(0, embeds.length);
-        for (let i = 0; i < data.message.embeds.length; i++) {
-          embeds[i] = await (new Embed(await getEmbedInput(), await getEmbedVisual(), generateUniqueId())).setEmbed(data.message.embeds[i])
-        }
-
-        changeView();
+        await setMessage(data.message);
       }
     });
 }
 
-function setMessage() {
+async function setMessage(message) {
+  //Content
+  content.value = message.content;
+  //Profile
+  username.value = message.author.username;
+  avatar_url.value = `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.png`;
+  //Files
 
+  //Embeds
+  embeds.forEach(ele => ele.removeEmbed());
+  embeds.splice(0, embeds.length);
+  for (let i = 0; i < message.embeds.length && i < 10; i++) {
+    await addEmbed(await getEmbedInput(), await getEmbedVisual());
+    await embeds[i].setEmbed(message.embeds[i]);
+  }
+
+  countEmbedNumbers();
+  checkAddEmbedButton();
+  checkArrowsEmbeds();
+  changeView();
 }
 
 function checkWebhookUrl() {
@@ -218,7 +288,6 @@ function checkWebhookUrl() {
     sendButton.disabled = true;
     WebHookInfo.name = null;
     WebHookInfo.avatar = null;
-    alertInvalidWebhookUrl.show()
   }
   changeView();
 }
@@ -235,16 +304,22 @@ function checkMessageLink() {
       .then((response) => response.json())
       .then((data) => {
         loadMessageButton.disabled = !data.success;
-        data.success == true ? alertInvalidMessageLink.hide() : alertInvalidMessageLink.show();
+        if (data.success == true) {
+          messageType = TypeOfMessage.EDIT;
+          alertInvalidMessageLink.hide()
+        } else {
+          messageType = TypeOfMessage.SEND;
+          alertInvalidMessageLink.show();
+        }
       });
   } else {
+    messageType = TypeOfMessage.SEND;
     loadMessageButton.disabled = true;
-    alertInvalidMessageLink.show()
   }
   changeView();
 }
 
-function changeView() {
+async function changeView() {
   contentView.innerText = content.value;
 
   if (username.value.replaceAll(/\s/g, "") != "") {
@@ -254,7 +329,7 @@ function changeView() {
   }
 
   if (avatar_url.value.replaceAll(/\s/g, "") != "") {
-    if (isImageURLValid(avatar_url.value)) {
+    if (await isImageURLValid(avatar_url.value)) {
       alertInvalidAvatarUrl.hide();
       avatarView.src = avatar_url.value;
     } else {
@@ -278,6 +353,7 @@ function isCorrectWebhookURL(WebhookUrl) {
     .startsWith("https://discord.com/api/webhooks/");
 
   if (WebhookUrl.replaceAll(/\s/g, "") == "") alertInvalidWebhookUrl.hide();
+  else if (res == false) alertInvalidWebhookUrl.show();
   return res == true;
 }
 
@@ -287,6 +363,7 @@ function isCorrectMessageLink(link) {
     .startsWith("https://discord.com/channels/");
 
   if (link.replaceAll(/\s/g, "") == "") alertInvalidMessageLink.hide();
+  else if (res == false) alertInvalidMessageLink.show();
   return res == true;
 }
 

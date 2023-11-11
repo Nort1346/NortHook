@@ -118,7 +118,6 @@ export class Embed {
         this.footer.icon_url.value = embed?.footer?.icon_url ?? "";
 
         if (embed?.fields != null && embed.fields?.length > 0) {
-            console.log(embed?.fields);
             await this.setFields(embed?.fields)
         }
 

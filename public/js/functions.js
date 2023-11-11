@@ -23,21 +23,21 @@ export function checkIfImageExists(url, callback) {
  */
 export function isImageURLValid(imageUrl) {
   return new Promise((resolve) => {
-      if (!imageUrl.startsWith("https://") && !imageUrl.startsWith("http://")) return resolve(false);
+    if (!imageUrl.startsWith("https://") && !imageUrl.startsWith("http://")) return resolve(false);
 
-      const img = new Image();
-      img.onload = () => {
-          resolve(true);
-      };
-      img.onerror = () => {
-          resolve(false);
-      };
+    const img = new Image();
+    img.onload = () => {
+      resolve(true);
+    };
+    img.onerror = () => {
+      resolve(false);
+    };
 
-      try {
-          img.src = imageUrl;
-      } catch (error) {
-          resolve(false);
-      }
+    try {
+      img.src = imageUrl;
+    } catch (error) {
+      resolve(false);
+    }
   });
 }
 
@@ -75,4 +75,9 @@ export async function getEmbedVisual(uniqeId) {
 
 export function insertAfter(newNode, referenceNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
+
+export class TypeOfMessage {
+  static get SEND() { return 'Send'; }
+  static get EDIT() { return 'Edit'; }
 }
