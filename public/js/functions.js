@@ -99,5 +99,12 @@ export function formatText(text) {
   // Header 4 #
   text = text.replace(/^# (.*?$)/gm, '<h4><b>$1</b></h4>');
 
+  // Under Text _ _
+  text = text.replace(/\_(.*?)\_/g, '<u>$1</u>');
+
+  // Spoiler Text || ||
+  text = text.replace(/\|\|(.*?)\|\|/g,
+    '<div class="spoilerText">$1</div>');
+
   return text;
 }

@@ -109,19 +109,7 @@ app.post('/isWebhook', upload.single(), async (req, res) => {
         name: webhookInfo.name,
         avatar: webhookInfo.avatar != null ? `https://cdn.discordapp.com/avatars/${webhookInfo.id}/${webhookInfo.avatar}.webp?size=512` : "https://cdn.discordapp.com/embed/avatars/0.png",
     });
-});
-
-app.post('/isWebhookMessage', upload.single(), async (req, res) => {
-    let messageData;
-    try {
-        messageData = (await axios.get(req.body.messageLink)).data;
-    } catch (e) {
-        return res.json({ success: false });
-    }
-    return res.json({
-        success: true
-    });
-});
+}); 
 
 app.post('/getWebhookMessage', upload.single(), async (req, res) => {
     let messageData;
