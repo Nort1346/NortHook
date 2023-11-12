@@ -136,6 +136,7 @@ export class Message {
 
         this.checkAddEmbedButton();
         this.checkArrowsEmbeds();
+        refreshTooltips();
 
         newEmbed.upButton.addEventListener("click", () => this.upEmbed(newEmbed.id));
         newEmbed.downButton.addEventListener("click", () => this.downEmbed(newEmbed.id));
@@ -195,7 +196,7 @@ export class Message {
 
     async duplicateEmbed(id) {
         const indexOfRemoveEmbed = this.embeds.findIndex(ele => ele.id == id);
-
+        
         if (indexOfRemoveEmbed >= 0 && this.embeds.length < 10) {
             const cloneEmbed = new Embed(await getEmbedInput(), await getEmbedVisual(), generateUniqueId());
             await cloneEmbed.setEmbed(this.embeds[indexOfRemoveEmbed].getEmbed());
@@ -205,6 +206,16 @@ export class Message {
             cloneEmbed.downButton.addEventListener("click", () => this.downEmbed(cloneEmbed.id));
             cloneEmbed.removeButton.addEventListener("click", () => this.removeEmbed(cloneEmbed.id));
             cloneEmbed.duplicateButton.addEventListener("click", async () => await this.duplicateEmbed(cloneEmbed.id));
+
+            this.embeds.splice(indexOfRemoveEmbed + 1, 0, cloneEmbed);
+
+            this.countEmbedNumbers();
+            this.checkAddEmbedButton();
+            this.checkArrowsEmbeds();
+
+            insertAfter(cloneEmbed.inputEmbed, this.embeds[indexOfRemoveEmbed].inputEmbed);
+            insertAfter(cloneEmbed.visualEmbed,this.embeds[indexOfRemoveEmbed].visualEmbed);
+            refreshTooltips();
         }
     }
 
@@ -240,66 +251,66 @@ export class Message {
             this.embeds[i].setNumber(i);
         }
     }
-    
+
     loadMessage() {
         const loading = document.getElementById("loadingMessage");
         loading.classList.remove("visually-hidden");
         this.loadMessageButton.disabled = true;
-      
+
         const formData = new FormData();
         formData.append("messageLink", `${webhookUrl.value}/messages/
         ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`);
-      
+
         fetch("/getWebhookMessage", {
-          method: "POST",
-          body: formData
+            method: "POST",
+            body: formData
         })
-          .then((response) => response.json())
-          .then(async (data) => {
-            loading.classList.add("visually-hidden");
-            this.loadMessageButton.disabled = false;
-      
-            if (data.success == true) {
-              await this.setMessage(data.message);
-            }
-          });
+            .then((response) => response.json())
+            .then(async (data) => {
+                loading.classList.add("visually-hidden");
+                this.loadMessageButton.disabled = false;
+
+                if (data.success == true) {
+                    await this.setMessage(data.message);
+                }
+            });
     }
 
     checkMessageLink() {
         if (this.isCorrectMessageLink(this.messageLink.value) && isCorrectWebhookURL(webhookUrl.value)) {
-          const apiURL = `${webhookUrl.value}/messages/
+            const apiURL = `${webhookUrl.value}/messages/
           ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`;
 
-          const formData = new FormData();
-          formData.append("messageLink", apiURL);
-          fetch("/getWebhookMessage", {
-            method: "POST",
-            body: formData
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              this.loadMessageButton.disabled = !data.success;
+            const formData = new FormData();
+            formData.append("messageLink", apiURL);
+            fetch("/getWebhookMessage", {
+                method: "POST",
+                body: formData
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    this.loadMessageButton.disabled = !data.success;
 
-              if (data.success == true) {
-                this.messageType = TypeOfMessage.EDIT;
-                this.alertInvalidMessageLink.hide()
-              } else {
-                this.messageType = TypeOfMessage.SEND;
-                this.alertInvalidMessageLink.show();
-              }
-            });
+                    if (data.success == true) {
+                        this.messageType = TypeOfMessage.EDIT;
+                        this.alertInvalidMessageLink.hide()
+                    } else {
+                        this.messageType = TypeOfMessage.SEND;
+                        this.alertInvalidMessageLink.show();
+                    }
+                });
         } else {
-          this.messageType = TypeOfMessage.SEND;
-          this.loadMessageButton.disabled = true;
+            this.messageType = TypeOfMessage.SEND;
+            this.loadMessageButton.disabled = true;
         }
         this.changeView();
     }
 
     isCorrectMessageLink(link) {
         let res = link
-          .replaceAll(/\s/g, "")
-          .startsWith("https://discord.com/channels/");
-      
+            .replaceAll(/\s/g, "")
+            .startsWith("https://discord.com/channels/");
+
         if (link.replaceAll(/\s/g, "") == "") this.alertInvalidMessageLink.hide();
         else if (res == false) this.alertInvalidMessageLink.show();
         return res == true;
