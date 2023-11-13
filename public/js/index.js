@@ -29,10 +29,10 @@ webhookUrl.addEventListener("input", checkWebhookUrl);
 webhookUrl.addEventListener("input", messages.forEach( (mess) => { mess.checkMessageLink(); }) );
 
 // Webhook foucs options
-webhookUrl.addEventListener("focusin", (foc) => {
+webhookUrl.addEventListener("focusin", () => {
   webhookUrl.type = "text";
 });
-webhookUrl.addEventListener("focusout", (foc) => {
+webhookUrl.addEventListener("focusout", () => {
   webhookUrl.type = "password";
 });
 
@@ -73,7 +73,9 @@ const successModalEdit = new bootstrap.Modal('#successModalEdit', { focus: true 
 const failModalEdit = new bootstrap.Modal('#failModalEdit', { focus: true });
 const failModalContentEdit = document.getElementById("failEmbedErrorContentEdit");
 
-messages.push(new Message());
+const messageInput = document.getElementById("messagesInput");
+const messageVisual = document.getElementById("messagesVisual");
+messages.push(new Message(messageInput, messageVisual));
 
 // Message Time Set
 const localTime = document.getElementById("localTime");

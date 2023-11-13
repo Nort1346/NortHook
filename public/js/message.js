@@ -26,30 +26,31 @@ import * as bootstrap from 'bootstrap';
 export class Message {
     /**
      * Create a message class
-     * @param {HTMLDivElement} messageElement 
+     * @param {HTMLElement} messageInputElement
+     * @param {HTMLElement} messageVisualElement
      */
-    constructor(messageElement) {
+    constructor(messageInputElement, messageVisualElement) {
         this.id = generateUniqueId;
 
         /*
         * Message Elements
         */
-        this.content = document.getElementById("content");
-        this.username = document.getElementById("username");
-        this.avatar_url = document.getElementById("avatar_url");
-        this.files = document.getElementById("files");
-        this.messageLink = document.getElementById("messageLink");
-        this.loadMessageButton = document.getElementById("loadMessageButton");
-        this.addEmbedButton = document.getElementById("addEmbed");
+        this.content = messageInputElement.querySelector(".content");
+        this.username = messageInputElement.querySelector(".username");
+        this.avatar_url = messageInputElement.querySelector(".avatar_url");
+        this.files = messageInputElement.querySelector(".files");
+        this.messageLink = messageInputElement.querySelector(".messageLink");
+        this.loadMessageButton = messageInputElement.querySelector(".loadMessageButton");
+        this.addEmbedButton = messageInputElement.querySelector(".addEmbed");
         this.embeds = [];
         this.messageType = TypeOfMessage.SEND;
 
         /*
          * Message View Parameters
          */
-        this.contentView = document.getElementById("contentView");
-        this.usernameView = document.getElementById("usernameName");
-        this.avatarView = document.getElementById("avatarIcon");
+        this.contentView = messageVisualElement.querySelector("#contentView");
+        this.usernameView = messageVisualElement.querySelector("#usernameName");
+        this.avatarView = messageVisualElement.querySelector("#avatarIcon");
 
         this.alertInvalidAvatarUrl = new bootstrap.Collapse("#InvalidAvatarUrlCollapse", { toggle: false });
         this.alertInvalidMessageLink = new bootstrap.Collapse("#InvalidMessageLinkCollapse", { toggle: false });
@@ -99,7 +100,7 @@ export class Message {
     }
 
     async changeView() {
-        this.contentView.innerHTML = formatText(content.value);
+        this.contentView.innerHTML = formatText(this.content.value);
 
         if (this.username.value.replaceAll(/\s/g, "") != "") {
             this.usernameView.innerText = this.username.value;
