@@ -14,6 +14,9 @@ import {
   Message
 } from './message.js'
 
+/**
+ * @type [Message]
+ */
 const messages = [];
 
 /**
@@ -49,14 +52,19 @@ sendButton.disabled = true;
 
 // Events for sendButton
 sendButton.addEventListener("click", () => {
-  if (messageType == TypeOfMessage.SEND)
-    sendMessage();
-  else
-    editMessage();
+  messages.forEach((mess) => {
+    if (mess.messageType == TypeOfMessage.SEND)
+      sendMessage(mess.getMessage());
+    else
+      editMessage(mess.getMessage());
+  })
 });
 
+//Webhook Url Invalid Alert
+const alertInvalidWebhookUrl = new bootstrap.Collapse("#InvalidWebhookUrlCollapse", { toggle: false });
+
 /*
- Modals for SEND and EDIT
+ * Modals for SEND and EDIT
  */
 const successModalSend = new bootstrap.Modal('#successModalSend', { focus: true });
 const failModalSend = new bootstrap.Modal('#failModalSend', { focus: true });
@@ -88,7 +96,7 @@ let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.
   }))
 
 // Functions
-function sendMessage() {
+function sendMessage(message) {
   const loading = document.getElementById("loadingMessage");
   loading.classList.remove("visually-hidden");
   sendButton.disabled = true;
@@ -97,13 +105,13 @@ function sendMessage() {
 
   formData.append("webhookUrl", webhookUrl.value)
   if (content.value.replaceAll(/\s/g, "") != "")
-    formData.append("content", content.value);
+    formData.append("content", message.content);
   if (username.value.replaceAll(/\s/g, "") != "")
-    formData.append("username", username.value);
+    formData.append("username", message.user.username);
   if (avatar_url.value.replaceAll(/\s/g, "") != "")
-    formData.append("avatar_url", avatar_url.value);
+    formData.append("avatar_url", message.user.avatar_url);
 
-  if (files.files.length > 10) {
+  if (message.files.length > 10) {
     failModalContentSend.innerText = `Error: Max files is 10`;
     loading.classList.add("visually-hidden");
     sendButton.disabled = false;
@@ -111,7 +119,7 @@ function sendMessage() {
   }
 
   let embedArray = [];
-  for (const embed of embeds) {
+  for (const embed of message.embeds) {
     embedArray.push(embed.getEmbed());
   }
   formData.append("embeds", JSON.stringify(
@@ -140,19 +148,19 @@ function sendMessage() {
     });
 }
 
-function editMessage() {
+function editMessage(message) {
   const loading = document.getElementById("loadingMessage");
   loading.classList.remove("visually-hidden");
   sendButton.disabled = true;
 
   const formData = new FormData();
 
-  formData.append("messageLink", `${webhookUrl.value}/messages/${messageLink.value.slice(messageLink.value.lastIndexOf("/") + 1)}`)
+  formData.append("messageLink", `${webhookUrl.value}/messages/${message.messageLink.slice(message.messageLink.lastIndexOf("/") + 1)}`)
 
   if (content.value.replaceAll(/\s/g, "") != "")
-    formData.append("content", content.value);
+    formData.append("content", message.content);
 
-  if (files.files.length > 10) {
+  if (message.files.length > 10) {
     failModalContentSend.innerText = `Error: Max files is 10`;
     loading.classList.add("visually-hidden");
     sendButton.disabled = false;
@@ -160,15 +168,15 @@ function editMessage() {
   }
 
   let embedArray = [];
-  for (const embed of embeds) {
+  for (const embed of message.embeds) {
     embedArray.push(embed.getEmbed());
   }
   formData.append("embeds", JSON.stringify(
     embedArray
   ));
 
-  for (let i = 0; i < files.files.length; i++) {
-    formData.append("files", files.files[i]);
+  for (let i = 0; i < message.files.length; i++) {
+    formData.append("files", messages.files[i]);
   }
 
   fetch("/editMessage", {
@@ -190,7 +198,7 @@ function editMessage() {
 }
 
 export function checkWebhookUrl() {
-  if (isCorrectWebhookURL(webhookUrl.value)) {
+  if (isCorrectWebhookURL()) {
     const formData = new FormData();
     formData.append("webhookUrl", webhookUrl.value);
     fetch("/isWebhook", {
@@ -202,23 +210,27 @@ export function checkWebhookUrl() {
         sendButton.disabled = !data.success;
         data.success == true ? alertInvalidWebhookUrl.hide() : alertInvalidWebhookUrl.show();
 
-        WebHookInfo.name = data?.name;
-        WebHookInfo.avatar = data?.avatar;
+        messages.forEach((mess) => {
+          mess.webhookInfo.name = data?.name;
+          mess.webhookInfo.avatar = data?.avatar;
+        });
       });
   } else {
     sendButton.disabled = true;
-    WebHookInfo.name = null;
-    WebHookInfo.avatar = null;
+    messages.forEach((mess) => {
+      mess.webhookInfo.name = null;
+      mess.webhookInfo.avatar = null;
+      mess.changeView();
+    });
   }
-  changeView();
 }
 
-export function isCorrectWebhookURL(WebhookUrl) {
-  let res = WebhookUrl
+export function isCorrectWebhookURL() {
+  let res = webhookUrl.value
     .replaceAll(/\s/g, "")
     .startsWith("https://discord.com/api/webhooks/");
 
-  if (WebhookUrl.replaceAll(/\s/g, "") == "") alertInvalidWebhookUrl.hide();
+  if (webhookUrl.value.replaceAll(/\s/g, "") == "") alertInvalidWebhookUrl.hide();
   else if (res == false) alertInvalidWebhookUrl.show();
   return res == true;
 }

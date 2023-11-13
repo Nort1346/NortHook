@@ -78,33 +78,61 @@ export function insertAfter(newNode, referenceNode) {
 }
 
 export function formatText(text) {
-  // Bold **
-  text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+  // Remove spaces in the start
+  text = text.trimStart()
 
-  // Italic *
-  text = text.replace(/\*(.*?)\*/g, '<i>$1</i>');
+    // Bold and Italic ***
+    .replace(/\*\*\*(.*?)\*\*\*/g, '<b><i>$1</i></b>')
 
-  // Bold and Italic ***
-  text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<b><i>$1</i></b>');
+    // Bold **
+    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
 
-  // Delete ~~
-  text = text.replace(/~~(.*?)~~/g, '<del>$1</del>');
+    // Italic *
+    .replace(/\*(.*?)\*/g, '<i>$1</i>')
 
-  // Header 6 ###
-  text = text.replace(/^### (.*?$)/gm, '<h6><b>$1</b></h6>');
+    // Under Text _ _
+    .replace(/\_\_(.*?)\_\_/g, '<u>$1</u>')
 
-  // Header 5 ##
-  text = text.replace(/^## (.*?$)/gm, '<h5><b>$1</b></h5>');
+    // Italic _
+    .replace(/\_(.*?)\_/g, '<i>$1</i>')
 
-  // Header 4 #
-  text = text.replace(/^# (.*?$)/gm, '<h4><b>$1</b></h4>');
+    // Delete ~~
+    .replace(/~~(.*?)~~/g, '<del>$1</del>')
 
-  // Under Text _ _
-  text = text.replace(/\_(.*?)\_/g, '<u>$1</u>');
+    // Header 6 ###
+    .replace(/^### (.*?$)/gm, '<h6><b>$1</b></h6>')
 
-  // Spoiler Text || ||
-  text = text.replace(/\|\|(.*?)\|\|/g,
-    '<div class="spoilerText">$1</div>');
+    // Header 5 ##
+    .replace(/^## (.*?$)/gm, '<h5><b>$1</b></h5>')
 
-  return text;
+    // Header 4 #
+    .replace(/^# (.*?$)/gm, '<h4><b>$1</b></h4>')
+
+    // Spoiler Text || ||
+    .replace(/\|\|(.*?)\|\|/g,
+      '<div class="spoilerText">$1</div>')
+
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = text;
+
+  removeNonUseElements(tempDiv);
+
+  return tempDiv.innerHTML;
+}
+
+function removeNonUseElements(element) {
+  let childs = element.childNodes;
+
+  for (let i = childs.length - 1; i >= 0; i--) {
+    let child = childs[i];
+
+    if (child.nodeType === 1 &&
+      (child.tagName !== 'B' && child.tagName !== 'I' && child.tagName !== 'U' && child.tagName !== 'DEL'
+        && child.tagName !== 'H6' && child.tagName !== 'H5' && child.tagName !== 'H4')
+      && !child.classList.contains('spoilerText')) {
+      element.removeChild(child);
+    } else if (child.nodeType == 1) {
+      removeNonUseElements(child);
+    }
+  }
 }

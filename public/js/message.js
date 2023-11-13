@@ -51,7 +51,6 @@ export class Message {
         this.usernameView = document.getElementById("usernameName");
         this.avatarView = document.getElementById("avatarIcon");
 
-        this.alertInvalidWebhookUrl = new bootstrap.Collapse("#InvalidWebhookUrlCollapse", { toggle: false });
         this.alertInvalidAvatarUrl = new bootstrap.Collapse("#InvalidAvatarUrlCollapse", { toggle: false });
         this.alertInvalidMessageLink = new bootstrap.Collapse("#InvalidMessageLinkCollapse", { toggle: false });
 
@@ -59,10 +58,10 @@ export class Message {
         this.username.addEventListener("input", async () => await this.changeView());
         this.avatar_url.addEventListener("input", async () => await this.changeView());
 
-        this.messageLink.addEventListener("input", checkWebhookUrl);
-        this.messageLink.addEventListener("input", this.checkMessageLink);
+        this.messageLink.addEventListener("input", () => checkWebhookUrl());
+        this.messageLink.addEventListener("input", () => this.checkMessageLink());
 
-        this.loadMessageButton.addEventListener("click", this.loadMessage);
+        this.loadMessageButton.addEventListener("click", () => this.loadMessage());
         this.addEmbedButton
             .addEventListener("click", async () => this.addEmbed(await getEmbedInput(), await getEmbedVisual()));
 
@@ -89,7 +88,7 @@ export class Message {
         this.embeds.forEach(ele => ele.removeEmbed());
         this.embeds.splice(0, this.embeds.length);
         for (let i = 0; i < message.embeds.length && i < 10; i++) {
-            await addEmbed(await getEmbedInput(), await getEmbedVisual());
+            await this.addEmbed(await getEmbedInput(), await getEmbedVisual());
             await this.embeds[i].setEmbed(message.embeds[i]);
         }
 
@@ -277,7 +276,7 @@ export class Message {
     }
 
     checkMessageLink() {
-        if (this.isCorrectMessageLink(this.messageLink.value) && isCorrectWebhookURL(webhookUrl.value)) {
+        if (this.isCorrectMessageLink(this.messageLink.value) && isCorrectWebhookURL()) {
             const apiURL = `${webhookUrl.value}/messages/
           ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`;
 
@@ -316,4 +315,16 @@ export class Message {
         return res == true;
     }
 
+    getMessage() {
+        return {
+            content: this.content.value,
+            user: {
+                username: this.username.value,
+                avatar_url: this.avatar_url.value
+            },
+            embeds: this.embeds,
+            files: this.files.files,
+            messageLink: this.messageLink.value
+        }
+    }
 }

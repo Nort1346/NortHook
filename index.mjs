@@ -56,7 +56,7 @@ app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
                 }
             });
     } catch (e) {
-        return res.json({ success: false, error: e.response.data.message ?? e.message });
+        return res.json({ success: false, error: e?.response?.data?.message ?? e.message });
     }
     return res.json({
         success: true,
@@ -90,7 +90,7 @@ app.post('/editMessage', upload.array('files', 10), async (req, res) => {
                 }
             });
     } catch (e) {
-        return res.json({ success: false, error: e.response.data.message ?? e.message });
+        return res.json({ success: false, error: e?.response?.data?.message ?? e.message });
     }
     return res.json({
         success: true,
