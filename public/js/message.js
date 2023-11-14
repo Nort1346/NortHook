@@ -48,12 +48,12 @@ export class Message {
         /*
          * Message View Parameters
          */
-        this.contentView = messageVisualElement.querySelector("#contentView");
-        this.usernameView = messageVisualElement.querySelector("#usernameName");
-        this.avatarView = messageVisualElement.querySelector("#avatarIcon");
+        this.contentView = messageVisualElement.querySelector(".contentView");
+        this.usernameView = messageVisualElement.querySelector(".usernameName");
+        this.avatarView = messageVisualElement.querySelector(".avatarIcon");
 
-        this.alertInvalidAvatarUrl = new bootstrap.Collapse("#InvalidAvatarUrlCollapse", { toggle: false });
-        this.alertInvalidMessageLink = new bootstrap.Collapse("#InvalidMessageLinkCollapse", { toggle: false });
+        this.alertInvalidAvatarUrl = new bootstrap.Collapse(".InvalidAvatarUrlCollapse", { toggle: false });
+        this.alertInvalidMessageLink = new bootstrap.Collapse(".InvalidMessageLinkCollapse", { toggle: false });
 
         this.content.addEventListener("input", async () => await this.changeView());
         this.username.addEventListener("input", async () => await this.changeView());

@@ -5,7 +5,9 @@ import {
   getEmbedInput,
   getEmbedVisual,
   insertAfter,
-  formatText
+  formatText,
+  createMessageInput,
+  createMessageVisual
 } from './functions.js'
 import {
   TypeOfMessage
@@ -26,7 +28,7 @@ export const webhookUrl = document.getElementById("webhookUrl");
 
 // Events for message parameters
 webhookUrl.addEventListener("input", checkWebhookUrl);
-webhookUrl.addEventListener("input", messages.forEach( (mess) => { mess.checkMessageLink(); }) );
+webhookUrl.addEventListener("input", messages.forEach((mess) => { mess.checkMessageLink(); }));
 
 // Webhook foucs options
 webhookUrl.addEventListener("focusin", () => {
@@ -39,7 +41,7 @@ webhookUrl.addEventListener("focusout", () => {
 /**
  * Default WebHook Values
  */
- export const DefaultWebhookInfo = {
+export const DefaultWebhookInfo = {
   name: 'Nort',
   avatar: 'https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024'
 };
@@ -51,13 +53,20 @@ export const sendButton = document.getElementById("sendButton");
 sendButton.disabled = true;
 
 // Events for sendButton
-sendButton.addEventListener("click", () => {
-  messages.forEach((mess) => {
+sendButton.addEventListener("click", async () => {
+
+  const loading = document.getElementById("loadingMessage");
+  loading.classList.remove("visually-hidden");
+  sendButton.disabled = true;
+  for (const mess of messages) {
     if (mess.messageType == TypeOfMessage.SEND)
-      sendMessage(mess.getMessage());
+      await sendMessage(mess.getMessage());
     else
-      editMessage(mess.getMessage());
-  })
+      await editMessage(mess.getMessage());
+  };
+
+  loading.classList.add("visually-hidden");
+  sendButton.disabled = false;
 });
 
 //Webhook Url Invalid Alert
@@ -73,16 +82,25 @@ const successModalEdit = new bootstrap.Modal('#successModalEdit', { focus: true 
 const failModalEdit = new bootstrap.Modal('#failModalEdit', { focus: true });
 const failModalContentEdit = document.getElementById("failEmbedErrorContentEdit");
 
-const messageInput = document.getElementById("messagesInput");
-const messageVisual = document.getElementById("messagesVisual");
-messages.push(new Message(messageInput, messageVisual));
+const messageId = generateUniqueId();
+messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId)));
+
+const addMessageButton = document.getElementById("addMessage")
+
+addMessageButton.addEventListener("click", async () => {
+  const messageId = generateUniqueId();
+  messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId)));
+  localTimers = document.querySelectorAll(".localTime");
+});
 
 // Message Time Set
-const localTime = document.getElementById("localTime");
-localTime.innerText = `${(new Date()).toLocaleTimeString().slice(0, -3)}`;
+let localTimers = document.querySelectorAll(".localTime");
+localTimers.forEach((ele) =>
+  ele.innerText = `${new Date().toLocaleTimeString().slice(0, -3)}`)
 setInterval(() => {
   let nowData = new Date();
-  localTime.innerText = `${nowData.toLocaleTimeString().slice(0, -3)}`
+  localTimers.forEach((ele) =>
+    ele.innerText = `${nowData.toLocaleTimeString().slice(0, -3)}`)
 }, 1000);
 
 // Check View For WebSite Width
@@ -98,25 +116,19 @@ let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.
   }))
 
 // Functions
-function sendMessage(message) {
-  const loading = document.getElementById("loadingMessage");
-  loading.classList.remove("visually-hidden");
-  sendButton.disabled = true;
-
+async function sendMessage(message) {
   const formData = new FormData();
 
   formData.append("webhookUrl", webhookUrl.value)
-  if (content.value.replaceAll(/\s/g, "") != "")
+  if (message.content.replaceAll(/\s/g, "") != "")
     formData.append("content", message.content);
-  if (username.value.replaceAll(/\s/g, "") != "")
+  if (message.user.username.replaceAll(/\s/g, "") != "")
     formData.append("username", message.user.username);
-  if (avatar_url.value.replaceAll(/\s/g, "") != "")
+  if (message.user.avatar_url.replaceAll(/\s/g, "") != "")
     formData.append("avatar_url", message.user.avatar_url);
 
   if (message.files.length > 10) {
     failModalContentSend.innerText = `Error: Max files is 10`;
-    loading.classList.add("visually-hidden");
-    sendButton.disabled = false;
     return failModalSend.show();
   }
 
@@ -124,6 +136,7 @@ function sendMessage(message) {
   for (const embed of message.embeds) {
     embedArray.push(embed.getEmbed());
   }
+
   formData.append("embeds", JSON.stringify(
     embedArray
   ));
@@ -132,40 +145,30 @@ function sendMessage(message) {
     formData.append("files", files.files[i]);
   }
 
-  fetch("/sendMessage", {
+  const response = await fetch("/sendMessage", {
     method: "POST",
     body: formData
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      loading.classList.add("visually-hidden");
-      sendButton.disabled = false;
+  });
 
-      if (data.success == true) {
-        successModalSend.show();
-      } else {
-        failModalContentSend.innerText = `Error: ${data.error}`;
-        failModalSend.show();
-      }
-    });
+  const data = await response.json();
+  if (data.success == true) {
+    successModalSend.show();
+  } else {
+    failModalContentSend.innerText = `Error: ${data.error}`;
+    failModalSend.show();
+  }
 }
 
-function editMessage(message) {
-  const loading = document.getElementById("loadingMessage");
-  loading.classList.remove("visually-hidden");
-  sendButton.disabled = true;
-
+async function editMessage(message) {
   const formData = new FormData();
 
   formData.append("messageLink", `${webhookUrl.value}/messages/${message.messageLink.slice(message.messageLink.lastIndexOf("/") + 1)}`)
 
-  if (content.value.replaceAll(/\s/g, "") != "")
+  if (message.content.replaceAll(/\s/g, "") != "")
     formData.append("content", message.content);
 
   if (message.files.length > 10) {
     failModalContentSend.innerText = `Error: Max files is 10`;
-    loading.classList.add("visually-hidden");
-    sendButton.disabled = false;
     return failModalSend.show();
   }
 
@@ -181,22 +184,19 @@ function editMessage(message) {
     formData.append("files", messages.files[i]);
   }
 
-  fetch("/editMessage", {
+  const response = await fetch("/editMessage", {
     method: "POST",
     body: formData
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      loading.classList.add("visually-hidden");
-      sendButton.disabled = false;
+  });
 
-      if (data.success == true) {
-        successModalEdit.show();
-      } else {
-        failModalContentEdit.innerText = `Error: ${data.error}`;
-        failModalEdit.show();
-      }
-    });
+  const data = await response.json();
+
+  if (data.success == true) {
+    successModalEdit.show();
+  } else {
+    failModalContentEdit.innerText = `Error: ${data.error}`;
+    failModalEdit.show();
+  }
 }
 
 export function checkWebhookUrl() {

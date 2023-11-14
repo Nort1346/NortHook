@@ -55,7 +55,7 @@ export async function getEmbedInput(uniqeId) {
 
   embedInput.querySelector(".embedName").innerHTML = "Embed";
 
-  document.getElementById("embedsInput").appendChild(embedInput);
+  document.querySelector(".embedsInput").appendChild(embedInput);
 
   return embedInput;
 }
@@ -68,7 +68,7 @@ export async function getEmbedVisual(uniqeId) {
   embedVisual.innerHTML = templateHTML;
   embedVisual.classList.add("py-1");
 
-  document.getElementById("embedsView").appendChild(embedVisual);
+  document.querySelector(".embedsView").appendChild(embedVisual);
 
   return embedVisual;
 }
@@ -120,6 +120,44 @@ export function formatText(text) {
   return tempDiv.innerHTML;
 }
 
+/**
+ * Create message input
+ * @param {string} uniqueId Unique Id
+ * @returns Message input element
+ */
+export async function createMessageInput(uniqueId) {
+  const response = await fetch('../html/messageInput.html');
+  const templateHTML = await response.text();
+
+  const messageInput = document.createElement('div');
+  messageInput.innerHTML = templateHTML;
+  messageInput.classList.add("mb-3")
+  messageInput.id = `messageInput_${uniqueId}`;
+
+  document.getElementById("messagesInput").appendChild(messageInput);
+
+  return messageInput;
+}
+
+/**
+ * Create message visual
+ * @param {string} uniqueId Unique Id
+ * @returns Message visual element
+ */
+export async function createMessageVisual(uniqueId) {
+  const response = await fetch('../html/messageVisual.html');
+  const templateHTML = await response.text();
+
+  const messageInput = document.createElement('div');
+  messageInput.innerHTML = templateHTML;
+  messageInput.classList.add("mb-3")
+  messageInput.id = `messageVisual_${uniqueId}`;
+
+  document.getElementById("messagesVisual").appendChild(messageInput);
+
+  return messageInput;
+}
+
 function removeNonUseElements(element) {
   let childs = element.childNodes;
 
@@ -129,7 +167,8 @@ function removeNonUseElements(element) {
     if (child.nodeType === 1 &&
       (child.tagName !== 'B' && child.tagName !== 'I' && child.tagName !== 'U' && child.tagName !== 'DEL'
         && child.tagName !== 'H6' && child.tagName !== 'H5' && child.tagName !== 'H4')
-      && !child.classList.contains('spoilerText')) {
+      && !child.classList.contains('spoilerText')
+      && !child.classList.contains('headerMax')) {
       element.removeChild(child);
     } else if (child.nodeType == 1) {
       removeNonUseElements(child);

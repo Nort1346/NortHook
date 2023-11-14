@@ -74,25 +74,25 @@ body {
     display: inline;
 }
 
-#viewTableRow {
+.viewTableRow {
     display: table-row;
     height: 100%;
     padding: 0;
 }
 
-#avatarView {
+.avatarView {
     display: table-cell;
     height: 100%;
 }
 
-#avatarIcon {
+.avatarIcon {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-#usernameView {
+.usernameView {
     padding: 0 0 0 10px;
     font-size: 15px;
     font-weight: 600;
@@ -102,18 +102,18 @@ body {
     overflow-wrap: break-word;
 }
 
-#usernameName {
+.usernameName {
     display: inline;
     width: auto;
 }
 
-#botBadge{
+.botBadge{
     width: auto;
     height: 18px;
     padding-bottom: 10px;
 }
 
-#messageTime {
+.messageTime {
     font-family: 'Rubik Light';
     font-size: 12px;
     font-weight: 100;
@@ -121,7 +121,7 @@ body {
     width: auto;
 }
 
-#contentView {
+.contentView {
     padding: 5px 0 0 10px;
     word-wrap: break-word;
     word-break: break-all;
@@ -180,4 +180,14 @@ hr {
     background-color: rgb(0, 0, 0, 0.3);
     padding: 3px;
     border-radius: 4px;
+    margin: 0px;
+}
+
+.headerMax {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+h4, h5, h6 {
+    margin: 0px;
 }
