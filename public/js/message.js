@@ -31,6 +31,8 @@ export class Message {
      */
     constructor(messageInputElement, messageVisualElement) {
         this.id = generateUniqueId;
+        this.messageInputElement = messageInputElement;
+        this.messageVisualElement = messageVisualElement;
 
         /*
         * Message Elements
@@ -64,7 +66,9 @@ export class Message {
 
         this.loadMessageButton.addEventListener("click", () => this.loadMessage());
         this.addEmbedButton
-            .addEventListener("click", async () => this.addEmbed(await getEmbedInput(), await getEmbedVisual()));
+            .addEventListener("click", async () =>
+                this.addEmbed(await getEmbedInput(this.messageInputElement),
+                    await getEmbedVisual(this.messageVisualElement)));
 
         /**
         * WebHookInfo
@@ -89,7 +93,7 @@ export class Message {
         this.embeds.forEach(ele => ele.removeEmbed());
         this.embeds.splice(0, this.embeds.length);
         for (let i = 0; i < message.embeds.length && i < 10; i++) {
-            await this.addEmbed(await getEmbedInput(), await getEmbedVisual());
+            await this.addEmbed(await getEmbedInput(this.messageInputElement), await getEmbedVisual(this.messageVisualElement));
             await this.embeds[i].setEmbed(message.embeds[i]);
         }
 
@@ -196,9 +200,11 @@ export class Message {
 
     async duplicateEmbed(id) {
         const indexOfRemoveEmbed = this.embeds.findIndex(ele => ele.id == id);
-        
+
         if (indexOfRemoveEmbed >= 0 && this.embeds.length < 10) {
-            const cloneEmbed = new Embed(await getEmbedInput(), await getEmbedVisual(), generateUniqueId());
+            const cloneEmbed = new Embed(await getEmbedInput(this.messageInputElement),
+                await getEmbedVisual(this.messageVisualElement),
+                generateUniqueId());
             await cloneEmbed.setEmbed(this.embeds[indexOfRemoveEmbed].getEmbed());
             await cloneEmbed.refreshEmbedVisual();
 
@@ -214,7 +220,7 @@ export class Message {
             this.checkArrowsEmbeds();
 
             insertAfter(cloneEmbed.inputEmbed, this.embeds[indexOfRemoveEmbed].inputEmbed);
-            insertAfter(cloneEmbed.visualEmbed,this.embeds[indexOfRemoveEmbed].visualEmbed);
+            insertAfter(cloneEmbed.visualEmbed, this.embeds[indexOfRemoveEmbed].visualEmbed);
             refreshTooltips();
         }
     }

@@ -1,11 +1,6 @@
 import * as bootstrap from 'bootstrap';
 import {
-  isImageURLValid,
   generateUniqueId,
-  getEmbedInput,
-  getEmbedVisual,
-  insertAfter,
-  formatText,
   createMessageInput,
   createMessageVisual
 } from './functions.js'
@@ -20,6 +15,11 @@ import {
  * @type [Message]
  */
 const messages = [];
+
+/**
+ * @type []
+ */
+let localTimers = [];
 
 /**
  * WebHook URL Input Element
@@ -58,6 +58,7 @@ sendButton.addEventListener("click", async () => {
   const loading = document.getElementById("loadingMessage");
   loading.classList.remove("visually-hidden");
   sendButton.disabled = true;
+
   for (const mess of messages) {
     if (mess.messageType == TypeOfMessage.SEND)
       await sendMessage(mess.getMessage());
@@ -85,18 +86,18 @@ const failModalContentEdit = document.getElementById("failEmbedErrorContentEdit"
 const messageId = generateUniqueId();
 messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId)));
 
-const addMessageButton = document.getElementById("addMessage")
+const addMessageButton = document.getElementById("addMessage");
 
 addMessageButton.addEventListener("click", async () => {
   const messageId = generateUniqueId();
   messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId)));
-  localTimers = document.querySelectorAll(".localTime");
+  refreshAllLocalTimers();
+  checkWebhookUrl();
 });
 
+refreshAllLocalTimers();
+
 // Message Time Set
-let localTimers = document.querySelectorAll(".localTime");
-localTimers.forEach((ele) =>
-  ele.innerText = `${new Date().toLocaleTimeString().slice(0, -3)}`)
 setInterval(() => {
   let nowData = new Date();
   localTimers.forEach((ele) =>
@@ -215,6 +216,7 @@ export function checkWebhookUrl() {
         messages.forEach((mess) => {
           mess.webhookInfo.name = data?.name;
           mess.webhookInfo.avatar = data?.avatar;
+          mess.changeView();
         });
       });
   } else {
@@ -267,4 +269,10 @@ function checkSize() {
     input.classList.add("h-auto");
     view.classList.add("h-auto");
   }
+}
+
+function refreshAllLocalTimers() {
+  localTimers = document.querySelectorAll(".localTime");
+  localTimers.forEach((ele) =>
+    ele.innerText = `${new Date().toLocaleTimeString().slice(0, -3)}`)
 }

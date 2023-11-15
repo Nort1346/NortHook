@@ -1,19 +1,19 @@
+<hr>
+<div class="fs-4 fw-bold">Message</div>
 <label class="fw-semibold">Content</label>
 <textarea
   class="form-control content"
   type="text"
   maxlength="2000"
-  rows="8"
+  rows="5"
 ></textarea>
 
-<hr />
-
-<div class="fs-6 d-flex align-items-center fw-semibold">
+<div class="fs-6 d-flex align-items-center fw-semibold mt-3">
   Profile
   <button
-    class="btn bg-transparent border-0 p-0 ms-2"
+    class="btn bg-transparent border-0 p-0 ms-2 profileContentButton"
     data-bs-toggle="collapse"
-    data-bs-target=".profileContent"
+    data-bs-target=""
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -29,7 +29,7 @@
     </svg>
   </button>
 </div>
-<div class="collapse profileContent">
+<div class="collapse profileContentCollapse">
   <label>Username</label><br />
   <input class="form-control username" type="text" maxlength="80" />
   <label>Avatar URL</label><br />
@@ -41,18 +41,14 @@
   </div>
 </div>
 
-<hr />
-
 <div class="mb-3">
-  <label for="files" class="form-label fw-semibold"
+  <label for="files" class="form-label fw-semibold mt-3"
     >Files <span class="badge bg-secondary">Max 25 MB</span></label
   >
   <input class="form-control files" type="file" id="files" multiple />
 </div>
 
-<hr />
-
-<div class="row mb-3">
+<div class="row mb-1">
   <div class="col-6 d-flex align-items-center">
     <label class="fs-6 fw-semibold">Embeds</label>
     &nbsp;<span class="badge bg-secondary">Max 10</span>
@@ -83,8 +79,6 @@
     <div class="d-block new-line embedsInput"></div>
   </div>
 </div>
-
-<hr />
 
 <div class="mb-3">
   <label class="fw-semibold">Message Link</label>

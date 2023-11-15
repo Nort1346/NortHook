@@ -45,7 +45,7 @@ export function generateUniqueId() {
   return Math.random().toString(36).substr(2, 9);
 }
 
-export async function getEmbedInput(uniqeId) {
+export async function getEmbedInput(parentInputElement) {
   const response = await fetch('../html/embedInput.html');
   const templateHTML = await response.text();
 
@@ -55,12 +55,12 @@ export async function getEmbedInput(uniqeId) {
 
   embedInput.querySelector(".embedName").innerHTML = "Embed";
 
-  document.querySelector(".embedsInput").appendChild(embedInput);
+  parentInputElement.querySelector(".embedsInput").appendChild(embedInput);
 
   return embedInput;
 }
 
-export async function getEmbedVisual(uniqeId) {
+export async function getEmbedVisual(parentVisualElement) {
   const response = await fetch('../html/embedVisual.html');
   const templateHTML = await response.text();
 
@@ -68,7 +68,7 @@ export async function getEmbedVisual(uniqeId) {
   embedVisual.innerHTML = templateHTML;
   embedVisual.classList.add("py-1");
 
-  document.querySelector(".embedsView").appendChild(embedVisual);
+  parentVisualElement.querySelector(".embedsView").appendChild(embedVisual);
 
   return embedVisual;
 }
@@ -131,8 +131,15 @@ export async function createMessageInput(uniqueId) {
 
   const messageInput = document.createElement('div');
   messageInput.innerHTML = templateHTML;
-  messageInput.classList.add("mb-3")
+  messageInput.classList.add("mb-3");
   messageInput.id = `messageInput_${uniqueId}`;
+  const profileContentCollapse =
+    messageInput.querySelector(".profileContentButton");
+
+  profileContentCollapse.setAttribute(
+    "data-bs-target",
+    `#messageInput_${uniqueId} .profileContentCollapse`
+  );
 
   document.getElementById("messagesInput").appendChild(messageInput);
 
