@@ -16,7 +16,9 @@ import {
     refreshTooltips,
     webhookUrl,
     isCorrectWebhookURL,
-    checkWebhookUrl
+    checkWebhookUrl,
+    removeMessage,
+    WebHookInfo
 } from './index.js';
 
 import { Embed } from './embed.js';
@@ -35,17 +37,23 @@ export class Message {
         this.messageVisualElement = messageVisualElement;
 
         /*
-        * Message Elements
+        * Message Input Elements
         */
         this.content = messageInputElement.querySelector(".content");
         this.username = messageInputElement.querySelector(".username");
         this.avatar_url = messageInputElement.querySelector(".avatar_url");
         this.files = messageInputElement.querySelector(".files");
         this.messageLink = messageInputElement.querySelector(".messageLink");
-        this.loadMessageButton = messageInputElement.querySelector(".loadMessageButton");
-        this.addEmbedButton = messageInputElement.querySelector(".addEmbed");
+        /** Message embeds Array
+         * @type [Embed]
+         */
         this.embeds = [];
         this.messageType = TypeOfMessage.SEND;
+
+        // Message Buttons
+        this.loadMessageButton = messageInputElement.querySelector(".loadMessageButton");
+        this.addEmbedButton = messageInputElement.querySelector(".addEmbed");
+        this.removeMessageButton = messageInputElement.querySelector(".removeMessage");
 
         /*
          * Message View Parameters
@@ -69,13 +77,16 @@ export class Message {
             .addEventListener("click", async () =>
                 this.addEmbed(await getEmbedInput(this.messageInputElement),
                     await getEmbedVisual(this.messageVisualElement)));
+        this.removeMessageButton.addEventListener("click", () => {
+            removeMessage(this.id);
+        });
 
         /**
         * WebHookInfo
         */
         this.webhookInfo = { name: null, avatar: null };
-
         this.setStandardValues();
+        this.setWebhookInfo();
     }
 
     /**
@@ -332,6 +343,29 @@ export class Message {
             embeds: this.embeds,
             files: this.files.files,
             messageLink: this.messageLink.value
+        }
+    }
+
+    removeMessage() {
+        this.messageInputElement.remove();
+        this.messageVisualElement.remove();
+
+        this.embeds.forEach((embed) => {
+            embed.removeEmbed();
+        });
+    }
+
+    setWebhookInfo() {
+        this.webhookInfo.name = WebHookInfo.name;
+        this.webhookInfo.avatar = WebHookInfo.avatar;
+        this.changeView();
+    }
+
+    toggleRemoveMessageButtonDisplay(toggle) {
+        if(toggle){
+            this.removeMessageButton.classList.remove("d-none");
+        } else {
+            this.removeMessageButton.classList.add("d-none");
         }
     }
 }

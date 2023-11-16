@@ -47,6 +47,14 @@ export const DefaultWebhookInfo = {
 };
 
 /**
+ * General WebhookInfo
+ */
+export let WebHookInfo = {
+  name: null,
+  avatar: null
+};
+
+/**
  * Send Button
  */
 export const sendButton = document.getElementById("sendButton");
@@ -85,6 +93,7 @@ const failModalContentEdit = document.getElementById("failEmbedErrorContentEdit"
 
 const messageId = generateUniqueId();
 messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId)));
+displayMessagesRemoveButton();
 
 const addMessageButton = document.getElementById("addMessage");
 
@@ -92,7 +101,7 @@ addMessageButton.addEventListener("click", async () => {
   const messageId = generateUniqueId();
   messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId)));
   refreshAllLocalTimers();
-  checkWebhookUrl();
+  displayMessagesRemoveButton();
 });
 
 refreshAllLocalTimers();
@@ -213,18 +222,21 @@ export function checkWebhookUrl() {
         sendButton.disabled = !data.success;
         data.success == true ? alertInvalidWebhookUrl.hide() : alertInvalidWebhookUrl.show();
 
+        WebHookInfo.name = data?.name;
+        WebHookInfo.avatar = data?.avatar;
+
         messages.forEach((mess) => {
-          mess.webhookInfo.name = data?.name;
-          mess.webhookInfo.avatar = data?.avatar;
-          mess.changeView();
+          mess.setWebhookInfo();
         });
       });
   } else {
     sendButton.disabled = true;
+
+    WebHookInfo.name = null;
+    WebHookInfo.avatar = null;
+
     messages.forEach((mess) => {
-      mess.webhookInfo.name = null;
-      mess.webhookInfo.avatar = null;
-      mess.changeView();
+      mess.setWebhookInfo();
     });
   }
 }
@@ -250,6 +262,18 @@ export function refreshTooltips() {
       trigger: "hover",
       delay: { show: 100, hide: 100 }
     }))
+}
+
+export function removeMessage(messId) {
+  const messageIndex = messages.findIndex(mess => mess.id == messId);
+  messages[messageIndex].removeMessage();
+  messages.splice(messages.findIndex(mess => mess.id == messId), 1);
+  displayMessagesRemoveButton();
+}
+
+function displayMessagesRemoveButton() {
+  const anyMessagesToRemove = messages.length > 1;
+  messages.forEach(mess => mess.toggleRemoveMessageButtonDisplay(anyMessagesToRemove));
 }
 
 function checkSize() {
