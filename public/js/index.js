@@ -163,9 +163,11 @@ async function sendMessage(message) {
   const data = await response.json();
   if (data.success == true) {
     successModalSend.show();
+    return true;
   } else {
     failModalContentSend.innerText = `Error: ${data.error}`;
     failModalSend.show();
+    return false;
   }
 }
 
