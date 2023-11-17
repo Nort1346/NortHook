@@ -52,6 +52,7 @@ export class Message {
 
         // Message Buttons
         this.loadMessageButton = messageInputElement.querySelector(".loadMessageButton");
+        this.clearFilesButton = messageInputElement.querySelector(".clearFiles");
         this.addEmbedButton = messageInputElement.querySelector(".addEmbed");
         this.removeMessageButton = messageInputElement.querySelector(".removeMessage");
 
@@ -73,6 +74,7 @@ export class Message {
         this.messageLink.addEventListener("input", () => this.checkMessageLink());
 
         this.loadMessageButton.addEventListener("click", () => this.loadMessage());
+        this.clearFilesButton.addEventListener("click", async () => this.clearFiles());
         this.addEmbedButton
             .addEventListener("click", async () =>
                 this.addEmbed(await getEmbedInput(this.messageInputElement),
@@ -108,8 +110,7 @@ export class Message {
             await this.embeds[i].setEmbed(message.embeds[i]);
         }
 
-        this.files.value = null;
-
+        this.clearFiles();
         this.countEmbedNumbers();
         this.checkAddEmbedButton();
         this.checkArrowsEmbeds();
@@ -364,10 +365,14 @@ export class Message {
     }
 
     toggleRemoveMessageButtonDisplay(toggle) {
-        if(toggle){
+        if (toggle) {
             this.removeMessageButton.classList.remove("d-none");
         } else {
             this.removeMessageButton.classList.add("d-none");
         }
+    }
+
+    clearFiles() {
+        this.files.value = null;
     }
 }
