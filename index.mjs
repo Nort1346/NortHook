@@ -73,6 +73,7 @@ app.post('/editMessage', upload.array('files', 10), async (req, res) => {
     if (JSONMessage?.embeds != null) {
         JSONMessage.embeds = await JSON.parse(JSONMessage.embeds);
         payload.embeds = JSONMessage.embeds;
+        payload.attachments = [];
     }
 
     form.append('payload_json', JSON.stringify(payload));

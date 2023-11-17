@@ -31,8 +31,8 @@ export class Message {
      * @param {HTMLElement} messageInputElement
      * @param {HTMLElement} messageVisualElement
      */
-    constructor(messageInputElement, messageVisualElement) {
-        this.id = generateUniqueId;
+    constructor(messageInputElement, messageVisualElement, uniqeId) {
+        this.id = uniqeId;
         this.messageInputElement = messageInputElement;
         this.messageVisualElement = messageVisualElement;
 
@@ -62,8 +62,8 @@ export class Message {
         this.usernameView = messageVisualElement.querySelector(".usernameName");
         this.avatarView = messageVisualElement.querySelector(".avatarIcon");
 
-        this.alertInvalidAvatarUrl = new bootstrap.Collapse(".InvalidAvatarUrlCollapse", { toggle: false });
-        this.alertInvalidMessageLink = new bootstrap.Collapse(".InvalidMessageLinkCollapse", { toggle: false });
+        this.alertInvalidAvatarUrl = new bootstrap.Collapse(`#messageInput_${this.id} .InvalidAvatarUrlCollapse`, { toggle: false });
+        this.alertInvalidMessageLink = new bootstrap.Collapse(`#messageInput_${this.id} .InvalidMessageLinkCollapse`, { toggle: false });
 
         this.content.addEventListener("input", async () => await this.changeView());
         this.username.addEventListener("input", async () => await this.changeView());
@@ -107,6 +107,8 @@ export class Message {
             await this.addEmbed(await getEmbedInput(this.messageInputElement), await getEmbedVisual(this.messageVisualElement));
             await this.embeds[i].setEmbed(message.embeds[i]);
         }
+
+        this.files.value = null;
 
         this.countEmbedNumbers();
         this.checkAddEmbedButton();

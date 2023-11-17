@@ -66,13 +66,32 @@ sendButton.addEventListener("click", async () => {
   const loading = document.getElementById("loadingMessage");
   loading.classList.remove("visually-hidden");
   sendButton.disabled = true;
+  let messagesSend = 0;
 
   for (const mess of messages) {
-    if (mess.messageType == TypeOfMessage.SEND)
-      await sendMessage(mess.getMessage());
-    else
-      await editMessage(mess.getMessage());
+    if (mess.messageType == TypeOfMessage.SEND) {
+      const response = await sendMessage(mess.getMessage());
+      if (response.success == false) {
+        failModalContentSend.innerText = response.errorText;
+        failModalSend.show();
+        break;
+      }
+      messagesSend++;
+    }
+    else {
+      const response = await editMessage(mess.getMessage());
+      if (response.success == false) {
+        failModalContentSend.innerText = response.errorText;
+        failModalSend.show();
+        break;
+      }
+      messagesSend++;
+    }
   };
+
+  if (messages.length == messagesSend) {
+    successModalSend.show();
+  }
 
   loading.classList.add("visually-hidden");
   sendButton.disabled = false;
@@ -82,24 +101,21 @@ sendButton.addEventListener("click", async () => {
 const alertInvalidWebhookUrl = new bootstrap.Collapse("#InvalidWebhookUrlCollapse", { toggle: false });
 
 /*
- * Modals for SEND and EDIT
+ * Modals for SEND
  */
 const successModalSend = new bootstrap.Modal('#successModalSend', { focus: true });
 const failModalSend = new bootstrap.Modal('#failModalSend', { focus: true });
 const failModalContentSend = document.getElementById("failEmbedErrorContentSend");
-const successModalEdit = new bootstrap.Modal('#successModalEdit', { focus: true });
-const failModalEdit = new bootstrap.Modal('#failModalEdit', { focus: true });
-const failModalContentEdit = document.getElementById("failEmbedErrorContentEdit");
 
 const messageId = generateUniqueId();
-messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId)));
+messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId), messageId));
 displayMessagesRemoveButton();
 
 const addMessageButton = document.getElementById("addMessage");
 
 addMessageButton.addEventListener("click", async () => {
   const messageId = generateUniqueId();
-  messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId)));
+  messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId), messageId));
   refreshAllLocalTimers();
   displayMessagesRemoveButton();
 });
@@ -125,7 +141,11 @@ let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.
     delay: { show: 100, hide: 100 }
   }))
 
-// Functions
+/**
+ * Send message in discord
+ * @param {} message 
+ * @returns {{success: boolean, errorText: string}}
+ */
 async function sendMessage(message) {
   const formData = new FormData();
 
@@ -138,8 +158,10 @@ async function sendMessage(message) {
     formData.append("avatar_url", message.user.avatar_url);
 
   if (message.files.length > 10) {
-    failModalContentSend.innerText = `Error: Max files is 10`;
-    return failModalSend.show();
+    return {
+      success: false,
+      errorText: `Error: Max files is 10`
+    }
   }
 
   let embedArray = [];
@@ -151,8 +173,8 @@ async function sendMessage(message) {
     embedArray
   ));
 
-  for (let i = 0; i < files.files.length; i++) {
-    formData.append("files", files.files[i]);
+  for (let i = 0; i < message.files.length; i++) {
+    formData.append("files", message.files[i]);
   }
 
   const response = await fetch("/sendMessage", {
@@ -162,15 +184,23 @@ async function sendMessage(message) {
 
   const data = await response.json();
   if (data.success == true) {
-    successModalSend.show();
-    return true;
+    return {
+      success: true,
+      errorText: null
+    };
   } else {
-    failModalContentSend.innerText = `Error: ${data.error}`;
-    failModalSend.show();
-    return false;
+    return {
+      success: false,
+      errorText: `Error: ${data.error}`
+    }
   }
 }
 
+/**
+ * Edit message in discord
+ * @param {} message 
+ * @returns {{success: boolean, errorText: string}}
+ */
 async function editMessage(message) {
   const formData = new FormData();
 
@@ -180,8 +210,10 @@ async function editMessage(message) {
     formData.append("content", message.content);
 
   if (message.files.length > 10) {
-    failModalContentSend.innerText = `Error: Max files is 10`;
-    return failModalSend.show();
+    return {
+      success: false,
+      errorText: `Error: Max files is 10`
+    }
   }
 
   let embedArray = [];
@@ -193,8 +225,10 @@ async function editMessage(message) {
   ));
 
   for (let i = 0; i < message.files.length; i++) {
-    formData.append("files", messages.files[i]);
+    formData.append("files", message.files[i]);
   }
+
+  formData.append("attachments", []);
 
   const response = await fetch("/editMessage", {
     method: "POST",
@@ -204,10 +238,15 @@ async function editMessage(message) {
   const data = await response.json();
 
   if (data.success == true) {
-    successModalEdit.show();
+    return {
+      success: true,
+      errorText: null
+    }
   } else {
-    failModalContentEdit.innerText = `Error: ${data.error}`;
-    failModalEdit.show();
+    return {
+      success: false,
+      errorText: `Error: ${data.error}`
+    }
   }
 }
 
