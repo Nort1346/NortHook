@@ -63,6 +63,7 @@ export class Message {
         this.contentView = messageVisualElement.querySelector(".contentView");
         this.usernameView = messageVisualElement.querySelector(".usernameName");
         this.avatarView = messageVisualElement.querySelector(".avatarIcon");
+        this.filesView = messageVisualElement.querySelector(".filesView");
 
         this.alertInvalidAvatarUrl = new bootstrap.Collapse(`#messageInput_${this.id} .InvalidAvatarUrlCollapse`, { toggle: false });
         this.alertInvalidMessageLink = new bootstrap.Collapse(`#messageInput_${this.id} .InvalidMessageLinkCollapse`, { toggle: false });
@@ -83,6 +84,9 @@ export class Message {
         this.removeMessageButton.addEventListener("click", () => {
             removeMessage(this.id);
         });
+
+        this.files.addEventListener("fileInput", async () => this.changeView())
+        this.files.addEventListener("change", async () => this.changeView());
 
         /**
         * WebHookInfo
@@ -138,6 +142,29 @@ export class Message {
         } else {
             this.alertInvalidAvatarUrl.hide();
             this.avatarView.src = this.webhookInfo.avatar ?? DefaultWebhookInfo.avatar;
+        }
+
+        this.filesView.innerHTML = "";
+
+        for (const file of this.files.files) {
+            if (file.type.startsWith('image/')) {
+                const divFile = document.createElement('div');
+                divFile.classList.add("w-100");
+
+                const imgEmbed = document.createElement('img');
+                imgEmbed.classList.add("rounded");
+                imgEmbed.classList.add("my-1");
+                imgEmbed.style.width = "auto";
+                imgEmbed.style.height = "auto";
+
+                imgEmbed.style.maxWidth = "90%";
+                imgEmbed.style.maxHeight = "400px";
+                imgEmbed.src = URL.createObjectURL(file);
+                imgEmbed.alt = file.name;
+
+                divFile.appendChild(imgEmbed);
+                this.filesView.appendChild(divFile);
+            }
         }
     }
 
@@ -375,5 +402,6 @@ export class Message {
 
     clearFiles() {
         this.files.value = null;
+        this.changeView();
     }
 }

@@ -333,6 +333,9 @@ function checkSize() {
     view.classList.remove("overflow-y-scroll");
     input.classList.add("h-auto");
     view.classList.add("h-auto");
+    if (!input.classList.contains("show") && !view.classList.contains("show")) {
+      input.classList.add("show");
+    }
   }
 }
 

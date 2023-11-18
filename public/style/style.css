@@ -1,4 +1,3 @@
-
 @font-face {
     font-family: "Rubik";
     src: url("../fonts/Rubik-Regular.ttf");
@@ -93,7 +92,7 @@ body {
 }
 
 .usernameView {
-    padding: 0 0 0 10px;
+    padding: 0px;
     font-size: 15px;
     font-weight: 600;
     width: 100%;
@@ -107,7 +106,7 @@ body {
     width: auto;
 }
 
-.botBadge{
+.botBadge {
     width: auto;
     height: 18px;
     padding-bottom: 10px;
@@ -122,7 +121,7 @@ body {
 }
 
 .contentView {
-    padding: 5px 0 0 10px;
+    padding: 5px 0 0 0;
     word-wrap: break-word;
     word-break: break-all;
     overflow-wrap: break-word;
@@ -183,11 +182,15 @@ hr {
     margin: 0px;
 }
 
-.headerMax {
-    font-size: 1.25rem;
-    font-weight: bold;
+.quote {
+    border-left: 4px solid #414141;
+    border-radius: 0 5px 5px 0;
+    padding: 3px 0px 3px 10px;
+    margin: 5px 0;
 }
 
-h4, h5, h6 {
+h4,
+h5,
+h6 {
     margin: 0px;
 }

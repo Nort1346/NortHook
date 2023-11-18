@@ -79,7 +79,7 @@ export function insertAfter(newNode, referenceNode) {
 
 export function formatText(text) {
   // Remove spaces in the start
-  text = text.trimStart()
+  text = text.trimStart().trimEnd()
 
     // Bold and Italic ***
     .replace(/\*\*\*(.*?)\*\*\*/g, '<b><i>$1</i></b>')
@@ -100,13 +100,19 @@ export function formatText(text) {
     .replace(/~~(.*?)~~/g, '<del>$1</del>')
 
     // Header 6 ###
-    .replace(/^### (.*?$)/gm, '<h6><b>$1</b></h6>')
+    .replace(/^### (.*?$)/gm, '<h6><b>$1</b></h6>').replace(/<\/h6>\n/g, '</h6>')
 
     // Header 5 ##
-    .replace(/^## (.*?$)/gm, '<h5><b>$1</b></h5>')
+    .replace(/^## (.*?$)/gm, '<h5><b>$1</b></h5>').replace(/<\/h5>\n/g, '</h5>')
 
     // Header 4 #
-    .replace(/^# (.*?$)/gm, '<h4><b>$1</b></h4>')
+    .replace(/^# (.*?$)/gm, '<h4><b>$1</b></h4>').replace(/<\/h4>\n/g, '</h4>')
+
+    // Quote Block >>>
+    .replace(/^>>> (.*?(\n|$)(?:(?!\n{99,}).*?(\n|$))*)/gm, '<blockquote class="quote">$1</blockquote>')
+
+    // Quote >
+    .replace(/^> (.*?$)/gm, '<blockquote class="quote">$1</blockquote>').replace(/<\/blockquote>\n/g, '</blockquote>')
 
     // Spoiler Text || ||
     .replace(/\|\|(.*?)\|\|/g,
@@ -195,7 +201,7 @@ function removeNonUseElements(element) {
 
     if (child.nodeType === 1 &&
       (child.tagName !== 'B' && child.tagName !== 'I' && child.tagName !== 'U' && child.tagName !== 'DEL'
-        && child.tagName !== 'H6' && child.tagName !== 'H5' && child.tagName !== 'H4')
+        && child.tagName !== 'H6' && child.tagName !== 'H5' && child.tagName !== 'H4' && child.tagName !== 'BR' && child.tagName !== 'BLOCKQUOTE')
       && !child.classList.contains('spoilerText')
       && !child.classList.contains('headerMax')) {
       element.removeChild(child);
