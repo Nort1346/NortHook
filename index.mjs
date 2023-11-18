@@ -41,11 +41,11 @@ app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
         payload.embeds = JSONMessage.embeds;
     }
 
-    form.append('payload_json', JSON.stringify(payload));
-
     for (let i = 0; i < req.files.length; i++) {
         form.append('files' + i, req.files[i].buffer, { filename: req.files[i].originalname });
     }
+
+    form.append('payload_json', JSON.stringify(payload));
 
     try {
         await axios.post(JSONMessage.webhookUrl,
@@ -110,7 +110,7 @@ app.post('/isWebhook', upload.single(), async (req, res) => {
         name: webhookInfo.name,
         avatar: webhookInfo.avatar != null ? `https://cdn.discordapp.com/avatars/${webhookInfo.id}/${webhookInfo.avatar}.webp?size=512` : "https://cdn.discordapp.com/embed/avatars/0.png",
     });
-}); 
+});
 
 app.post('/getWebhookMessage', upload.single(), async (req, res) => {
     let messageData;
@@ -124,6 +124,21 @@ app.post('/getWebhookMessage', upload.single(), async (req, res) => {
         message: messageData
     });
 })
+
+app.post('/getFile', upload.single(), async (req, res) => {
+    try {
+        const response = await axios.get(req.body.fileLink, { responseType: 'arraybuffer' });
+        const buffer = Buffer.from(response.data, 'binary');
+
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.setHeader('Content-Disposition', 'attachment; filename=plik.jpg');
+        res.send(buffer);
+    } catch (error) {
+        console.error('Błąd podczas pobierania pliku:', error);
+        res.status(500).send('Error while downloading file');
+        console.log(error);
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`NortHook on, port: ${PORT}`);

@@ -165,6 +165,28 @@ export async function createMessageVisual(uniqueId) {
   return messageInput;
 }
 
+/**
+ * Get blob file
+ * @param {string} fileLink Url File
+ * @returns {Blob} Blob of file or null when error
+ */
+export async function getFile(fileLink) {
+  const fileUrl = new FormData();
+  fileUrl.append("fileLink", fileLink);
+  try {
+    const response = await fetch("/getFile", {
+      method: "POST",
+      body: fileUrl,
+    });
+
+    const blob = await response.blob();
+    return blob;
+  } catch (error) {
+    console.error('Error:', error);
+    return null;
+  }
+}
+
 function removeNonUseElements(element) {
   let childs = element.childNodes;
 

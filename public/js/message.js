@@ -4,7 +4,8 @@ import {
     getEmbedInput,
     getEmbedVisual,
     insertAfter,
-    formatText
+    formatText,
+    getFile
 } from './functions.js';
 
 import {
