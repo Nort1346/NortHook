@@ -158,7 +158,7 @@ export class Message {
                 imgEmbed.style.height = "auto";
 
                 imgEmbed.style.maxWidth = "90%";
-                imgEmbed.style.maxHeight = "400px";
+                imgEmbed.style.maxHeight = "400 px";
                 imgEmbed.src = URL.createObjectURL(file);
                 imgEmbed.alt = file.name;
 

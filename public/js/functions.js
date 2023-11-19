@@ -118,6 +118,8 @@ export function formatText(text) {
     .replace(/\|\|(.*?)\|\|/g,
       '<div class="spoilerText">$1</div>')
 
+    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>')
+
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = text;
 
@@ -201,7 +203,8 @@ function removeNonUseElements(element) {
 
     if (child.nodeType === 1 &&
       (child.tagName !== 'B' && child.tagName !== 'I' && child.tagName !== 'U' && child.tagName !== 'DEL'
-        && child.tagName !== 'H6' && child.tagName !== 'H5' && child.tagName !== 'H4' && child.tagName !== 'BR' && child.tagName !== 'BLOCKQUOTE')
+        && child.tagName !== 'H6' && child.tagName !== 'H5' && child.tagName !== 'H4' && child.tagName !== 'BR' && child.tagName !== 'BLOCKQUOTE'
+        && child.tagName !== 'A')
       && !child.classList.contains('spoilerText')
       && !child.classList.contains('headerMax')) {
       element.removeChild(child);
