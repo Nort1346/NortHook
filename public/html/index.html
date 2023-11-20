@@ -1,195 +1,118 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="author" content="_nort_" />
-    <meta name="description" content="Simple web app to manage discord webhooks"/>
-    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="../style/style.css" />
-    <title>NortHook</title>
-  </head>
 
-  <body>
-    <div
-      class="position-absolute z-999 pointer-events-none user-select-none w-100 h-100 d-flex justify-content-center align-items-center visually-hidden"
-      id="loadingMessage"
-    >
-      <div
-        class="spinner-border"
-        role="status"
-        style="width: 3rem; height: 3rem"
-      ></div>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="author" content="_nort_" />
+  <meta name="description" content="Simple web app to manage discord webhooks" />
+  <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../style/style.css" />
+  <title>NortHook</title>
+</head>
 
-    <nav
-      class="navbar-Northook navbar navbar-expand"
-      style="box-shadow: 4px 4px 10px rgb(58, 58, 58)"
-    >
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#" target="_blank">NortHook</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <div
-            class="nav nav-pills nav-justified me-3 d-md-none"
-            id="v-pills-tab"
-            role="tablist"
-          >
-            <button
-              class="nav-link active"
-              id="v-pills-home-tab"
-              data-bs-toggle="pill"
-              data-bs-target="#inputs"
-              type="button"
-              role="tab"
-              aria-controls="v-pills-home"
-              aria-selected="true"
-            >
-              Editor
-            </button>
-            <button
-              class="nav-link"
-              id="v-pills-profile-tab"
-              data-bs-toggle="pill"
-              data-bs-target="#messageView"
-              type="button"
-              role="tab"
-              aria-controls="v-pills-profile"
-              aria-selected="false"
-            >
-              Preview
-            </button>
-          </div>
-        </div>
-      </div>
-    </nav>
+<body>
+  <div
+    class="position-absolute z-999 pointer-events-none user-select-none w-100 h-100 d-flex justify-content-center align-items-center visually-hidden"
+    id="loadingMessage">
+    <div class="spinner-border" role="status" style="width: 3rem; height: 3rem"></div>
+  </div>
 
-    <div class="container-fluid" style="height: calc(100vh - 56px)">
-      <div class="row h-100 d-block-inline tab-content">
-        <div
-          id="inputs"
-          class="col-md-6 overflow-y-scroll tab-pane fade d-md-block active"
-          role="tabpanel"
-          aria-labelledby="v-pills-home-tab"
-          tabindex="0"
-        >
-          <label class="fw-semibold">Webhook URL</label><br />
-          <div class="input-group">
-            <input
-              class="form-control"
-              type="password"
-              id="webhookUrl"
-              placeholder="https://discord.com/api/webhooks/"
-              required
-            />
-            <button
-              class="btn btn-outline-secondary fw-medium northookButton"
-              id="sendButton"
-              disabled
-            >
-              Send
-            </button>
-          </div>
-          <div class="collapse" id="InvalidWebhookUrlCollapse">
-            <div
-              class="card card-body text-danger border-danger w-50 h-auto p-2 mt-3"
-            >
-              Invalid URL
-            </div>
-          </div>
-          <div id="messagesInput"></div>
-          <hr />
-          <button class="btn btn-outline-primary" id="addMessage">Add Message</button>
-          <hr />
-
-          <footer class="bg-dark text-center text-lg-start white-text rounded">
-            <div class="text-center p-3">© 2023 Copyright: Nort Studios</div>
-          </footer>
-        </div>
-
-        <div
-          id="messageView"
-          class="col-md-6 overflow-y-scroll tab-pane fade d-md-block"
-          role="tabpanel"
-          aria-labelledby="v-pills-home-tab"
-          tabindex="0"
-        >
-          <div id="messagesVisual"></div>
+  <nav class="navbar-Northook navbar navbar-expand" style="box-shadow: 4px 4px 10px rgb(58, 58, 58)">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#" target="_blank">NortHook</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="nav nav-pills nav-justified me-3 d-md-none" id="v-pills-tab" role="tablist">
+          <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#inputs"
+            type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">
+            Editor
+          </button>
+          <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#messageView"
+            type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">
+            Preview
+          </button>
         </div>
       </div>
     </div>
+  </nav>
 
-    <div
-      class="modal fade"
-      id="successModalSend"
-      tabindex="-1"
-      aria-labelledby="successModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content bg-success text-white">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="successModalLabel">
-              Message Sent
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
+  <div class="container-fluid" style="height: calc(100vh - 56px)">
+    <div class="row h-100 d-block-inline tab-content">
+      <div id="inputs" class="col-md-6 overflow-y-scroll tab-pane fade d-md-block active" role="tabpanel"
+        aria-labelledby="v-pills-home-tab" tabindex="0">
+        <label class="fw-semibold">Webhook URL</label><br />
+        <div class="input-group">
+          <input class="form-control" type="password" id="webhookUrl" placeholder="https://discord.com/api/webhooks/"
+            required />
+          <button class="btn btn-outline-secondary fw-medium northookButton" id="sendButton" disabled>
+            Send
+          </button>
+        </div>
+        <div class="collapse" id="InvalidWebhookUrlCollapse">
+          <div class="card card-body text-danger border-danger h-auto p-2 mt-3" style="width: fit-content;">
+            Invalid URL
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
-              Ok
-            </button>
-          </div>
+        </div>
+        <div id="messagesInput"></div>
+        <hr />
+        <button class="btn btn-outline-primary" id="addMessage">Add Message</button>
+        <hr />
+
+        <footer class="bg-dark text-center text-lg-start white-text rounded">
+          <div class="text-center p-3">© 2023 Copyright: Nort Studios</div>
+        </footer>
+      </div>
+
+      <div id="messageView" class="col-md-6 overflow-y-scroll tab-pane fade d-md-block" role="tabpanel"
+        aria-labelledby="v-pills-home-tab" tabindex="0">
+        <div id="messagesVisual"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="successModalSend" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-success text-white">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="successModalLabel">
+            Message Sent
+          </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
+            Ok
+          </button>
         </div>
       </div>
     </div>
+  </div>
 
-    <div
-      class="modal fade"
-      id="failModalSend"
-      tabindex="-1"
-      aria-labelledby="failModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content bg-danger text-white">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="failModalLabel">
-              Message Not Sent
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body" id="failEmbedErrorContentSend">Error:</div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
-              Ok
-            </button>
-          </div>
+  <div class="modal fade" id="failModalSend" tabindex="-1" aria-labelledby="failModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-danger text-white">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="failModalLabel">
+            Message Not Sent
+          </h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="failEmbedErrorContentSend">Error:</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
+            Ok
+          </button>
         </div>
       </div>
     </div>
+  </div>
 
-  </body>
-  <script type="importmap">
+</body>
+<script type="importmap">
     {
       "imports": {
         "@popperjs/core": "../popperjs/index.js",
@@ -197,5 +120,6 @@
       }
     }
   </script>
-  <script src="../js/index.js" type="module"></script>
+<script src="../js/index.js" type="module"></script>
+
 </html>

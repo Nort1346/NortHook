@@ -22,13 +22,17 @@ const messages = [];
 let localTimers = [];
 
 /**
+ * @type boolean
+ */
+export let webhookUrlGood = false;
+
+/**
  * WebHook URL Input Element
  */
 export const webhookUrl = document.getElementById("webhookUrl");
 
 // Events for message parameters
 webhookUrl.addEventListener("input", checkWebhookUrl);
-webhookUrl.addEventListener("input", messages.forEach((mess) => { mess.checkMessageLink(); }));
 
 // Webhook foucs options
 webhookUrl.addEventListener("focusin", () => {
@@ -262,16 +266,19 @@ export function checkWebhookUrl() {
       .then((data) => {
         sendButton.disabled = !data.success;
         data.success == true ? alertInvalidWebhookUrl.hide() : alertInvalidWebhookUrl.show();
+        webhookUrlGood = data.success;
 
         WebHookInfo.name = data?.name;
         WebHookInfo.avatar = data?.avatar;
 
         messages.forEach((mess) => {
           mess.setWebhookInfo();
+          mess.checkMessageLink();
         });
       });
   } else {
     sendButton.disabled = true;
+    webhookUrlGood = false;
 
     WebHookInfo.name = null;
     WebHookInfo.avatar = null;

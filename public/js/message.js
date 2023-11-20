@@ -19,7 +19,8 @@ import {
     isCorrectWebhookURL,
     checkWebhookUrl,
     removeMessage,
-    WebHookInfo
+    WebHookInfo,
+    webhookUrlGood
 } from './index.js';
 
 import { Embed } from './embed.js';
@@ -72,7 +73,7 @@ export class Message {
         this.username.addEventListener("input", async () => await this.changeView());
         this.avatar_url.addEventListener("input", async () => await this.changeView());
 
-        this.messageLink.addEventListener("input", () => checkWebhookUrl());
+        // this.messageLink.addEventListener("input", () => checkWebhookUrl());
         this.messageLink.addEventListener("input", () => this.checkMessageLink());
 
         this.loadMessageButton.addEventListener("click", () => this.loadMessage());
@@ -85,8 +86,8 @@ export class Message {
             removeMessage(this.id);
         });
 
-        this.files.addEventListener("fileInput", async () => this.changeView())
-        this.files.addEventListener("change", async () => this.changeView());
+        this.files.addEventListener("fileInput", async () => this.refreshFilesVisual())
+        this.files.addEventListener("change", async () => this.refreshFilesVisual());
 
         /**
         * WebHookInfo
@@ -119,6 +120,7 @@ export class Message {
         this.countEmbedNumbers();
         this.checkAddEmbedButton();
         this.checkArrowsEmbeds();
+        this.refreshFilesVisual();
         this.changeView();
     }
 
@@ -143,7 +145,9 @@ export class Message {
             this.alertInvalidAvatarUrl.hide();
             this.avatarView.src = this.webhookInfo.avatar ?? DefaultWebhookInfo.avatar;
         }
+    }
 
+    async refreshFilesVisual() {
         this.filesView.innerHTML = "";
 
         for (const file of this.files.files) {
@@ -168,7 +172,7 @@ export class Message {
                 const fileElementHTML = await response.text();
 
                 divFile.innerHTML = fileElementHTML;
-                divFile.querySelector(".fileName").innerHTML = file.name.substring(0,30);
+                divFile.querySelector(".fileName").innerHTML = file.name.substring(0, 30);
                 divFile.querySelector(".fileSize").innerHTML = formatBytes(file.size);
             }
             this.filesView.appendChild(divFile);
@@ -332,10 +336,11 @@ export class Message {
     }
 
     checkMessageLink() {
-        if (this.isCorrectMessageLink(this.messageLink.value) && isCorrectWebhookURL()) {
+        console.log("ok");
+        if (webhookUrlGood && this.isCorrectMessageLink(this.messageLink.value)) {
             const apiURL = `${webhookUrl.value}/messages/
           ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`;
-
+            console.log("ok ok");
             const formData = new FormData();
             formData.append("messageLink", apiURL);
             fetch("/getWebhookMessage", {
@@ -357,6 +362,11 @@ export class Message {
         } else {
             this.messageType = TypeOfMessage.SEND;
             this.loadMessageButton.disabled = true;
+
+            if (this.messageLink.value.replaceAll(/\s/g, "") == "")
+                this.alertInvalidMessageLink.hide();
+            else
+                this.alertInvalidMessageLink.show();
         }
         this.changeView();
     }
@@ -366,8 +376,6 @@ export class Message {
             .replaceAll(/\s/g, "")
             .startsWith("https://discord.com/channels/");
 
-        if (link.replaceAll(/\s/g, "") == "") this.alertInvalidMessageLink.hide();
-        else if (res == false) this.alertInvalidMessageLink.show();
         return res == true;
     }
 
@@ -409,6 +417,6 @@ export class Message {
 
     clearFiles() {
         this.files.value = null;
-        this.changeView();
+        this.refreshFilesVisual();
     }
 }
