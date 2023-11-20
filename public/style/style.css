@@ -106,12 +106,6 @@ body {
     width: auto;
 }
 
-.botBadge {
-    width: auto;
-    height: 18px;
-    padding-bottom: 10px;
-}
-
 .messageTime {
     font-family: 'Rubik Light';
     font-size: 12px;

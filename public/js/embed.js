@@ -132,7 +132,7 @@ export class Embed {
          * EMBED NAME
          */
         if (this.title.value) {
-            this.embedName.innerText = `- ${this.title.value.substring(0, 25)}`;
+            this.embedName.innerText = `- ${this.title.value}`;
         } else {
             this.embedName.innerText = '';
         }

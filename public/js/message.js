@@ -5,7 +5,7 @@ import {
     getEmbedVisual,
     insertAfter,
     formatText,
-    getFile
+    formatBytes
 } from './functions.js';
 
 import {
@@ -147,24 +147,31 @@ export class Message {
         this.filesView.innerHTML = "";
 
         for (const file of this.files.files) {
-            if (file.type.startsWith('image/')) {
-                const divFile = document.createElement('div');
-                divFile.classList.add("w-100");
+            const divFile = document.createElement('div');
+            divFile.classList.add("w-100");
+            divFile.classList.add("my-1");
 
+            if (file.type.startsWith('image/')) {
                 const imgEmbed = document.createElement('img');
                 imgEmbed.classList.add("rounded");
-                imgEmbed.classList.add("my-1");
                 imgEmbed.style.width = "auto";
                 imgEmbed.style.height = "auto";
 
                 imgEmbed.style.maxWidth = "90%";
-                imgEmbed.style.maxHeight = "400 px";
+                imgEmbed.style.maxHeight = "400px";
                 imgEmbed.src = URL.createObjectURL(file);
                 imgEmbed.alt = file.name;
 
                 divFile.appendChild(imgEmbed);
-                this.filesView.appendChild(divFile);
+            } else {
+                const response = await fetch('../html/fileVisual.html');
+                const fileElementHTML = await response.text();
+
+                divFile.innerHTML = fileElementHTML;
+                divFile.querySelector(".fileName").innerHTML = file.name.substring(0,30);
+                divFile.querySelector(".fileSize").innerHTML = formatBytes(file.size);
             }
+            this.filesView.appendChild(divFile);
         }
     }
 
