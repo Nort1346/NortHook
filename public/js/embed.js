@@ -110,7 +110,7 @@ export class Embed {
         this.description.value = embed?.description?.substring(0, 2048) ?? "";
         this.color.value = "#" + embed?.color?.toString(16)?.padStart(6, "0") ?? "";
         this.url.value = embed?.url?.substring(0, 2000) ?? "";
-        this.timestamp.value = embed?.timestamp ?? "";
+        this.timestamp.value = new Date(embed?.timestamp).toISOString().slice(0,16) ?? "";
 
         this.image.url.value = embed?.image?.url?.substring(0, 2048) ?? "";
         this.thumbnail.url.value = embed?.thumbnail?.url?.substring(0, 256) ?? "";
