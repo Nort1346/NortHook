@@ -137,7 +137,7 @@ refreshAllLocalTimers();
 setInterval(() => {
   let nowData = new Date();
   localTimers.forEach((ele) =>
-    ele.innerText = `${nowData.toLocaleTimeString().slice(0, -3)}`)
+    ele.innerText = `${nowData.toLocaleTimeString().substring(0,5)}`)
 }, 1000);
 
 // Check View For WebSite Width
@@ -356,5 +356,5 @@ function checkSize() {
 function refreshAllLocalTimers() {
   localTimers = document.querySelectorAll(".localTime");
   localTimers.forEach((ele) =>
-    ele.innerText = `${new Date().toLocaleTimeString().slice(0, -3)}`)
+    ele.innerText = `${new Date().toLocaleTimeString().substring(0, 5)}`)
 }
