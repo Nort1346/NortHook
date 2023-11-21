@@ -5,7 +5,7 @@ import {
     getEmbedVisual,
     insertAfter,
     formatText,
-    formatBytes
+    formatBytes,
 } from './functions.js';
 
 import {
@@ -86,6 +86,22 @@ export class Message {
             removeMessage(this.id);
         });
 
+        //JSON parameters
+        this.jsonEditorButton = messageInputElement.querySelector(".jsonEditor");
+        this.jsonEditorJSON = messageInputElement.querySelector(".jsonEditorJSON");
+        this.jsonEditorModal = new bootstrap.Modal(`#messageInput_${this.id} .jsonEditorInput`);
+        this.jsonEditorExecuteChangesButton = messageInputElement.querySelector(".jsonEditorExecuteChanges");
+        this.jsonEditorError = messageInputElement.querySelector(".jsonEditorError");
+
+        //JSON listeners
+        this.jsonEditorButton.addEventListener("click", () => {
+            this.jsonEditorModal.show(); this.jsonEditorJSON.value = JSON.stringify(this.getJsonMessage(), null, 3)
+        });
+        this.jsonEditorJSON.addEventListener("input", () => this.checkJsonInputErrors());
+        this.jsonEditorExecuteChangesButton.addEventListener("click", async () => {
+            await this.setMessageJSON(JSON.parse(this.jsonEditorJSON.value));
+        })
+
         this.files.addEventListener("fileInput", async () => this.refreshFilesVisual())
         this.files.addEventListener("change", async () => this.refreshFilesVisual());
 
@@ -100,13 +116,12 @@ export class Message {
     /**
      * @param {{ content: any; author: { username: any; id: any; avatar: any; }; embeds: string | any[]; }} message
      */
-    async setMessage(message) {
+    async setMessageFromMessageObject(message) {
         //Content
         this.content.value = message.content;
         //Profile
         this.username.value = message.author.username;
         this.avatar_url.value = `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.png`;
-        //Files
 
         //Embeds
         this.embeds.forEach(ele => ele.removeEmbed());
@@ -122,6 +137,31 @@ export class Message {
         this.checkArrowsEmbeds();
         this.refreshFilesVisual();
         this.changeView();
+    }
+
+    async setMessageJSON(message) {
+        //Content
+        this.content.value = await message.content?.substring(0, 2000);
+        //Profile
+        this.username.value = await message?.username?.substring(0, 80) ?? "";
+        this.avatar_url.value = await message?.avatar_url?.substring(0, 2048) ?? "";
+
+        //Embeds
+        this.embeds.forEach(ele => ele.removeEmbed());
+        if (message.embeds !== null) {
+            this.embeds.splice(0, this.embeds.length);
+            for (let i = 0; i < message.embeds.length && i < 10; i++) {
+                await this.addEmbed(await getEmbedInput(this.messageInputElement), await getEmbedVisual(this.messageVisualElement));
+                await this.embeds[i].setEmbed(message.embeds[i]);
+            }
+        }
+
+        this.clearFiles();
+        this.countEmbedNumbers();
+        this.checkAddEmbedButton();
+        this.checkArrowsEmbeds();
+        this.refreshFilesVisual();
+        await this.changeView();
     }
 
     async changeView() {
@@ -330,17 +370,15 @@ export class Message {
                 this.loadMessageButton.disabled = false;
 
                 if (data.success == true) {
-                    await this.setMessage(data.message);
+                    await this.setMessageFromMessageObject(data.message);
                 }
             });
     }
 
     checkMessageLink() {
-        console.log("ok");
         if (webhookUrlGood && this.isCorrectMessageLink(this.messageLink.value)) {
             const apiURL = `${webhookUrl.value}/messages/
           ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`;
-            console.log("ok ok");
             const formData = new FormData();
             formData.append("messageLink", apiURL);
             fetch("/getWebhookMessage", {
@@ -386,10 +424,22 @@ export class Message {
                 username: this.username.value,
                 avatar_url: this.avatar_url.value
             },
-            embeds: this.embeds,
+            embeds: [].concat(...this.embeds.map(embed => embed.getEmbed())),
             files: this.files.files,
             messageLink: this.messageLink.value
         }
+    }
+
+    getJsonMessage() {
+        const jsonMessage = {
+            content: this.content.value,
+            embeds: this.embeds.length > 0 ? [].concat(...this.embeds.map(embed => embed.getEmbed())) : null,
+        };
+        if (this.username.value.trimStart() !== "")
+            jsonMessage.username = this.username.value;
+        if (this.avatar_url.value.trimStart() !== "")
+            jsonMessage.avatar_url = this.avatar_url.value;
+        return jsonMessage;
     }
 
     removeMessage() {
@@ -418,5 +468,30 @@ export class Message {
     clearFiles() {
         this.files.value = null;
         this.refreshFilesVisual();
+    }
+
+    clearMessage() {
+        this.content.value = "";
+        this.username.value = "";
+        this.avatar_url.value = "";
+        this.clearFiles();
+        this.embeds.forEach((embed) => {
+            embed.removeEmbed();
+        });
+        this.messageLink.value = "";
+        this.checkMessageLink();
+    }
+
+    checkJsonInputErrors() {
+        try {
+            JSON.parse(this.jsonEditorJSON.value);
+            this.jsonEditorExecuteChangesButton.disabled = false;
+            this.jsonEditorError.innerText = "";
+            return true;
+        } catch (error) {
+            this.jsonEditorExecuteChangesButton.disabled = true;
+            this.jsonEditorError.innerText = error.message;
+            return false;
+        }
     }
 }

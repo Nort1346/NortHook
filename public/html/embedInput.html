@@ -2,7 +2,7 @@
   <div class="card-header px-1">
     <div class="row w-100">
 
-      <div class="col-8 px-4 d-flex align-items-center text-truncate">
+      <div class="col-8 px-4 d-flex align-items-center">
         <button class="btn btn-outline-light spin border-0 p-1 bg-transparent embedButtonCollapse"
           data-bs-toggle="collapse" data-bs-target="" data-bs-placement="top" data-bs-title="Tooltip on top">
           <svg xmlns=" http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
@@ -11,13 +11,16 @@
               d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
           </svg>
         </button>&nbsp;
-        <span class="embedId text-truncate">Embed 1</span>&nbsp;
-        <span class="embedName text-truncate"></span>
+        <div class="text-truncate">
+          <span class="embedId">Embed 1</span>
+          <span class="embedName"></span>
+        </div>
       </div>
 
       <div class="col d-flex justify-content-end float-end text-end p-0">
 
-        <button class="btn btn-outline-light d-flex align-items-center border-0 p-0 bg-transparent embedButtonUp" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Move Up">
+        <button class="btn btn-outline-light d-flex align-items-center border-0 p-0 bg-transparent embedButtonUp"
+          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Move Up">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-up"
             viewBox="0 0 16 16">
             <path fill-rule="evenodd"
@@ -25,7 +28,8 @@
           </svg>
         </button>
 
-        <button class="btn btn-outline-light d-flex align-items-center border-0 p-0 bg-transparent embedButtonDown" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Move Down">
+        <button class="btn btn-outline-light d-flex align-items-center border-0 p-0 bg-transparent embedButtonDown"
+          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Move Down">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-down"
             viewBox="0 0 16 16">
             <path fill-rule="evenodd"
@@ -33,8 +37,8 @@
           </svg>
         </button>
 
-        <button
-          class="btn btn-outline-light d-flex align-items-center border-0 p-1 bg-transparent embedButtonDuplicate" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Duplicate">
+        <button class="btn btn-outline-light d-flex align-items-center border-0 p-1 bg-transparent embedButtonDuplicate"
+          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Duplicate">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-copy"
             viewBox="0 0 16 16">
             <path fill-rule="evenodd"
@@ -42,7 +46,8 @@
           </svg>
         </button>
 
-        <button class="btn btn-outline-danger d-flex align-items-center border-0 p-1 bg-transparent embedButtonRemove" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Remove">
+        <button class="btn btn-outline-danger d-flex align-items-center border-0 p-1 bg-transparent embedButtonRemove"
+          data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Remove">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-x-circle-fill"
             viewBox="0 0 16 16">
             <path
@@ -63,18 +68,18 @@
       </button>
       <div class="collapse authorOptions">
         <div class="mb-3">
-          <label class="form-label">Name</label>
-          <input type="text" class="form-control authorName" maxlength="256" />
+          <div class="form-label">Name</div>
+          <input type="text" class="form-control authorName" maxlength="256" name="authorName" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Author Url</label>
-          <input type="url" class="form-control authorUrl" maxlength="2048" />
+          <div class="form-label">Author Url</div>
+          <input type="url" class="form-control authorUrl" maxlength="2048" name="authorUrl" />
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Author Icon Url</label>
-          <input type="url" class="form-control authorIconUrl" maxlength="2048" />
+          <div class="form-label">Author Icon Url</div>
+          <input type="url" class="form-control authorIconUrl" maxlength="2048" name="authorIconUrl" />
         </div>
       </div>
 
@@ -84,20 +89,20 @@
       </button>
       <div class="collapse bodyOptions">
         <div class="mb-3">
-          <label class="form-label">Title</label>
-          <input type="text" class="form-control title" maxlength="256" />
+          <div class="form-label">Title</div>
+          <input type="text" class="form-control title" maxlength="256" name="title" />
         </div>
         <div class="mb-3">
-          <label class="form-label">Description</label>
-          <textarea class="form-control description" maxlength="2048"></textarea>
+          <div class="form-label">Description</div>
+          <textarea class="form-control description" maxlength="2048" name="description"></textarea>
         </div>
         <div class="mb-3">
-          <label class="form-label">URL</label>
-          <input type="url" class="form-control url" maxlength="2000" />
+          <div class="form-label">URL</div>
+          <input type="url" class="form-control url" maxlength="2000" name="url" />
         </div>
         <div class="mb-3">
-          <label class="form-label">Color</label>
-          <input type="color" class="form-control color" />
+          <div class="form-label">Color</div>
+          <input type="color" class="form-control color" name="color" />
         </div>
       </div>
 
@@ -113,18 +118,18 @@
         </div>
       </div>
 
-      <button class="btn btn-outline-primary text-start w-100 mb-2 imagesButtonOptions" data-bs-toggle="collapse"
-        data-bs-target="">
+      <button class="btn btn-outline-primary text-start w-100 mb-2 
+      imagesButtonOptions" data-bs-toggle="collapse" data-bs-target="">
         Images
       </button>
       <div class="collapse imagesOptions">
         <div class="mb-3">
-          <label class="form-label">Image URL</label>
-          <input type="url" class="form-control imagesUrl" maxlength="2048" />
+          <div class="form-label">Image URL</div>
+          <input type="url" class="form-control imagesUrl" maxlength="2048" name="imagesUrl" />
         </div>
         <div class="mb-3">
-          <label class="form-label">Thumbnail URL</label>
-          <input type="url" class="form-control thumbnailUrl" maxlength="2048" />
+          <div class="form-label">Thumbnail URL</div>
+          <input type="url" class="form-control thumbnailUrl" maxlength="2048" name="thumbnailUrl" />
         </div>
       </div>
 
@@ -134,16 +139,16 @@
       </button>
       <div class="collapse footerOptions">
         <div class="mb-3">
-          <label class="form-label">Footer Text</label>
-          <input type="text" class="form-control footerText" maxlength="2048" />
+          <div class="form-label">Footer Text</div>
+          <input type="text" class="form-control footerText" maxlength="2048" name="footerText" />
         </div>
         <div class="mb-3">
-          <label class="form-label">Timestamp</label>
-          <input type="datetime-local" class="form-control fa fa-calendar timestamp" />
+          <div class="form-label">Timestamp</div>
+          <input type="datetime-local" class="form-control fa fa-calendar timestamp" name="timestamp" />
         </div>
         <div class="mb-3">
-          <label class="form-label">Footer Icon URL</label>
-          <input type="url" class="form-control footerIconUrl" maxlength="2048" />
+          <div class="form-label">Footer Icon URL</div>
+          <input type="url" class="form-control footerIconUrl" maxlength="2048" name="footerIconUrl" />
         </div>
       </div>
     </div>

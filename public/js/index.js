@@ -59,6 +59,22 @@ export let WebHookInfo = {
 };
 
 /**
+ * Options buttons
+ */
+const clearAllButton = document.getElementById("clearAllMessages");
+
+clearAllButton.addEventListener("click", () => {
+  messages.forEach((mess, index) => {
+    if (index != 0) mess.removeMessage();
+    else {
+      mess.clearMessage();
+      mess.toggleRemoveMessageButtonDisplay(false);
+    }
+  });
+  messages.slice(0);
+});
+
+/**
  * Send Button
  */
 export const sendButton = document.getElementById("sendButton");
@@ -118,18 +134,9 @@ const successModalText = document.getElementById("successModalText");
 const failModalSend = new bootstrap.Modal('#failModalSend', { focus: true });
 const failModalContentSend = document.getElementById("failEmbedErrorContentSend");
 
-const messageId = generateUniqueId();
-messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId), messageId));
-displayMessagesRemoveButton();
-
+createMessage();
 const addMessageButton = document.getElementById("addMessage");
-
-addMessageButton.addEventListener("click", async () => {
-  const messageId = generateUniqueId();
-  messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId), messageId));
-  refreshAllLocalTimers();
-  displayMessagesRemoveButton();
-});
+addMessageButton.addEventListener("click", async () => await createMessage());
 
 refreshAllLocalTimers();
 
@@ -137,7 +144,7 @@ refreshAllLocalTimers();
 setInterval(() => {
   let nowData = new Date();
   localTimers.forEach((ele) =>
-    ele.innerText = `${nowData.toLocaleTimeString().substring(0,5)}`)
+    ele.innerText = `${nowData.getHours()}:${nowData.getMinutes()}`)
 }, 1000);
 
 // Check View For WebSite Width
@@ -175,13 +182,8 @@ async function sendMessage(message) {
     }
   }
 
-  let embedArray = [];
-  for (const embed of message.embeds) {
-    embedArray.push(embed.getEmbed());
-  }
-
   formData.append("embeds", JSON.stringify(
-    embedArray
+    message.embeds
   ));
 
   for (let i = 0; i < message.files.length; i++) {
@@ -227,12 +229,8 @@ async function editMessage(message) {
     }
   }
 
-  let embedArray = [];
-  for (const embed of message.embeds) {
-    embedArray.push(embed.getEmbed());
-  }
   formData.append("embeds", JSON.stringify(
-    embedArray
+    message.embeds
   ));
 
   for (let i = 0; i < message.files.length; i++) {
@@ -259,6 +257,13 @@ async function editMessage(message) {
       errorText: `Error: ${data.error}`
     }
   }
+}
+
+async function createMessage() {
+  const messageId = generateUniqueId();
+  messages.push(new Message(await createMessageInput(messageId), await createMessageVisual(messageId), messageId));
+  refreshAllLocalTimers();
+  displayMessagesRemoveButton();
 }
 
 export function checkWebhookUrl() {
@@ -355,6 +360,7 @@ function checkSize() {
 
 function refreshAllLocalTimers() {
   localTimers = document.querySelectorAll(".localTime");
+  let nowData = new Date();
   localTimers.forEach((ele) =>
-    ele.innerText = `${new Date().toLocaleTimeString().substring(0, 5)}`)
+    ele.innerText = `${nowData.getHours()}:${nowData.getMinutes()}`)
 }

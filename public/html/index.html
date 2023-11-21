@@ -44,7 +44,12 @@
     <div class="row h-100 d-block-inline tab-content">
       <div id="inputs" class="col-md-6 overflow-y-scroll tab-pane fade d-md-block active" role="tabpanel"
         aria-labelledby="v-pills-home-tab" tabindex="0">
-        <label class="fw-semibold">Webhook URL</label><br />
+
+        <div class="mb-2">
+          <button class="btn btn-outline-primary btn-sm" id="clearAllMessages">Clear All</button>
+        </div>
+
+        <div class="fw-semibold">Webhook URL</div>
         <div class="input-group">
           <input class="form-control" type="password" id="webhookUrl" placeholder="https://discord.com/api/webhooks/"
             required />

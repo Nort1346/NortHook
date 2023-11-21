@@ -102,18 +102,18 @@ export class Embed {
      * @param {*} embed Embed element
      */
     async setEmbed(embed) {
-        this.author.name.value = embed?.author?.name ?? "";
-        this.author.url.value = embed?.author?.url ?? "";
-        this.author.icon_url.value = embed?.author?.icon_url ?? "";
+        this.author.name.value = embed?.author?.name?.substring(0, 256) ?? "";
+        this.author.url.value = embed?.author?.url?.substring(0, 2048) ?? "";
+        this.author.icon_url.value = embed?.author?.icon_url?.substring(0, 2048) ?? "";
 
-        this.title.value = embed?.title ?? "";
-        this.description.value = embed?.description ?? "";
+        this.title.value = embed?.title?.substring(0, 256) ?? "";
+        this.description.value = embed?.description?.substring(0, 2048) ?? "";
         this.color.value = "#" + embed?.color?.toString(16)?.padStart(6, "0") ?? "";
-        this.url.value = embed?.url ?? "";
+        this.url.value = embed?.url?.substring(0, 2000) ?? "";
         this.timestamp.value = embed?.timestamp ?? "";
 
-        this.image.url.value = embed?.image?.url ?? "";
-        this.thumbnail.url.value = embed?.thumbnail?.url ?? "";
+        this.image.url.value = embed?.image?.url?.substring(0, 2048) ?? "";
+        this.thumbnail.url.value = embed?.thumbnail?.url?.substring(0, 256) ?? "";
 
         this.footer.text.value = embed?.footer?.text ?? "";
         this.footer.icon_url.value = embed?.footer?.icon_url ?? "";
