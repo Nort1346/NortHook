@@ -1,7 +1,7 @@
 <div class="card my-2">
   <div class="card-header">
     <div class="row">
-      <div class="col-8">
+      <div class="col-8 text-truncate">
         <button class="btn btn-dark btn-sm bg-transparent fieldButtonParameters me-1" data-bs-toggle="collapse"
           data-bs-target="">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -10,12 +10,13 @@
               d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
           </svg>
         </button>
-        <span class="fieldNumber text-truncate">Field 1</span>
+        <span class="fieldNumber text-truncate">Field 1</span>&nbsp;
+        <span class="fieldTitle text-truncate"></span>
       </div>
       <div class="col">
         <div class="row">
           <div class="d-flex align-items-center justify-content-end p-0">
-            <button class="btn btn-outline-light d-flex align-items-center border-0 p-0 fieldButtonUp">
+            <button class="btn btn-outline-light d-flex align-items-center border-0 bg-transparent p-0 fieldButtonUp" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Move Up">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-up"
                 viewBox="0 0 16 16">
                 <path fill-rule="evenodd"
@@ -23,7 +24,7 @@
               </svg>
             </button>
 
-            <button class="btn btn-outline-light d-flex align-items-center border-0 p-0 fieldButtonDown">
+            <button class="btn btn-outline-light d-flex align-items-center border-0 bg-transparent p-0 fieldButtonDown" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Move Down">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                 class="bi bi-arrow-down" viewBox="0 0 16 16">
                 <path fill-rule="evenodd"
@@ -31,7 +32,7 @@
               </svg>
             </button>
 
-            <button class="btn btn-outline-light d-flex align-items-center border-0 p-1 fieldButtonDuplicate"
+            <button class="btn btn-outline-light d-flex align-items-center border-0 bg-transparent p-1 fieldButtonDuplicate"
               data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Duplicate">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-copy"
                 viewBox="0 0 16 16">
@@ -40,7 +41,7 @@
               </svg>
             </button>
 
-            <button class="btn btn-outline-danger d-flex align-items-center border-0 p-1 fieldButtonRemove">
+            <button class="btn btn-outline-danger d-flex align-items-center border-0 bg-transparent p-1 fieldButtonRemove" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Remove">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg"
                 viewBox="0 0 16 16">
                 <path

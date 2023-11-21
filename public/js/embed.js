@@ -1,4 +1,5 @@
-import { generateUniqueId, isImageURLValid, formatText } from './functions.js'
+import { generateUniqueId, isImageURLValid, formatText } from './functions.js';
+import { refreshTooltips } from './index.js';
 
 /**
  * Create Embed
@@ -285,6 +286,9 @@ export class Embed {
         fieldInputElement.querySelector(".fieldButtonDown")
             .addEventListener("click", async () => this.fieldDown(uniqueFieldId));
 
+        fieldInputElement.querySelector(".fieldName")
+            .addEventListener("input", () => this.countAndTitleAllFields());
+
         if (values) {
             fieldInputElement.querySelector(".fieldName").value = values.name;
             fieldInputElement.querySelector(".fieldValue").value = values.value;
@@ -310,6 +314,7 @@ export class Embed {
                 fieldRemoveButton: fieldInputElement.querySelector(".fieldButtonRemove"),
                 fieldUpButton: fieldInputElement.querySelector(".fieldButtonUp"),
                 fieldDownButton: fieldInputElement.querySelector(".fieldButtonDown"),
+                fieldTitle: fieldInputElement.querySelector(".fieldTitle"),
                 fieldVisual: {
                     id: uniqueFieldId,
                     name: fieldVisualElement.querySelector(".fieldVisualName"),
@@ -320,12 +325,13 @@ export class Embed {
         )
 
         //SHOW FIELDS
-        await this.countAllFields();
+        await this.countAndTitleAllFields();
         await this.checkMaxFields();
         await this.checkArrowsFields();
         document.querySelector(`#embedInput${this.id} .fieldsContent`).appendChild(fieldInputElement);
         document.querySelector(`#embedVisual${this.id} .fieldsContent`).appendChild(fieldVisualElement);
 
+        refreshTooltips();
         return uniqueFieldId;
     }
 
@@ -343,8 +349,9 @@ export class Embed {
         document.getElementById(`fieldInput_${fieldId}`).remove();
         document.getElementById(`fieldVisual_${fieldId}`).remove();
 
-        this.countAllFields();
+        this.countAndTitleAllFields();
         this.checkMaxFields();
+        refreshTooltips();
     }
     /**
      * Duplicate Field
@@ -361,7 +368,7 @@ export class Embed {
                 }
             )
 
-            this.countAllFields();
+            this.countAndTitleAllFields();
             this.checkMaxFields();
             this.refreshEmbedVisual();
         }
@@ -383,7 +390,7 @@ export class Embed {
             document.getElementById(`fieldVisual_${fieldId}`)
                 .insertAdjacentElement("afterend", document.getElementById(`fieldVisual_${this.fields[indexOfRemoveEmbed].id}`));
 
-            this.countAllFields();
+            this.countAndTitleAllFields();
             this.checkArrowsFields();
         }
     }
@@ -404,7 +411,7 @@ export class Embed {
             document.getElementById(`fieldVisual_${fieldId}`)
                 .insertAdjacentElement("beforebegin", document.getElementById(`fieldVisual_${this.fields[indexOfRemoveEmbed].id}`));
 
-            this.countAllFields();
+            this.countAndTitleAllFields();
             this.checkArrowsFields();
         }
     }
@@ -446,12 +453,17 @@ export class Embed {
         });
     }
     /**
-     * Count all fields and change number in theirs headers
+     * Count and title all fields and change number in theirs headers
      */
-    async countAllFields() {
+    async countAndTitleAllFields() {
         let i = 1;
         for (const field of this.fields) {
             field.fieldNumber.innerText = `Field ${i} `;
+            if (field.name.value.trimStart() !== "") {
+                field.fieldTitle.innerText = `- ${field.name.value.trimStart().trimEnd().substring(0, 20)}`;
+            } else {
+                field.fieldTitle.innerText = "";
+            }
             i++;
         }
     }

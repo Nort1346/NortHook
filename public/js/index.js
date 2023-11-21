@@ -94,6 +94,11 @@ sendButton.addEventListener("click", async () => {
   };
 
   if (messages.length == messagesSend) {
+    if (messages.length > 1)
+      successModalText.innerText = `Messages Sent`;
+    else
+      successModalText.innerText = `Message Sent`;
+
     successModalSend.show();
   }
 
@@ -108,6 +113,8 @@ const alertInvalidWebhookUrl = new bootstrap.Collapse("#InvalidWebhookUrlCollaps
  * Modals for SEND
  */
 const successModalSend = new bootstrap.Modal('#successModalSend', { focus: true });
+const successModalText = document.getElementById("successModalText");
+
 const failModalSend = new bootstrap.Modal('#failModalSend', { focus: true });
 const failModalContentSend = document.getElementById("failEmbedErrorContentSend");
 
@@ -189,7 +196,7 @@ async function sendMessage(message) {
   const data = await response.json();
   if (data.success == true) {
     return {
-      success: true,
+      success: data.success,
       errorText: null
     };
   } else {

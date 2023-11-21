@@ -1,14 +1,30 @@
-<hr>
+<hr />
 <label class="fw-semibold">Content</label>
-<textarea class="form-control content" type="text" maxlength="2000" rows="4"></textarea>
+<textarea
+  class="form-control content"
+  type="text"
+  maxlength="2000"
+  rows="4"
+></textarea>
 
 <div class="fs-6 d-flex align-items-center fw-semibold mt-3">
   Profile
-  <button class="btn bg-transparent border-0 p-0 ms-2 profileContentButton" data-bs-toggle="collapse" data-bs-target="">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill"
-      viewBox="0 0 16 16">
+  <button
+    class="btn bg-transparent border-0 p-0 ms-2 profileContentButton"
+    data-bs-toggle="collapse"
+    data-bs-target=""
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      class="bi bi-caret-down-fill"
+      viewBox="0 0 16 16"
+    >
       <path
-        d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+        d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"
+      />
     </svg>
   </button>
 </div>
@@ -18,15 +34,21 @@
   <label>Avatar URL</label><br />
   <input class="form-control avatar_url" type="url" maxlength="2048" />
   <div class="collapse InvalidAvatarUrlCollapse">
-    <div class="card card-body text-danger border-danger h-auto p-2 mt-3" style="width: fit-content;">
+    <div
+      class="card card-body text-danger border-danger h-auto p-2 mt-3"
+      style="width: fit-content"
+    >
       Invalid URL
     </div>
   </div>
 </div>
 
 <div class="mb-3">
-  <label for="files" class="form-label fw-semibold mt-3 d-flex align-items-center">Files<span
-      class="badge bg-secondary ms-1">Max 25 MB</span></label>
+  <label
+    for="files"
+    class="form-label fw-semibold mt-3 d-flex align-items-center"
+    >Files<span class="badge bg-secondary ms-1">Max 25 MB</span></label
+  >
   <div class="input-group">
     <input class="form-control files" type="file" id="files" multiple />
     <button class="btn btn-secondary clearFiles">Clear</button>
@@ -39,11 +61,21 @@
     <span class="badge bg-secondary ms-1">Max 10</span>
   </div>
   <div class="col-6">
-    <button class="btn btn-primary float-end d-flex align-items-center addEmbed">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-        class="d-flex align-items-center justify-content-center" viewBox="0 0 16 16">
-        <path fill-rule="evenodd"
-          d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z" />
+    <button
+      class="btn btn-primary float-end d-flex align-items-center addEmbed"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        fill="currentColor"
+        class="d-flex align-items-center justify-content-center"
+        viewBox="0 0 16 16"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"
+        />
       </svg>
       <span>&nbsp;Add Embed</span>
     </button>
@@ -55,19 +87,34 @@
   </div>
 </div>
 
-<div class="mb-3">
+<div class="mb-1">
   <label class="fw-semibold">Message Link</label>
   <div class="input-group">
-    <input type="url" class="form-control messageLink" placeholder="https://discord.com/channels/" />
-    <button class="btn btn-outline-secondary fw-medium northookButton loadMessageButton" disabled>
+    <input
+      type="url"
+      class="form-control messageLink"
+      placeholder="https://discord.com/channels/"
+    />
+    <button
+      class="btn btn-outline-secondary fw-medium northookButton loadMessageButton"
+      disabled
+    >
       Load
     </button>
   </div>
   <div class="collapse InvalidMessageLinkCollapse">
-    <div class="card card-body text-danger border-danger h-auto p-2 mt-3" style="width: fit-content;">
+    <div
+      class="card card-body text-danger border-danger h-auto p-2 mt-3"
+      style="width: fit-content"
+    >
       Invalid Message Link Or Webhook URL
     </div>
   </div>
+</div>
+
+<div class="fst-italic mb-2 fs-6">
+  When a "Message Link" is set, pressing send will edit the message inside of
+  Discord.
 </div>
 
 <button class="btn btn-outline-secondary removeMessage">Remove Message</button>
