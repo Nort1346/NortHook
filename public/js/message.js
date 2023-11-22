@@ -15,7 +15,7 @@ import {
 import {
     DefaultWebhookInfo,
     refreshTooltips,
-    webhookUrl,
+    webhooksUrl,
     isCorrectWebhookURL,
     checkWebhookUrl,
     removeMessage,
@@ -357,7 +357,7 @@ export class Message {
         this.loadMessageButton.disabled = true;
 
         const formData = new FormData();
-        formData.append("messageLink", `${webhookUrl.value}/messages/
+        formData.append("messageLink", `${webhooksUrl.value}/messages/
         ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`);
 
         fetch("/getWebhookMessage", {
@@ -377,7 +377,7 @@ export class Message {
 
     checkMessageLink() {
         if (webhookUrlGood && this.isCorrectMessageLink(this.messageLink.value)) {
-            const apiURL = `${webhookUrl.value}/messages/
+            const apiURL = `${webhooksUrl.value}/messages/
           ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`;
             const formData = new FormData();
             formData.append("messageLink", apiURL);

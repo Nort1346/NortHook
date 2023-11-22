@@ -6,7 +6,8 @@ import {
   createWebhookUrlInput
 } from './functions.js'
 import {
-  TypeOfMessage
+  TypeOfMessage,
+  WebhookUrl
 } from './classes.js'
 import {
   Message
@@ -28,23 +29,28 @@ let localTimers = [];
 export let webhookUrlGood = false;
 
 /**
- * WebHook URL Input Element
+ * Array of WebHook URL Input Element
+ * @type WebhookUrl[]
  */
-export const webhookUrl = document.getElementById("webhookUrl");
+export const webhooksUrl = [
+  new WebhookUrl(
+    document.getElementById("webhookUrl"),
+    new bootstrap.Collapse("#InvalidWebhookUrlCollapse", { toggle: false })
+  )
+];
 
-// Events for message parameters
-webhookUrl.addEventListener("input", checkWebhookUrl);
 
-// Webhook foucs options
-webhookUrl.addEventListener("focusin", () => {
-  webhookUrl.type = "text";
+// Events for webhook
+webhooksUrl[0].input.addEventListener("input", checkWebhookUrl);
+webhooksUrl[0].input.addEventListener("focusin", () => {
+  webhooksUrl[0].input.type = "text";
 });
-webhookUrl.addEventListener("focusout", () => {
-  webhookUrl.type = "password";
+webhooksUrl[0].input.addEventListener("focusout", () => {
+  webhooksUrl[0].input.type = "password";
 });
 
 const addWebhookButton = document.getElementById("addWebhook");
-addWebhookButton.addEventListener("click", () => createWebhookUrlInput(generateUniqueId()));
+addWebhookButton.addEventListener("click", addWebhook);
 
 /**
  * Default WebHook Values
@@ -172,7 +178,7 @@ let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.
 async function sendMessage(message) {
   const formData = new FormData();
 
-  formData.append("webhookUrl", webhookUrl.value)
+  formData.append("webhookUrl", webhooksUrl.value)
   if (message.content.replaceAll(/\s/g, "") != "")
     formData.append("content", message.content);
   if (message.user.username.replaceAll(/\s/g, "") != "")
@@ -222,7 +228,7 @@ async function sendMessage(message) {
 async function editMessage(message) {
   const formData = new FormData();
 
-  formData.append("messageLink", `${webhookUrl.value}/messages/${message.messageLink.slice(message.messageLink.lastIndexOf("/") + 1)}`)
+  formData.append("messageLink", `${webhooksUrl.value}/messages/${message.messageLink.slice(message.messageLink.lastIndexOf("/") + 1)}`)
 
   if (message.content.replaceAll(/\s/g, "") != "")
     formData.append("content", message.content);
@@ -274,7 +280,7 @@ async function createMessage() {
 export function checkWebhookUrl() {
   if (isCorrectWebhookURL()) {
     const formData = new FormData();
-    formData.append("webhookUrl", webhookUrl.value);
+    formData.append("webhookUrl", webhooksUrl[0].input.value);
     fetch("/isWebhook", {
       method: "POST",
       body: formData
@@ -307,12 +313,21 @@ export function checkWebhookUrl() {
 }
 
 export function isCorrectWebhookURL() {
-  let res = webhookUrl.value
-    .replaceAll(/\s/g, "")
-    .startsWith("https://discord.com/api/webhooks/");
+  let res = true;
 
-  if (webhookUrl.value.replaceAll(/\s/g, "") == "") alertInvalidWebhookUrl.hide();
-  else if (res == false) alertInvalidWebhookUrl.show();
+  for (const webhook of webhooksUrl) {
+    if (res === true) {
+      res = webhook.input.value
+        .replaceAll(/\s/g, "")
+        .startsWith("https://discord.com/api/webhooks/");
+    }
+
+    if (webhook.input.value.replaceAll(/\s/g, "") == "") webhook.alert.hide();
+    else if (res == false) {
+      webhook.alert.show();
+    }
+  }
+
   return res == true;
 }
 
@@ -334,6 +349,33 @@ export function removeMessage(messId) {
   messages[messageIndex].removeMessage();
   messages.splice(messages.findIndex(mess => mess.id == messId), 1);
   displayMessagesRemoveButton();
+}
+
+async function addWebhook() {
+  const uniqueId = generateUniqueId();
+  const webhookDiv = await createWebhookUrlInput(uniqueId);
+
+  const webhook = new WebhookUrl(
+    webhookDiv.querySelector(`.webhookUrl`),
+    new bootstrap.Collapse(webhookDiv.querySelector('.InvalidWebhookUrlCollapse'), { toggle: false }),
+    webhookDiv.querySelector(`.removeButton`)
+  );
+
+  webhook.input.addEventListener("input", checkWebhookUrl);
+  webhook.input.addEventListener("focusin", () => {
+    webhook.input.type = "text";
+  });
+  webhook.input.addEventListener("focusout", () => {
+    webhook.input.type = "password";
+  });
+
+  webhook.removeButton.addEventListener("click", () => {
+    webhookDiv.remove();
+    webhooksUrl.findIndex(web => web.id == uniqueId);
+  });
+
+  webhooksUrl.push(webhook);
+
 }
 
 function displayMessagesRemoveButton() {
