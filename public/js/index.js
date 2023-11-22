@@ -2,7 +2,8 @@ import * as bootstrap from 'bootstrap';
 import {
   generateUniqueId,
   createMessageInput,
-  createMessageVisual
+  createMessageVisual,
+  createWebhookUrlInput
 } from './functions.js'
 import {
   TypeOfMessage
@@ -41,6 +42,9 @@ webhookUrl.addEventListener("focusin", () => {
 webhookUrl.addEventListener("focusout", () => {
   webhookUrl.type = "password";
 });
+
+const addWebhookButton = document.getElementById("addWebhook");
+addWebhookButton.addEventListener("click", () => createWebhookUrlInput(generateUniqueId()));
 
 /**
  * Default WebHook Values
@@ -143,8 +147,9 @@ refreshAllLocalTimers();
 // Message Time Set
 setInterval(() => {
   let nowData = new Date();
+  const minutes = nowData.getMinutes();
   localTimers.forEach((ele) =>
-    ele.innerText = `${nowData.getHours()}:${nowData.getMinutes()}`)
+    ele.innerText = `${nowData.getHours()}:${minutes < 10 ? '0' : ''}${minutes}`)
 }, 1000);
 
 // Check View For WebSite Width
@@ -361,6 +366,7 @@ function checkSize() {
 function refreshAllLocalTimers() {
   localTimers = document.querySelectorAll(".localTime");
   let nowData = new Date();
+  const minutes = nowData.getMinutes();
   localTimers.forEach((ele) =>
-    ele.innerText = `${nowData.getHours()}:${nowData.getMinutes()}`)
+    ele.innerText = `${nowData.getHours()}:${minutes < 10 ? '0' : ''}${minutes}`)
 }

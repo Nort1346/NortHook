@@ -173,6 +173,20 @@ export async function createMessageVisual(uniqueId) {
   return messageInput;
 }
 
+export async function createWebhookUrlInput(uniqueId) {
+  const response = await fetch('../html/webhookUrlInput.html');
+  const templateHTML = await response.text();
+
+  const webhookUrlInput = document.createElement('div');
+  webhookUrlInput.innerHTML = templateHTML;
+  webhookUrlInput.classList.add("mb-2");
+  webhookUrlInput.id = `webhookUrl_${uniqueId}`;
+
+  document.getElementById("webhookUrls").appendChild(webhookUrlInput);
+
+  return webhookUrlInput;
+}
+
 /**
  * Get blob file
  * @param {string} fileLink Url File

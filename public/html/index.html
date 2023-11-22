@@ -46,25 +46,34 @@
         aria-labelledby="v-pills-home-tab" tabindex="0">
 
         <div class="mb-2">
+          <button class="btn btn-outline-primary btn-sm" id="messagesSavesButton" data-bs-toggle="modal"
+            data-bs-target="#messageSavesModal">Saves</button>
           <button class="btn btn-outline-primary btn-sm" id="clearAllMessages">Clear All</button>
         </div>
 
         <div class="fw-semibold">Webhook URL</div>
-        <div class="input-group">
-          <input class="form-control" type="password" id="webhookUrl" placeholder="https://discord.com/api/webhooks/"
-            required />
-          <button class="btn btn-outline-secondary fw-medium northookButton" id="sendButton" disabled>
-            Send
-          </button>
-        </div>
-        <div class="collapse" id="InvalidWebhookUrlCollapse">
-          <div class="card card-body text-danger border-danger h-auto p-2 mt-3" style="width: fit-content;">
-            Invalid URL
+
+        <div id="webhookUrls">
+          <div class="generalWebhookUrl mb-2">
+            <div class="input-group">
+              <input class="form-control" type="password" id="webhookUrl"
+                placeholder="https://discord.com/api/webhooks/" required />
+              <button class="btn btn-outline-secondary fw-medium northookButton" id="sendButton" disabled>
+                Send
+              </button>
+            </div>
+            <div class="collapse" id="InvalidWebhookUrlCollapse">
+              <div class="card card-body text-danger border-danger h-auto p-2 mt-2" style="width: fit-content;">
+                Invalid URL
+              </div>
+            </div>
           </div>
         </div>
+
+        <button class="btn btn-outline-secondary btn-md" id="addWebhook">Add Webhook</button>
         <div id="messagesInput"></div>
         <hr />
-        <button class="btn btn-outline-primary" id="addMessage">Add Message</button>
+        <button class="btn btn-primary" id="addMessage">Add Message</button>
         <hr />
 
         <footer class="bg-dark text-center text-lg-start white-text rounded">
@@ -75,6 +84,37 @@
       <div id="messageView" class="col-md-6 overflow-y-scroll tab-pane fade d-md-block" role="tabpanel"
         aria-labelledby="v-pills-home-tab" tabindex="0">
         <div id="messagesVisual"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade modal-dialog-scrollable" id="messageSavesModal" tabindex="-1" data-bs-backdrop="static"
+    aria-labelledby="messageSavesModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title fs-5" id="successModalText">
+            Saves
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="overflow-y-auto mb-2">
+            You've yet to create any backups. Provide a name below and click the Save button to initiate one.
+          </div>
+          <div>
+            <div class="fw-semibold">Save name</div>
+            <div class="input-group">
+              <input class="form-control" type="text" id="saveNameInput">
+              <button class="btn btn-outline-primary">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
+            Close
+          </button>
+        </div>
       </div>
     </div>
   </div>
