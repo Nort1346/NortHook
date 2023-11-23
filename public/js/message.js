@@ -20,7 +20,7 @@ import {
     checkWebhookUrl,
     removeMessage,
     WebHookInfo,
-    webhookUrlGood
+    webhooksUrlGood
 } from './index.js';
 
 import { Embed } from './embed.js';
@@ -376,7 +376,7 @@ export class Message {
     }
 
     checkMessageLink() {
-        if (webhookUrlGood && this.isCorrectMessageLink(this.messageLink.value)) {
+        if (webhooksUrlGood && this.isCorrectMessageLink(this.messageLink.value)) {
             const apiURL = `${webhooksUrl.value}/messages/
           ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`;
             const formData = new FormData();

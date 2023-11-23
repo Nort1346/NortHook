@@ -26,7 +26,7 @@ let localTimers = [];
 /**
  * @type boolean
  */
-export let webhookUrlGood = false;
+export let webhooksUrlGood = false;
 
 /**
  * Array of WebHook URL Input Element
@@ -34,6 +34,7 @@ export let webhookUrlGood = false;
  */
 export const webhooksUrl = [
   new WebhookUrl(
+    0,
     document.getElementById("webhookUrl"),
     new bootstrap.Collapse("#InvalidWebhookUrlCollapse", { toggle: false })
   )
@@ -41,7 +42,7 @@ export const webhooksUrl = [
 
 
 // Events for webhook
-webhooksUrl[0].input.addEventListener("input", checkWebhookUrl);
+webhooksUrl[0].input.addEventListener("input", () => checkWebhookUrl(0));
 webhooksUrl[0].input.addEventListener("focusin", () => {
   webhooksUrl[0].input.type = "text";
 });
@@ -98,33 +99,39 @@ sendButton.addEventListener("click", async () => {
   sendButton.disabled = true;
   let messagesSend = 0;
 
-  for (const mess of messages) {
-    if (mess.messageType == TypeOfMessage.SEND) {
-      const response = await sendMessage(mess.getMessage());
-      if (response.success == false) {
-        failModalContentSend.innerText = response.errorText;
-        failModalSend.show();
-        break;
+  for (const webhook of webhooksUrl) {
+    let error = false;
+    for (const mess of messages) {
+      if (mess.messageType == TypeOfMessage.SEND) {
+        const response = await sendMessage(webhook.input.value, mess.getMessage());
+        if (response.success == false) {
+          failModalContentSend.innerText = response.errorText;
+          failModalSend.show();
+          error = true;
+          break;
+        }
+        messagesSend++;
       }
-      messagesSend++;
-    }
-    else {
-      const response = await editMessage(mess.getMessage());
-      if (response.success == false) {
-        failModalContentSend.innerText = response.errorText;
-        failModalSend.show();
-        break;
+      else {
+        const response = await editMessage(webhook.input.value, mess.getMessage());
+        if (response.success == false) {
+          failModalContentSend.innerText = response.errorText;
+          failModalSend.show();
+          error = true;
+          break;
+        }
+        messagesSend++;
       }
-      messagesSend++;
     }
+    if (error) break;
   };
 
-  if (messages.length == messagesSend) {
-    if (messages.length > 1)
-      successModalText.innerText = `Messages Sent`;
-    else
-      successModalText.innerText = `Message Sent`;
-
+  if (messages.length == messagesSend / webhooksUrl.length) {
+    if (messagesSend > 1) {
+      successModalText.innerHTML = "Messages Sent";
+    } else {
+      successModalText.innerHTML = "Message Sent";
+    }
     successModalSend.show();
   }
 
@@ -132,8 +139,6 @@ sendButton.addEventListener("click", async () => {
   sendButton.disabled = false;
 });
 
-//Webhook Url Invalid Alert
-const alertInvalidWebhookUrl = new bootstrap.Collapse("#InvalidWebhookUrlCollapse", { toggle: false });
 
 /*
  * Modals for SEND
@@ -175,10 +180,10 @@ let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.
  * @param {} message 
  * @returns {{success: boolean, errorText: string}}
  */
-async function sendMessage(message) {
+async function sendMessage(webhookUrl, message) {
   const formData = new FormData();
 
-  formData.append("webhookUrl", webhooksUrl.value)
+  formData.append("webhookUrl", webhookUrl)
   if (message.content.replaceAll(/\s/g, "") != "")
     formData.append("content", message.content);
   if (message.user.username.replaceAll(/\s/g, "") != "")
@@ -225,10 +230,10 @@ async function sendMessage(message) {
  * @param {} message 
  * @returns {{success: boolean, errorText: string}}
  */
-async function editMessage(message) {
+async function editMessage(webhookUrl, message) {
   const formData = new FormData();
 
-  formData.append("messageLink", `${webhooksUrl.value}/messages/${message.messageLink.slice(message.messageLink.lastIndexOf("/") + 1)}`)
+  formData.append("messageLink", `${webhookUrl}/messages/${message.messageLink.slice(message.messageLink.lastIndexOf("/") + 1)}`)
 
   if (message.content.replaceAll(/\s/g, "") != "")
     formData.append("content", message.content);
@@ -277,22 +282,24 @@ async function createMessage() {
   displayMessagesRemoveButton();
 }
 
-export function checkWebhookUrl() {
-  if (isCorrectWebhookURL()) {
+export function checkWebhookUrl(indexOfWebhookUrl) {
+  if (isCorrectWebhookURL(indexOfWebhookUrl)) {
     const formData = new FormData();
-    formData.append("webhookUrl", webhooksUrl[0].input.value);
+    formData.append("webhookUrl", webhooksUrl[indexOfWebhookUrl].input.value);
     fetch("/isWebhook", {
       method: "POST",
       body: formData
     })
       .then((response) => response.json())
       .then((data) => {
-        sendButton.disabled = !data.success;
-        data.success == true ? alertInvalidWebhookUrl.hide() : alertInvalidWebhookUrl.show();
-        webhookUrlGood = data.success;
+        data.success == true ?
+          webhooksUrl[indexOfWebhookUrl].alert.hide()
+          : webhooksUrl[indexOfWebhookUrl].alert.show();
+        webhooksUrl[indexOfWebhookUrl].verify = data.success;
 
-        WebHookInfo.name = data?.name;
-        WebHookInfo.avatar = data?.avatar;
+        webhooksUrl[indexOfWebhookUrl].webHookInfo.name = data?.name;
+        webhooksUrl[indexOfWebhookUrl].webHookInfo.avatar = data?.avatar;
+        verifyWebhookUrls();
 
         messages.forEach((mess) => {
           mess.setWebhookInfo();
@@ -300,11 +307,10 @@ export function checkWebhookUrl() {
         });
       });
   } else {
-    sendButton.disabled = true;
-    webhookUrlGood = false;
+    webhooksUrl[indexOfWebhookUrl].webHookInfo.name = null;
+    webhooksUrl[indexOfWebhookUrl].webHookInfo.name = null;
 
-    WebHookInfo.name = null;
-    WebHookInfo.avatar = null;
+    verifyWebhookUrls();
 
     messages.forEach((mess) => {
       mess.setWebhookInfo();
@@ -312,7 +318,21 @@ export function checkWebhookUrl() {
   }
 }
 
-export function isCorrectWebhookURL() {
+export function isCorrectWebhookURL(indexOfWebhookUrl) {
+  let res = webhooksUrl[indexOfWebhookUrl].input.value
+    .replaceAll(/\s/g, "")
+    .startsWith("https://discord.com/api/webhooks/");
+
+  if (webhooksUrl[indexOfWebhookUrl].input.value.replaceAll(/\s/g, "") == "")
+    webhooksUrl[indexOfWebhookUrl].alert.hide();
+  else if (res == false) {
+    webhooksUrl[indexOfWebhookUrl].alert.show();
+  }
+
+  return res;
+}
+
+export function isCorrectAllWebhookURL() {
   let res = true;
 
   for (const webhook of webhooksUrl) {
@@ -322,13 +342,48 @@ export function isCorrectWebhookURL() {
         .startsWith("https://discord.com/api/webhooks/");
     }
 
-    if (webhook.input.value.replaceAll(/\s/g, "") == "") webhook.alert.hide();
+    if (webhook.input.value.replaceAll(/\s/g, "") == "")
+      webhook.alert.hide();
     else if (res == false) {
       webhook.alert.show();
     }
   }
 
-  return res == true;
+  return res;
+}
+
+export function verifyWebhookUrls() {
+  let invalid = true;
+
+  for (const webhook of webhooksUrl) {
+    if (webhook.verify == false) {
+      invalid = false;
+      sendButton.disabled = true;
+      webhooksUrlGood = false;
+
+      if (webhook.id == 0) {
+        WebHookInfo.name = null;
+        WebHookInfo.avatar = null;
+      }
+
+      break;
+    }
+  }
+
+  if (webhooksUrl[0].verify) {
+    WebHookInfo.name = webhooksUrl[0].webHookInfo.name;
+    WebHookInfo.avatar = webhooksUrl[0].webHookInfo.avatar;
+  } else {
+    WebHookInfo.name = null;
+    WebHookInfo.avatar = null;
+  }
+
+  if (invalid) {
+    sendButton.disabled = false;
+    webhooksUrlGood = true;
+  }
+
+  return invalid;
 }
 
 export function refreshTooltips() {
@@ -356,12 +411,13 @@ async function addWebhook() {
   const webhookDiv = await createWebhookUrlInput(uniqueId);
 
   const webhook = new WebhookUrl(
+    uniqueId,
     webhookDiv.querySelector(`.webhookUrl`),
     new bootstrap.Collapse(webhookDiv.querySelector('.InvalidWebhookUrlCollapse'), { toggle: false }),
     webhookDiv.querySelector(`.removeButton`)
   );
 
-  webhook.input.addEventListener("input", checkWebhookUrl);
+  webhook.input.addEventListener("input", () => checkWebhookUrl(webhooksUrl.findIndex(ele => ele.id == uniqueId)));
   webhook.input.addEventListener("focusin", () => {
     webhook.input.type = "text";
   });
@@ -371,11 +427,14 @@ async function addWebhook() {
 
   webhook.removeButton.addEventListener("click", () => {
     webhookDiv.remove();
-    webhooksUrl.findIndex(web => web.id == uniqueId);
+    webhooksUrl.splice(webhooksUrl.findIndex(web => web.id == uniqueId), 1);
+    refreshTooltips();
+    verifyWebhookUrls();
   });
 
   webhooksUrl.push(webhook);
-
+  refreshTooltips();
+  verifyWebhookUrls();
 }
 
 function displayMessagesRemoveButton() {
