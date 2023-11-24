@@ -13,14 +13,14 @@ import {
 } from './classes.js';
 
 import {
-    DefaultWebhookInfo,
+    defaultWebhookInfo,
     refreshTooltips,
     webhooksUrl,
     isCorrectWebhookURL,
     checkWebhookUrl,
     removeMessage,
-    WebHookInfo,
-    webhooksUrlGood
+    generalWebHookInfo,
+    isAllWebhooksGood
 } from './index.js';
 
 import { Embed } from './embed.js';
@@ -170,7 +170,7 @@ export class Message {
         if (this.username.value.replaceAll(/\s/g, "") != "") {
             this.usernameView.innerText = this.username.value;
         } else {
-            this.usernameView.innerText = this.webhookInfo.name ?? DefaultWebhookInfo.name;
+            this.usernameView.innerText = this.webhookInfo.name ?? defaultWebhookInfo.name;
         }
 
         if (this.avatar_url.value.replaceAll(/\s/g, "") != "") {
@@ -179,11 +179,11 @@ export class Message {
                 this.avatarView.src = this.avatar_url.value;
             } else {
                 this.alertInvalidAvatarUrl.show();
-                this.avatarView.src = this.webhookInfo.avatar ?? DefaultWebhookInfo.avatar;
+                this.avatarView.src = this.webhookInfo.avatar ?? defaultWebhookInfo.avatar;
             }
         } else {
             this.alertInvalidAvatarUrl.hide();
-            this.avatarView.src = this.webhookInfo.avatar ?? DefaultWebhookInfo.avatar;
+            this.avatarView.src = this.webhookInfo.avatar ?? defaultWebhookInfo.avatar;
         }
     }
 
@@ -376,7 +376,7 @@ export class Message {
     }
 
     checkMessageLink() {
-        if (webhooksUrlGood && this.isCorrectMessageLink(this.messageLink.value)) {
+        if (isAllWebhooksGood && this.isCorrectMessageLink(this.messageLink.value)) {
             const apiURL = `${webhooksUrl.value}/messages/
           ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`;
             const formData = new FormData();
@@ -424,7 +424,7 @@ export class Message {
                 username: this.username.value,
                 avatar_url: this.avatar_url.value
             },
-            embeds: [].concat(...this.embeds.map(embed => embed.getEmbed())),
+            embeds: [].concat(...this.embeds.map(embed => embed.getEmbed())) ?? null,
             files: this.files.files,
             messageLink: this.messageLink.value
         }
@@ -442,6 +442,20 @@ export class Message {
         return jsonMessage;
     }
 
+    getMessageToData() {
+        return {
+            data: {
+                content: this.content.value,
+                user: {
+                    username: this.username.value,
+                    avatar_url: this.avatar_url.value
+                },
+                embeds: [].concat(...this.embeds.map(embed => embed.getEmbed())) ?? null,
+            },
+            reference: this.messageLink.value
+        }
+    }
+
     removeMessage() {
         this.messageInputElement.remove();
         this.messageVisualElement.remove();
@@ -452,8 +466,8 @@ export class Message {
     }
 
     setWebhookInfo() {
-        this.webhookInfo.name = WebHookInfo.name;
-        this.webhookInfo.avatar = WebHookInfo.avatar;
+        this.webhookInfo.name = generalWebHookInfo.name;
+        this.webhookInfo.avatar = generalWebHookInfo.avatar;
         this.changeView();
     }
 

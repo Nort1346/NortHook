@@ -26,7 +26,7 @@ let localTimers = [];
 /**
  * @type boolean
  */
-export let webhooksUrlGood = false;
+export let isAllWebhooksGood = false;
 
 /**
  * Array of WebHook URL Input Element
@@ -39,7 +39,7 @@ export const webhooksUrl = [
     new bootstrap.Collapse("#InvalidWebhookUrlCollapse", { toggle: false })
   )
 ];
-
+localStorage.clear();
 
 // Events for webhook
 webhooksUrl[0].input.addEventListener("input", () => checkWebhookUrl(0));
@@ -56,7 +56,7 @@ addWebhookButton.addEventListener("click", addWebhook);
 /**
  * Default WebHook Values
  */
-export const DefaultWebhookInfo = {
+export const defaultWebhookInfo = {
   name: 'Nort',
   avatar: 'https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024'
 };
@@ -64,7 +64,7 @@ export const DefaultWebhookInfo = {
 /**
  * General WebhookInfo
  */
-export let WebHookInfo = {
+export let generalWebHookInfo = {
   name: null,
   avatar: null
 };
@@ -73,27 +73,58 @@ export let WebHookInfo = {
  * Options buttons
  */
 const clearAllButton = document.getElementById("clearAllMessages");
+clearAllButton.addEventListener("click", clearAllMessages);
 
-clearAllButton.addEventListener("click", () => {
-  messages.forEach((mess, index) => {
-    if (index != 0) mess.removeMessage();
-    else {
-      mess.clearMessage();
-      mess.toggleRemoveMessageButtonDisplay(false);
-    }
-  });
-  messages.slice(0);
-});
+const savesModal = document.getElementById("messageSavesModal");
+const saveNameInput = document.getElementById("saveNameInput");
+const saveDataButton = document.getElementById("saveDataButton");
+const saves = document.getElementById("saves");
+
+savesModal.addEventListener('show.bs.modal', loadSaves);
+saveDataButton.addEventListener("click", saveData);
 
 /**
  * Send Button
  */
 export const sendButton = document.getElementById("sendButton");
-sendButton.disabled = true;
+sendButton.addEventListener("click", async () => send);
 
-// Events for sendButton
-sendButton.addEventListener("click", async () => {
+/*
+ * Modals for SEND
+ */
+const successModalSend = new bootstrap.Modal('#successModalSend', { focus: true });
+const successModalText = document.getElementById("successModalText");
 
+const failModalSend = new bootstrap.Modal('#failModalSend', { focus: true });
+const failModalContentSend = document.getElementById("failEmbedErrorContentSend");
+
+createMessage();
+const addMessageButton = document.getElementById("addMessage");
+addMessageButton.addEventListener("click", async () => await createMessage());
+
+refreshAllLocalTimers();
+
+// Message Time Set
+setInterval(() => {
+  let nowData = new Date();
+  const minutes = nowData.getMinutes();
+  localTimers.forEach((ele) =>
+    ele.innerText = `${nowData.getHours()}:${minutes < 10 ? '0' : ''}${minutes}`)
+}, 1000);
+
+// Check View For WebSite Width
+checkSize();
+window.addEventListener('resize', checkSize);
+
+// Tooltips support
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,
+  {
+    trigger: "hover",
+    delay: { show: 100, hide: 100 }
+  }));
+
+async function send() {
   const loading = document.getElementById("loadingMessage");
   loading.classList.remove("visually-hidden");
   sendButton.disabled = true;
@@ -137,44 +168,7 @@ sendButton.addEventListener("click", async () => {
 
   loading.classList.add("visually-hidden");
   sendButton.disabled = false;
-});
-
-
-/*
- * Modals for SEND
- */
-const successModalSend = new bootstrap.Modal('#successModalSend', { focus: true });
-const successModalText = document.getElementById("successModalText");
-
-const failModalSend = new bootstrap.Modal('#failModalSend', { focus: true });
-const failModalContentSend = document.getElementById("failEmbedErrorContentSend");
-
-createMessage();
-const addMessageButton = document.getElementById("addMessage");
-addMessageButton.addEventListener("click", async () => await createMessage());
-
-refreshAllLocalTimers();
-
-// Message Time Set
-setInterval(() => {
-  let nowData = new Date();
-  const minutes = nowData.getMinutes();
-  localTimers.forEach((ele) =>
-    ele.innerText = `${nowData.getHours()}:${minutes < 10 ? '0' : ''}${minutes}`)
-}, 1000);
-
-// Check View For WebSite Width
-checkSize();
-window.addEventListener('resize', checkSize);
-
-// Tooltips support
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,
-  {
-    trigger: "hover",
-    delay: { show: 100, hide: 100 }
-  }))
-
+}
 /**
  * Send message in discord
  * @param {} message 
@@ -359,11 +353,11 @@ export function verifyWebhookUrls() {
     if (webhook.verify == false) {
       invalid = false;
       sendButton.disabled = true;
-      webhooksUrlGood = false;
+      isAllWebhooksGood = false;
 
       if (webhook.id == 0) {
-        WebHookInfo.name = null;
-        WebHookInfo.avatar = null;
+        generalWebHookInfo.name = null;
+        generalWebHookInfo.avatar = null;
       }
 
       break;
@@ -371,16 +365,16 @@ export function verifyWebhookUrls() {
   }
 
   if (webhooksUrl[0].verify) {
-    WebHookInfo.name = webhooksUrl[0].webHookInfo.name;
-    WebHookInfo.avatar = webhooksUrl[0].webHookInfo.avatar;
+    generalWebHookInfo.name = webhooksUrl[0].webHookInfo.name;
+    generalWebHookInfo.avatar = webhooksUrl[0].webHookInfo.avatar;
   } else {
-    WebHookInfo.name = null;
-    WebHookInfo.avatar = null;
+    generalWebHookInfo.name = null;
+    generalWebHookInfo.avatar = null;
   }
 
   if (invalid) {
     sendButton.disabled = false;
-    webhooksUrlGood = true;
+    isAllWebhooksGood = true;
   }
 
   return invalid;
@@ -435,6 +429,57 @@ async function addWebhook() {
   webhooksUrl.push(webhook);
   refreshTooltips();
   verifyWebhookUrls();
+}
+
+function saveData() {
+  if (saveNameInput.value !== "") {
+    localStorage.setItem(`${saveNameInput.value}`, JSON.stringify(getAllDataJSON(saveNameInput.value)));
+    saveNameInput.value = "";
+  }
+  loadSaves();
+}
+
+function getAllDataJSON(name) {
+  const data = {
+    version: 1.0,
+    save: {
+      name: name,
+      messages: null,
+      targets: null
+    }
+  };
+
+  data.save.messages = [].concat(...messages.map(messages => messages.getMessageToData()));
+  data.save.targets = [].concat(...webhooksUrl.map(webhook => { return { url: webhook.input.value } }));
+  return data;
+}
+
+function loadSaves() {
+  const allKeys = Object.keys(localStorage);
+  const allSaves = allKeys.map(key => JSON.parse(localStorage.getItem(key)));
+
+  if (allKeys.length == 0) {
+    saves.innerHTML = "You've yet to create any backups. Provide a name below and click the Save button to initiate one.";
+  } else {
+    saves.innerHTML = "";
+    for (const save of allSaves) {
+      const div = document.createElement('div');
+      div.innerText = save.save.name;
+      div.classList.add("w-100", "border-bottom", "py-2", "px-1");
+      saves.appendChild(div);
+    }
+  }
+}
+
+function clearAllMessages() {
+  messages.forEach((mess, index) => {
+    if (index != 0) mess.removeMessage();
+    else {
+      mess.clearMessage();
+      mess.toggleRemoveMessageButtonDisplay(false);
+    }
+  });
+  messages.slice(0);
 }
 
 function displayMessagesRemoveButton() {

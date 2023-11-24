@@ -99,14 +99,12 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div class="overflow-y-auto mb-2">
-            You've yet to create any backups. Provide a name below and click the Save button to initiate one.
-          </div>
+          <div class="overflow-y-auto mb-2" id="saves" style="max-height: 300px;"></div>
           <div>
             <div class="fw-semibold">Save name</div>
             <div class="input-group">
               <input class="form-control" type="text" id="saveNameInput">
-              <button class="btn btn-outline-primary">Save</button>
+              <button class="btn btn-outline-primary" id="saveDataButton">Save</button>
             </div>
           </div>
         </div>
