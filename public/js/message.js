@@ -164,6 +164,34 @@ export class Message {
         await this.changeView();
     }
 
+    async setMessageFromData(data) {
+        //Content
+        this.content.value = await data?.data.content?.substring(0, 2000);
+        //Profile
+        this.username.value = await data?.data.user?.username?.substring(0, 80) ?? "";
+        this.avatar_url.value = await data?.data.user?.avatar_url?.substring(0, 2048) ?? "";
+
+        //Embeds
+        this.embeds.forEach(ele => ele.removeEmbed());
+        if (data.data.embeds !== null) {
+            this.embeds.splice(0, this.embeds.length);
+            for (let i = 0; i < data.data.embeds.length && i < 10; i++) {
+                await this.addEmbed(await getEmbedInput(this.messageInputElement),
+                    await getEmbedVisual(this.messageVisualElement));
+                await this.embeds[i].setEmbed(data.data.embeds[i]);
+            }
+        }
+        this.messageLink.value = await data?.reference;
+
+        this.clearFiles();
+        this.countEmbedNumbers();
+        this.checkAddEmbedButton();
+        this.checkArrowsEmbeds();
+        this.refreshFilesVisual();
+        this.checkMessageLink()
+        await this.changeView();
+    }
+
     async changeView() {
         this.contentView.innerHTML = formatText(this.content.value);
 
@@ -492,6 +520,7 @@ export class Message {
         this.embeds.forEach((embed) => {
             embed.removeEmbed();
         });
+        this.embeds.splice(0);
         this.messageLink.value = "";
         this.checkMessageLink();
     }
