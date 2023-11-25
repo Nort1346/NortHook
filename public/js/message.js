@@ -45,7 +45,7 @@ export class Message {
         this.username = messageInputElement.querySelector(".username");
         this.avatar_url = messageInputElement.querySelector(".avatar_url");
         this.files = messageInputElement.querySelector(".files");
-        this.messageLink = messageInputElement.querySelector(".messageLink");
+        this.reference = messageInputElement.querySelector(".messageLink");
         /** Message embeds Array
          * @type [Embed]
          */
@@ -69,12 +69,11 @@ export class Message {
         this.alertInvalidAvatarUrl = new bootstrap.Collapse(`#messageInput_${this.id} .InvalidAvatarUrlCollapse`, { toggle: false });
         this.alertInvalidMessageLink = new bootstrap.Collapse(`#messageInput_${this.id} .InvalidMessageLinkCollapse`, { toggle: false });
 
-        this.content.addEventListener("input", async () => await this.changeView());
-        this.username.addEventListener("input", async () => await this.changeView());
-        this.avatar_url.addEventListener("input", async () => await this.changeView());
+        this.content.addEventListener("input", async () => await this.refreshView());
+        this.username.addEventListener("input", async () => await this.refreshView());
+        this.avatar_url.addEventListener("input", async () => await this.refreshView());
 
-        // this.messageLink.addEventListener("input", () => checkWebhookUrl());
-        this.messageLink.addEventListener("input", () => this.checkMessageLink());
+        this.reference.addEventListener("input", () => this.checkReference());
 
         this.loadMessageButton.addEventListener("click", () => this.loadMessage());
         this.clearFilesButton.addEventListener("click", async () => this.clearFiles());
@@ -95,7 +94,7 @@ export class Message {
 
         //JSON listeners
         this.jsonEditorButton.addEventListener("click", () => {
-            this.jsonEditorModal.show(); this.jsonEditorJSON.value = JSON.stringify(this.getJsonMessage(), null, 3)
+            this.jsonEditorModal.show(); this.jsonEditorJSON.value = JSON.stringify(this.getMessageJSON(), null, 3)
         });
         this.jsonEditorJSON.addEventListener("input", () => this.checkJsonInputErrors());
         this.jsonEditorExecuteChangesButton.addEventListener("click", async () => {
@@ -110,9 +109,10 @@ export class Message {
         */
         this.webhookInfo = { name: null, avatar: null };
         this.setStandardValues();
-        this.setWebhookInfo();
+        this.refreshWebhookInfo();
     }
 
+    //SET message
     /**
      * @param {{ content: any; author: { username: any; id: any; avatar: any; }; embeds: string | any[]; }} message
      */
@@ -136,7 +136,7 @@ export class Message {
         this.checkAddEmbedButton();
         this.checkArrowsEmbeds();
         this.refreshFilesVisual();
-        this.changeView();
+        this.refreshView();
     }
 
     async setMessageJSON(message) {
@@ -161,7 +161,7 @@ export class Message {
         this.checkAddEmbedButton();
         this.checkArrowsEmbeds();
         this.refreshFilesVisual();
-        await this.changeView();
+        await this.refreshView();
     }
 
     async setMessageFromData(data) {
@@ -181,18 +181,84 @@ export class Message {
                 await this.embeds[i].setEmbed(data.data.embeds[i]);
             }
         }
-        this.messageLink.value = await data?.reference;
+        this.reference.value = await data?.reference;
 
         this.clearFiles();
         this.countEmbedNumbers();
         this.checkAddEmbedButton();
         this.checkArrowsEmbeds();
         this.refreshFilesVisual();
-        this.checkMessageLink()
-        await this.changeView();
+        this.checkReference()
+        await this.refreshView();
     }
 
-    async changeView() {
+    //GET message
+    getMessage() {
+        return {
+            content: this.content.value,
+            user: {
+                username: this.username.value,
+                avatar_url: this.avatar_url.value
+            },
+            embeds: [].concat(...this.embeds.map(embed => embed.getEmbed())) ?? null,
+            files: this.files.files,
+            reference: this.reference.value
+        }
+    }
+
+    getMessageJSON() {
+        const jsonMessage = {
+            content: this.content.value,
+            embeds: this.embeds.length > 0 ? [].concat(...this.embeds.map(embed => embed.getEmbed())) : null,
+        };
+        if (this.username.value.trimStart() !== "")
+            jsonMessage.username = this.username.value;
+        if (this.avatar_url.value.trimStart() !== "")
+            jsonMessage.avatar_url = this.avatar_url.value;
+        return jsonMessage;
+    }
+
+    getMessageData() {
+        return {
+            data: {
+                content: this.content.value,
+                user: {
+                    username: this.username.value,
+                    avatar_url: this.avatar_url.value
+                },
+                embeds: [].concat(...this.embeds.map(embed => embed.getEmbed())) ?? null,
+            },
+            reference: this.reference.value
+        }
+    }
+
+    //Load Message
+    loadMessage() {
+        const loading = document.getElementById("loadingMessage");
+        loading.classList.remove("visually-hidden");
+        this.loadMessageButton.disabled = true;
+
+        const formData = new FormData();
+        formData.append("messageLink", `${webhooksUrl.value}/messages/
+        ${this.reference.value.slice(this.reference.value.lastIndexOf("/") + 1)}`);
+
+        fetch("/getWebhookMessage", {
+            method: "POST",
+            body: formData
+        })
+            .then((response) => response.json())
+            .then(async (data) => {
+                loading.classList.add("visually-hidden");
+                this.loadMessageButton.disabled = false;
+
+                if (data.success == true) {
+                    await this.setMessageFromMessageObject(data.message);
+                }
+            });
+    }
+
+    //Refresh
+    async refreshView() {
         this.contentView.innerHTML = formatText(this.content.value);
 
         if (this.username.value.replaceAll(/\s/g, "") != "") {
@@ -247,15 +313,23 @@ export class Message {
         }
     }
 
-    setStandardValues() {
-        this.content.value = "Hello World, I am Developer";
-        this.changeView();
+    refreshWebhookInfo() {
+        this.webhookInfo.name = generalWebHookInfo.name;
+        this.webhookInfo.avatar = generalWebHookInfo.avatar;
+        this.refreshView();
     }
 
+    //SET Standard Values
+    setStandardValues() {
+        this.content.value = "Hello World, I am Developer";
+        this.refreshView();
+    }
+
+    //Embed methods
     async addEmbed(inputEmbed, visualEmbed) {
         const uniqeId = generateUniqueId();
         const newEmbed = new Embed(inputEmbed, visualEmbed, uniqeId);
-        await newEmbed.setNumber(this.embeds.length);
+        await newEmbed.setEmbedNumber(this.embeds.length);
 
         this.embeds.push(newEmbed);
 
@@ -375,38 +449,15 @@ export class Message {
 
     countEmbedNumbers() {
         for (let i = 0; i < this.embeds.length; i++) {
-            this.embeds[i].setNumber(i);
+            this.embeds[i].setEmbedNumber(i);
         }
     }
 
-    loadMessage() {
-        const loading = document.getElementById("loadingMessage");
-        loading.classList.remove("visually-hidden");
-        this.loadMessageButton.disabled = true;
-
-        const formData = new FormData();
-        formData.append("messageLink", `${webhooksUrl.value}/messages/
-        ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`);
-
-        fetch("/getWebhookMessage", {
-            method: "POST",
-            body: formData
-        })
-            .then((response) => response.json())
-            .then(async (data) => {
-                loading.classList.add("visually-hidden");
-                this.loadMessageButton.disabled = false;
-
-                if (data.success == true) {
-                    await this.setMessageFromMessageObject(data.message);
-                }
-            });
-    }
-
-    checkMessageLink() {
-        if (isAllWebhooksGood && this.isCorrectMessageLink(this.messageLink.value)) {
+    //Reference
+    checkReference() {
+        if (isAllWebhooksGood && this.isCorrectReference(this.reference.value)) {
             const apiURL = `${webhooksUrl.value}/messages/
-          ${this.messageLink.value.slice(this.messageLink.value.lastIndexOf("/") + 1)}`;
+          ${this.reference.value.slice(this.reference.value.lastIndexOf("/") + 1)}`;
             const formData = new FormData();
             formData.append("messageLink", apiURL);
             fetch("/getWebhookMessage", {
@@ -429,15 +480,15 @@ export class Message {
             this.messageType = TypeOfMessage.SEND;
             this.loadMessageButton.disabled = true;
 
-            if (this.messageLink.value.replaceAll(/\s/g, "") == "")
+            if (this.reference.value.replaceAll(/\s/g, "") == "")
                 this.alertInvalidMessageLink.hide();
             else
                 this.alertInvalidMessageLink.show();
         }
-        this.changeView();
+        this.refreshView();
     }
 
-    isCorrectMessageLink(link) {
+    isCorrectReference(link) {
         let res = link
             .replaceAll(/\s/g, "")
             .startsWith("https://discord.com/channels/");
@@ -445,45 +496,7 @@ export class Message {
         return res == true;
     }
 
-    getMessage() {
-        return {
-            content: this.content.value,
-            user: {
-                username: this.username.value,
-                avatar_url: this.avatar_url.value
-            },
-            embeds: [].concat(...this.embeds.map(embed => embed.getEmbed())) ?? null,
-            files: this.files.files,
-            messageLink: this.messageLink.value
-        }
-    }
-
-    getJsonMessage() {
-        const jsonMessage = {
-            content: this.content.value,
-            embeds: this.embeds.length > 0 ? [].concat(...this.embeds.map(embed => embed.getEmbed())) : null,
-        };
-        if (this.username.value.trimStart() !== "")
-            jsonMessage.username = this.username.value;
-        if (this.avatar_url.value.trimStart() !== "")
-            jsonMessage.avatar_url = this.avatar_url.value;
-        return jsonMessage;
-    }
-
-    getMessageToData() {
-        return {
-            data: {
-                content: this.content.value,
-                user: {
-                    username: this.username.value,
-                    avatar_url: this.avatar_url.value
-                },
-                embeds: [].concat(...this.embeds.map(embed => embed.getEmbed())) ?? null,
-            },
-            reference: this.messageLink.value
-        }
-    }
-
+    //Remove Message
     removeMessage() {
         this.messageInputElement.remove();
         this.messageVisualElement.remove();
@@ -493,12 +506,7 @@ export class Message {
         });
     }
 
-    setWebhookInfo() {
-        this.webhookInfo.name = generalWebHookInfo.name;
-        this.webhookInfo.avatar = generalWebHookInfo.avatar;
-        this.changeView();
-    }
-
+    //Remove Button
     toggleRemoveMessageButtonDisplay(toggle) {
         if (toggle) {
             this.removeMessageButton.classList.remove("d-none");
@@ -507,6 +515,7 @@ export class Message {
         }
     }
 
+    //Clear
     clearFiles() {
         this.files.value = null;
         this.refreshFilesVisual();
@@ -521,10 +530,11 @@ export class Message {
             embed.removeEmbed();
         });
         this.embeds.splice(0);
-        this.messageLink.value = "";
-        this.checkMessageLink();
+        this.reference.value = "";
+        this.checkReference();
     }
 
+    //Errors
     checkJsonInputErrors() {
         try {
             JSON.parse(this.jsonEditorJSON.value);

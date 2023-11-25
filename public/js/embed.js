@@ -62,9 +62,8 @@ export class Embed {
             }
         }
 
-        this.addListeners();
+        this.#addListeners();
     };
-
     /**
      * Get embed element
      * @returns Embed element
@@ -96,7 +95,6 @@ export class Embed {
 
         return embedObject;
     }
-
     /**
      * Set embed values
      * @param {*} embed Embed element
@@ -127,7 +125,6 @@ export class Embed {
 
         await this.refreshEmbedVisual();
     }
-
     /**
      * Refresh embed visual
      */
@@ -238,8 +235,7 @@ export class Embed {
                 this.fields[i].fieldVisual.colElementInline.classList.add("col-12");
         }
     }
-
-    addListeners() {
+    #addListeners() {
         this.inputEmbed.addEventListener("input", () => this.refreshEmbedVisual());
         this.addFieldButton.addEventListener("click", async () => this.addField());
     }
@@ -337,7 +333,6 @@ export class Embed {
         refreshTooltips();
         return uniqueFieldId;
     }
-
     /**
      * Remove Field
      * @param {Number} fieldId Id of field
@@ -376,7 +371,6 @@ export class Embed {
             this.refreshEmbedVisual();
         }
     }
-
     /**
      * Move field Up
      * @param {Number} fieldId 
@@ -397,7 +391,6 @@ export class Embed {
             this.checkArrowsFields();
         }
     }
-
     /**
      * Move field Down
      * @param {Number} fieldId 
@@ -484,7 +477,7 @@ export class Embed {
      * Set embed number in the header
      * @param {Number} number Number of embed to display
      */
-    async setNumber(number) {
+    async setEmbedNumber(number) {
         this.embedNumber.innerText = `Embed ${number + 1} `
         this.refreshEmbedVisual();
     }
@@ -522,4 +515,5 @@ export class Embed {
         this.inputEmbed.remove();
         this.visualEmbed.remove();
     }
+
 }

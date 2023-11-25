@@ -216,7 +216,7 @@ async function sendMessage(webhookUrl, message) {
 async function editMessage(webhookUrl, message) {
   const formData = new FormData();
 
-  formData.append("messageLink", `${webhookUrl}/messages/${message.messageLink.slice(message.messageLink.lastIndexOf("/") + 1)}`)
+  formData.append("messageLink", `${webhookUrl}/messages/${message.reference.slice(message.reference.lastIndexOf("/") + 1)}`)
 
   if (message.content.replaceAll(/\s/g, "") != "")
     formData.append("content", message.content);
@@ -285,8 +285,8 @@ export function checkWebhookUrl(indexOfWebhookUrl) {
         verifyWebhookUrls();
 
         messages.forEach((mess) => {
-          mess.setWebhookInfo();
-          mess.checkMessageLink();
+          mess.refreshWebhookInfo();
+          mess.checkReference();
         });
       });
   } else {
@@ -296,7 +296,7 @@ export function checkWebhookUrl(indexOfWebhookUrl) {
     verifyWebhookUrls();
 
     messages.forEach((mess) => {
-      mess.setWebhookInfo();
+      mess.refreshWebhookInfo();
     });
   }
 }
@@ -417,7 +417,7 @@ function getAllDataJSON(name) {
     }
   };
 
-  data.save.messages = [].concat(...messages.map(messages => messages.getMessageToData()));
+  data.save.messages = [].concat(...messages.map(messages => messages.getMessageData()));
   data.save.targets = [].concat(...webhooksUrl.map(webhook => { return { url: webhook.input.value } }));
   return data;
 }
@@ -483,9 +483,7 @@ async function exportSaveData(key) {
   link.href = URL.createObjectURL(blob);
   link.download = key;
   link.click();
-  //link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
 
-  // Zwolnij zasoby po utworzeniu linku
   window.URL.revokeObjectURL(link.href);
 }
 
