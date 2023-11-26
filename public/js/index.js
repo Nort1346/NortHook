@@ -18,11 +18,6 @@ import {
  */
 const messages = [];
 
-/**
- * @type []
- */
-let localTimers = [];
-
 // Tooltips support
 const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,
@@ -78,7 +73,7 @@ const saveDataButton = document.getElementById("saveDataButton");
 const saves = document.getElementById("saves");
 await loadAllSaves();
 saveNameInput.addEventListener("input", checkSaveButtonName);
-saveDataButton.addEventListener("click", saveData);
+saveDataButton.addEventListener("click", () => saveData(saveNameInput.value));
 
 /**
  * Send Button
@@ -99,9 +94,10 @@ createMessage();
 const addMessageButton = document.getElementById("addMessage");
 addMessageButton.addEventListener("click", async () => await createMessage());
 
+let localTimers = [];
 refreshAllLocalTimers();
 
-// Message Time Set
+// Messages Set Time
 setInterval(() => {
   let nowData = new Date();
   const minutes = nowData.getMinutes();
@@ -447,20 +443,20 @@ async function loadAllDataJSON(key) {
   }
 }
 
-async function saveData() {
-  if (saveNameInput.value === "") return;
+async function saveData(key) {
+  if (key === "") return;
 
-  const save = getAllDataJSON(saveNameInput.value);
-  localStorage.setItem(`${saveNameInput.value}`, JSON.stringify(save));
+  const save = getAllDataJSON(key);
+  localStorage.setItem(`${key}`, JSON.stringify(save));
+
+  if (saves.querySelector(`[id="saveElement_${key}"]`) !== null) return;
   saveNameInput.value = "";
   checkSaveButtonName();
-
-  if (saves.querySelector(`#saveElement_${save.save.name}`) !== null) return;
 
   const response = await fetch('../html/saveElement.html');
   const templateHTML = await response.text();
 
-  const div = generateSaveElement(save.save.name, templateHTML);
+  const div = generateSaveElement(key, templateHTML);
 
   checkEmptySaves();
   saves.appendChild(div);
@@ -499,6 +495,12 @@ function checkEmptySaves() {
     if (div) {
       div.remove();
     }
+
+    if (localStorage.length > 5)
+      saves.classList.remove("overflow-y-visible");
+    else
+      saves.classList.add("overflow-y-visible");
+
     return true;
   }
 }
@@ -535,6 +537,7 @@ function generateSaveElement(name, templateHTML) {
   div.querySelector(".saveLoadButton").addEventListener("click", () => loadAllDataJSON(name));
   div.querySelector(".removeSaveButton").addEventListener("click", () => removeSaveData(name));
   div.querySelector(".exportSaveButton").addEventListener("click", () => exportSaveData(name));
+  div.querySelector(".overrideSaveButton").addEventListener("click", () => saveData(name));
   div.classList.add("saveElement", "container", "border-bottom", "py-2");
   return div;
 }
