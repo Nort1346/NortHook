@@ -97,13 +97,20 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content bg-dark text-white">
         <div class="modal-header">
-          <h5 class="modal-title fs-5">
+          <h6 class="modal-title fs-5">
             Saves
-          </h5>
+          </h6>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body pb-0 mb-3" id="saves" style="max-height: 300px;">
+
+        <div class="p-3 pt-3 pb-1">
+          <div class="fw-semibold">Search saves</div>
+          <input class="form-control" type="text" id="searchSavesInput" maxlength="50">
         </div>
+
+        <ul class="modal-body pb-3 pt-3 list-group list-group-flush" id="savesContent" style="max-height: 300px;">
+        </ul>
+
         <div class="p-3 pt-1">
           <div class="fw-semibold">Save name</div>
           <div class="input-group">
@@ -111,6 +118,7 @@
             <button class="btn btn-outline-primary" id="saveDataButton">Save</button>
           </div>
         </div>
+
         <div class="modal-footer">
           <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
             Close

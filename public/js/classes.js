@@ -1,4 +1,4 @@
-import { removeWebhook, checkWebhookUrl, webhooksUrl } from './index.js'
+import { removeWebhook, checkWebhookUrl, webhooksUrl } from './index.js';
 
 export class TypeOfMessage {
     static get SEND() { return 'Send'; }

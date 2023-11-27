@@ -235,6 +235,7 @@ export class Embed {
                 this.fields[i].fieldVisual.colElementInline.classList.add("col-12");
         }
     }
+    
     #addListeners() {
         this.inputEmbed.addEventListener("input", () => this.refreshEmbedVisual());
         this.addFieldButton.addEventListener("click", async () => this.addField());

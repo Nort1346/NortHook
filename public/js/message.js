@@ -7,24 +7,21 @@ import {
     formatText,
     formatBytes,
 } from './functions.js';
-
 import {
     TypeOfMessage
 } from './classes.js';
-
 import {
-    defaultWebhookInfo,
     refreshTooltips,
-    webhooksUrl,
-    isCorrectWebhookURL,
-    checkWebhookUrl,
     removeMessage,
-    generalWebHookInfo,
+    webhooksUrl,
     isAllWebhooksGood
 } from './index.js';
 
+import {
+    defaultWebhookInfo,
+    generalWebHookInfo
+} from './variables.js';
 import { Embed } from './embed.js';
-
 import * as bootstrap from 'bootstrap';
 
 export class Message {
@@ -359,7 +356,6 @@ export class Message {
             this.countEmbedNumbers();
             refreshTooltips();
         }
-        refreshTooltips();
     }
 
     downEmbed(id) {

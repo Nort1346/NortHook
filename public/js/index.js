@@ -1,35 +1,40 @@
-import * as bootstrap from 'bootstrap';
+import * as bootstrap from 'bootstrap';;
 import {
   generateUniqueId,
   createMessageInput,
   createMessageVisual,
-  createWebhookUrlInput
-} from './functions.js'
+  createWebhookUrlInput,
+  checkWebsiteSize,
+  refreshAllLocalTimers
+} from './functions.js';
 import {
   TypeOfMessage,
   WebhookUrl
-} from './classes.js'
+} from './classes.js';
 import {
   Message
-} from './message.js'
-
-/**
- * @type [Message]
- */
-const messages = [];
-
-// Tooltips support
-const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-let tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,
-  {
-    trigger: "hover",
-    delay: { show: 100, hide: 100 }
-  }));
+} from './message.js';
+import {
+  generalWebHookInfo,
+  messages,
+  successModalSend,
+  successModalText,
+  failModalSend,
+  failModalContentSend
+} from './variables.js';
 
 /**
  * @type boolean
- */
+*/
 export let isAllWebhooksGood = false;
+
+const saveNameInput = document.getElementById("saveNameInput");
+const saveDataButton = document.getElementById("saveDataButton");
+const savesContent = document.getElementById("savesContent");
+const searchSavesInput = document.getElementById("searchSavesInput");
+const sendButton = document.getElementById("sendButton");
+
+let tooltipList = [];
 
 /**
  * Array of WebHook URL Input Element
@@ -43,71 +48,25 @@ export const webhooksUrl = [
   )
 ];
 
-const addWebhookButton = document.getElementById("addWebhook");
-addWebhookButton.addEventListener("click", addWebhook);
-
-/**
- * Default WebHook Values
- */
-export const defaultWebhookInfo = {
-  name: 'Nort',
-  avatar: 'https://cdn.discordapp.com/avatars/794288711164493864/5aa45cc104dc6af311c76b5ee58f49bb.jpg?size=1024'
-};
-
-/**
- * General WebhookInfo
- */
-export let generalWebHookInfo = {
-  name: null,
-  avatar: null
-};
-
+//Listeners
 /**
  * Options buttons
  */
-const clearAllButton = document.getElementById("clearAllMessages");
-clearAllButton.addEventListener("click", clearAllMessages);
-
-const saveNameInput = document.getElementById("saveNameInput");
-const saveDataButton = document.getElementById("saveDataButton");
-const saves = document.getElementById("saves");
-await loadAllSaves();
-saveNameInput.addEventListener("input", checkSaveButtonName);
-saveDataButton.addEventListener("click", () => saveData(saveNameInput.value));
-
-/**
- * Send Button
- */
-export const sendButton = document.getElementById("sendButton");
+document.getElementById("clearAllMessages").addEventListener("click", clearAllMessages);
+document.getElementById("addMessage").addEventListener("click", async () => await createMessage());
+document.getElementById("addWebhook").addEventListener("click", addWebhook);
 sendButton.addEventListener("click", async () => await send());
+saveNameInput.addEventListener("input", checkSaveButtonName);
+searchSavesInput.addEventListener("input", () => filterSaves(searchSavesInput.value))
+saveDataButton.addEventListener("click", () => saveData(saveNameInput.value));
+window.addEventListener('resize', checkWebsiteSize);
 
-/*
- * Modals for SEND
- */
-const successModalSend = new bootstrap.Modal('#successModalSend', { focus: true });
-const successModalText = document.getElementById("successModalText");
 
-const failModalSend = new bootstrap.Modal('#failModalSend', { focus: true });
-const failModalContentSend = document.getElementById("failEmbedErrorContentSend");
-
+//Call functions
+checkWebsiteSize();
 createMessage();
-const addMessageButton = document.getElementById("addMessage");
-addMessageButton.addEventListener("click", async () => await createMessage());
-
-let localTimers = [];
-refreshAllLocalTimers();
-
-// Messages Set Time
-setInterval(() => {
-  let nowData = new Date();
-  const minutes = nowData.getMinutes();
-  localTimers.forEach((ele) =>
-    ele.innerText = `${nowData.getHours()}:${minutes < 10 ? '0' : ''}${minutes}`)
-}, 1000);
-
-// Check View For WebSite Width
-checkSize();
-window.addEventListener('resize', checkSize);
+await loadAllSaves();
+refreshTooltips();
 
 async function send() {
   const loading = document.getElementById("loadingMessage");
@@ -154,6 +113,7 @@ async function send() {
   loading.classList.add("visually-hidden");
   sendButton.disabled = false;
 }
+
 /**
  * Send message in discord
  * @param {} message 
@@ -375,8 +335,8 @@ export function refreshTooltips() {
     {
       trigger: "hover",
       delay: { show: 100, hide: 100 }
-    }))
-}
+    }));
+};
 
 export function removeMessage(messId) {
   const messageIndex = messages.findIndex(mess => mess.id == messId);
@@ -449,7 +409,7 @@ async function saveData(key) {
   const save = getAllDataJSON(key);
   localStorage.setItem(`${key}`, JSON.stringify(save));
 
-  if (saves.querySelector(`[id="saveElement_${key}"]`) !== null) return;
+  if (savesContent.querySelector(`[id="saveElement_${key}"]`) !== null) return;
   saveNameInput.value = "";
   checkSaveButtonName();
 
@@ -459,12 +419,12 @@ async function saveData(key) {
   const div = generateSaveElement(key, templateHTML);
 
   checkEmptySaves();
-  saves.appendChild(div);
+  savesContent.appendChild(div);
   refreshTooltips();
 }
 
 async function removeSaveData(key) {
-  saves.querySelector(`[id="saveElement_${key}"]`).remove();
+  savesContent.querySelector(`[id="saveElement_${key}"]`).remove();
   localStorage.removeItem(key);
   checkEmptySaves();
   refreshTooltips();
@@ -488,18 +448,18 @@ function checkEmptySaves() {
     const div = document.createElement('div');
     div.classList.add("noSavesElement");
     div.innerHTML = "You've yet to create any backups. Provide a name below and click the Save button to initiate one.";
-    saves.appendChild(div);
+    savesContent.appendChild(div);
     return false;
   } else {
-    const div = saves.querySelector(".noSavesElement");
+    const div = savesContent.querySelector(".noSavesElement");
     if (div) {
       div.remove();
     }
 
     if (localStorage.length > 5)
-      saves.classList.remove("overflow-y-visible");
+      savesContent.classList.remove("overflow-y-visible");
     else
-      saves.classList.add("overflow-y-visible");
+      savesContent.classList.add("overflow-y-visible");
 
     return true;
   }
@@ -510,11 +470,11 @@ async function loadAllSaves() {
   const allSaves = allKeys.map(key => JSON.parse(localStorage.getItem(key)));
 
   if (checkEmptySaves()) {
-    saves.innerHTML = "";
+    savesContent.innerHTML = "";
     const response = await fetch('../html/saveElement.html');
     const templateHTML = await response.text();
     for (const save of allSaves) {
-      saves.appendChild(generateSaveElement(save.save.name, templateHTML));
+      savesContent.appendChild(generateSaveElement(save.save.name, templateHTML));
     }
     refreshTooltips();
   }
@@ -526,11 +486,25 @@ export function removeWebhook(uniqueId) {
   if (indexToRemove !== -1) {
     webhooksUrl.splice(indexToRemove, 1);
   }
+  verifyWebhookUrls();
   refreshTooltips();
 }
 
+function filterSaves(saveNameFilter) {
+  const saveElements = savesContent.querySelectorAll(".saveElement");
+
+  saveElements.forEach((ele) => {
+    const eleText = ele.querySelector(".saveName").innerText;
+    if (eleText.includes(saveNameFilter)) {
+      ele.classList.remove("d-none");
+    } else {
+      ele.classList.add("d-none");
+    }
+  })
+}
+
 function generateSaveElement(name, templateHTML) {
-  const div = document.createElement('div');
+  const div = document.createElement('li');
   div.id = `saveElement_${name}`;
   div.innerHTML = templateHTML;
   div.querySelector(".saveName").innerText = name;
@@ -538,7 +512,7 @@ function generateSaveElement(name, templateHTML) {
   div.querySelector(".removeSaveButton").addEventListener("click", () => removeSaveData(name));
   div.querySelector(".exportSaveButton").addEventListener("click", () => exportSaveData(name));
   div.querySelector(".overrideSaveButton").addEventListener("click", () => saveData(name));
-  div.classList.add("saveElement", "container", "border-bottom", "py-2");
+  div.classList.add("saveElement", "list-group-item");
   return div;
 }
 
@@ -576,34 +550,4 @@ function clearAllMessages() {
 function displayMessagesRemoveButton() {
   const anyMessagesToRemove = messages.length > 1;
   messages.forEach(mess => mess.toggleRemoveMessageButtonDisplay(anyMessagesToRemove));
-}
-
-function checkSize() {
-  const currentWidth = window.innerWidth;
-  const input = document.getElementById('inputs');
-  const view = document.getElementById('messageView');
-  if (currentWidth >= 768) {
-    input.classList.add("show");
-    view.classList.add("show");
-    input.classList.add("overflow-y-scroll");
-    view.classList.add("overflow-y-scroll");
-    input.classList.remove("h-auto");
-    view.classList.remove("h-auto");
-  } else {
-    input.classList.remove("overflow-y-scroll");
-    view.classList.remove("overflow-y-scroll");
-    input.classList.add("h-auto");
-    view.classList.add("h-auto");
-    if (!input.classList.contains("show") && !view.classList.contains("show")) {
-      input.classList.add("show");
-    }
-  }
-}
-
-function refreshAllLocalTimers() {
-  localTimers = document.querySelectorAll(".localTime");
-  let nowData = new Date();
-  const minutes = nowData.getMinutes();
-  localTimers.forEach((ele) =>
-    ele.innerText = `${nowData.getHours()}:${minutes < 10 ? '0' : ''}${minutes}`)
 }

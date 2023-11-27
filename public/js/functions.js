@@ -239,3 +239,42 @@ function removeNonUseElements(element) {
     }
   }
 }
+
+export function checkWebsiteSize() {
+  const currentWidth = window.innerWidth;
+  const input = document.getElementById('inputs');
+  const view = document.getElementById('messageView');
+  if (currentWidth >= 768) {
+    input.classList.add("show");
+    view.classList.add("show");
+    input.classList.add("overflow-y-scroll");
+    view.classList.add("overflow-y-scroll");
+    input.classList.remove("h-auto");
+    view.classList.remove("h-auto");
+  } else {
+    input.classList.remove("overflow-y-scroll");
+    view.classList.remove("overflow-y-scroll");
+    input.classList.add("h-auto");
+    view.classList.add("h-auto");
+    if (!input.classList.contains("show") && !view.classList.contains("show")) {
+      input.classList.add("show");
+    }
+  }
+}
+
+let timeMessages = [];
+
+refreshAllLocalTimers();
+setInterval(refreshTimeMessage, 1000);
+
+function refreshTimeMessage() {
+  let nowData = new Date();
+  const minutes = nowData.getMinutes();
+  timeMessages.forEach((ele) =>
+    ele.innerText = `${nowData.getHours()}:${minutes < 10 ? '0' : ''}${minutes}`)
+}
+
+export function refreshAllLocalTimers() {
+  timeMessages = document.querySelectorAll(".localTime");
+  refreshTimeMessage();
+}
