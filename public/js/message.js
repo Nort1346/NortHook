@@ -452,8 +452,9 @@ export class Message {
     //Reference
     checkReference() {
         if (isAllWebhooksGood && this.isCorrectReference(this.reference.value)) {
-            const apiURL = `${webhooksUrl.value}/messages/
+            const apiURL = `${webhooksUrl[0].input.value}/messages/
           ${this.reference.value.slice(this.reference.value.lastIndexOf("/") + 1)}`;
+
             const formData = new FormData();
             formData.append("messageLink", apiURL);
             fetch("/getWebhookMessage", {
@@ -463,7 +464,7 @@ export class Message {
                 .then((response) => response.json())
                 .then((data) => {
                     this.loadMessageButton.disabled = !data.success;
-
+                    console.log("success " + data.success)
                     if (data.success == true) {
                         this.messageType = TypeOfMessage.EDIT;
                         this.alertInvalidMessageLink.hide()
@@ -488,8 +489,7 @@ export class Message {
         let res = link
             .replaceAll(/\s/g, "")
             .startsWith("https://discord.com/channels/");
-
-        return res == true;
+        return res;
     }
 
     //Remove Message

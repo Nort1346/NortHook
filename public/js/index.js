@@ -328,7 +328,7 @@ export function verifyWebhookUrls() {
 export function refreshTooltips() {
   tooltipList.map(tooltipTriggerEl => {
     tooltipTriggerEl.dispose()
-  })
+  });
 
   const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
   tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl,
@@ -494,8 +494,8 @@ function filterSaves(saveNameFilter) {
   const saveElements = savesContent.querySelectorAll(".saveElement");
 
   saveElements.forEach((ele) => {
-    const eleText = ele.querySelector(".saveName").innerText;
-    if (eleText.includes(saveNameFilter)) {
+    const eleText = (ele.querySelector(".saveName").innerText).toLowerCase();
+    if (eleText.includes(saveNameFilter.toLowerCase())) {
       ele.classList.remove("d-none");
     } else {
       ele.classList.add("d-none");
