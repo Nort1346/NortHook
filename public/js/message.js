@@ -230,28 +230,26 @@ export class Message {
     }
 
     //Load Message
-    loadMessage() {
+    async loadMessage() {
         const loading = document.getElementById("loadingMessage");
         loading.classList.remove("visually-hidden");
         this.loadMessageButton.disabled = true;
 
-        const formData = new FormData();
-        formData.append("messageLink", `${webhooksUrl.value}/messages/
-        ${this.reference.value.slice(this.reference.value.lastIndexOf("/") + 1)}`);
+        const apiURL = `${webhooksUrl[0].input.value}/messages/
+        ${this.reference.value.slice(this.reference.value.lastIndexOf("/") + 1)}`;
 
-        fetch("/getWebhookMessage", {
-            method: "POST",
-            body: formData
-        })
-            .then((response) => response.json())
-            .then(async (data) => {
-                loading.classList.add("visually-hidden");
-                this.loadMessageButton.disabled = false;
+        const response = await fetch(apiURL, {
+            method: "GET",
+            cache: 'no-store'
+        });
 
-                if (data.success == true) {
-                    await this.setMessageFromMessageObject(data.message);
-                }
-            });
+        loading.classList.add("visually-hidden");
+        this.loadMessageButton.disabled = false;
+
+        if (response.ok) {
+            const data = await response.json();
+            await this.setMessageFromMessageObject(data);
+        }
     }
 
     //Refresh
@@ -450,38 +448,34 @@ export class Message {
     }
 
     //Reference
-    checkReference() {
+    async checkReference() {
         if (isAllWebhooksGood && this.isCorrectReference(this.reference.value)) {
             const apiURL = `${webhooksUrl[0].input.value}/messages/
           ${this.reference.value.slice(this.reference.value.lastIndexOf("/") + 1)}`;
 
-            const formData = new FormData();
-            formData.append("messageLink", apiURL);
-            fetch("/getWebhookMessage", {
-                method: "POST",
-                body: formData
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    this.loadMessageButton.disabled = !data.success;
-                    console.log("success " + data.success)
-                    if (data.success == true) {
-                        this.messageType = TypeOfMessage.EDIT;
-                        this.alertInvalidMessageLink.hide()
-                    } else {
-                        this.messageType = TypeOfMessage.SEND;
-                        this.alertInvalidMessageLink.show();
-                    }
-                });
-        } else {
-            this.messageType = TypeOfMessage.SEND;
-            this.loadMessageButton.disabled = true;
+            const response = await fetch(apiURL, {
+                method: "GET"
+            });
 
-            if (this.reference.value.replaceAll(/\s/g, "") == "")
+            this.loadMessageButton.disabled = !response.ok;
+
+            if (response.ok) {
+                const data = await response.json();
+
+                this.messageType = TypeOfMessage.EDIT;
                 this.alertInvalidMessageLink.hide();
-            else
-                this.alertInvalidMessageLink.show();
+                this.refreshView();
+                return;
+            }
         }
+        this.messageType = TypeOfMessage.SEND;
+        this.loadMessageButton.disabled = true;
+
+        if (this.reference.value.replaceAll(/\s/g, "") == "")
+            this.alertInvalidMessageLink.hide();
+        else
+            this.alertInvalidMessageLink.show();
+
         this.refreshView();
     }
 

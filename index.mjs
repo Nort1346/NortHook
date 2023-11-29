@@ -23,6 +23,8 @@ app.get('/', async (req, res) => {
     res.sendFile('public/html/index.html', { root: __dirname });
 });
 
+
+/*
 app.post('/sendMessage', upload.array('files', 10), async (req, res) => {
     const JSONMessage = req.body;
     const form = new FormData();
@@ -139,7 +141,7 @@ app.post('/getFile', upload.single(), async (req, res) => {
         console.log(error);
     }
 });
-
+*/
 app.listen(PORT, () => {
     console.log(`NortHook on, port: ${PORT}`);
 });

@@ -31,7 +31,7 @@ export class WebhookUrl {
         this.input.addEventListener("focusout", () => {
             this.input.type = "password";
         });
-        this.input.addEventListener("input", () => checkWebhookUrl(webhooksUrl.findIndex(ele => ele.id == this.id)));
+        this.input.addEventListener("input", async () => await checkWebhookUrl(webhooksUrl.findIndex(ele => ele.id == this.id)));
     }
 
     removeWebhook() {

@@ -121,14 +121,15 @@ async function send() {
  */
 async function sendMessage(webhookUrl, message) {
   const formData = new FormData();
+  const payload = {};
 
-  formData.append("webhookUrl", webhookUrl)
-  if (message.content.replaceAll(/\s/g, "") != "")
-    formData.append("content", message.content);
+  payload.content = message.content ?? null;
+
   if (message.user.username.replaceAll(/\s/g, "") != "")
-    formData.append("username", message.user.username);
+    payload.username = message.user.username;
+
   if (message.user.avatar_url.replaceAll(/\s/g, "") != "")
-    formData.append("avatar_url", message.user.avatar_url);
+    payload.avatar_url = message.user.avatar_url;
 
   if (message.files.length > 10) {
     return {
@@ -137,29 +138,45 @@ async function sendMessage(webhookUrl, message) {
     }
   }
 
-  formData.append("embeds", JSON.stringify(
-    message.embeds
-  ));
-
-  for (let i = 0; i < message.files.length; i++) {
-    formData.append("files", message.files[i]);
+  if (message?.embeds != null) {
+    payload.embeds = message.embeds;
   }
 
-  const response = await fetch("/sendMessage", {
+  for (let i = 0; i < message.files.length; i++) {
+    try {
+      const blob = new Blob([await message.files[i].arrayBuffer()],
+        {
+          type: message.files[i].type,
+        });
+
+      formData.append(
+        `files${i}`,
+        blob,
+        message.files[i].name
+      );
+
+    } catch (error) {
+      console.error(`Error in file ${i}:`, error);
+    }
+  }
+
+  formData.append('payload_json', JSON.stringify(payload));
+
+  const response = await fetch(webhookUrl, {
     method: "POST",
     body: formData
   });
 
-  const data = await response.json();
-  if (data.success == true) {
+  if (response.ok) {
     return {
-      success: data.success,
+      success: true,
       errorText: null
     };
-  } else {
+  }
+  else {
     return {
       success: false,
-      errorText: `Error: ${data.error}`
+      errorText: `Error: Message Invalid`
     }
   }
 }
@@ -171,11 +188,9 @@ async function sendMessage(webhookUrl, message) {
  */
 async function editMessage(webhookUrl, message) {
   const formData = new FormData();
+  const payload_json = {};
 
-  formData.append("messageLink", `${webhookUrl}/messages/${message.reference.slice(message.reference.lastIndexOf("/") + 1)}`)
-
-  if (message.content.replaceAll(/\s/g, "") != "")
-    formData.append("content", message.content);
+  const editUrl = `${webhookUrl}/messages/${message.reference.slice(message.reference.lastIndexOf("/") + 1)}`;
 
   if (message.files.length > 10) {
     return {
@@ -184,24 +199,40 @@ async function editMessage(webhookUrl, message) {
     }
   }
 
-  formData.append("embeds", JSON.stringify(
-    message.embeds
-  ));
+  payload_json.content = message.content ?? null;
+  payload_json.embeds = message.embeds ?? null;
+  payload_json.attachments = [];
 
   for (let i = 0; i < message.files.length; i++) {
     formData.append("files", message.files[i]);
   }
 
-  formData.append("attachments", []);
+  for (let i = 0; i < message.files.length; i++) {
+    try {
+      const blob = new Blob([await message.files[i].arrayBuffer()],
+        {
+          type: message.files[i].type,
+        });
 
-  const response = await fetch("/editMessage", {
-    method: "POST",
+      formData.append(
+        `files${i}`,
+        blob,
+        message.files[i].name
+      );
+
+    } catch (error) {
+      console.error(`Error in file ${i}:`, error);
+    }
+  }
+
+  formData.append("payload_json", JSON.stringify(payload_json));
+
+  const response = await fetch(editUrl, {
+    method: "PATCH",
     body: formData
   });
 
-  const data = await response.json();
-
-  if (data.success == true) {
+  if (response.ok) {
     return {
       success: true,
       errorText: null
@@ -209,7 +240,7 @@ async function editMessage(webhookUrl, message) {
   } else {
     return {
       success: false,
-      errorText: `Error: ${data.error}`
+      errorText: `Error: Invalid Message`
     }
   }
 }
@@ -221,31 +252,43 @@ async function createMessage() {
   displayMessagesRemoveButton();
 }
 
-export function checkWebhookUrl(indexOfWebhookUrl) {
+export async function checkWebhookUrl(indexOfWebhookUrl) {
   if (isCorrectWebhookURL(indexOfWebhookUrl)) {
-    const formData = new FormData();
-    formData.append("webhookUrl", webhooksUrl[indexOfWebhookUrl].input.value);
-    fetch("/isWebhook", {
-      method: "POST",
-      body: formData
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        data.success == true ?
-          webhooksUrl[indexOfWebhookUrl].alert.hide()
-          : webhooksUrl[indexOfWebhookUrl].alert.show();
-        webhooksUrl[indexOfWebhookUrl].verify = data.success;
+    try {
+
+      const response = await fetch(webhooksUrl[indexOfWebhookUrl].input.value, {
+        method: "GET"
+      })
+
+      const statusOk = response.status == 200;
+
+      statusOk ?
+        webhooksUrl[indexOfWebhookUrl].alert.hide()
+        : webhooksUrl[indexOfWebhookUrl].alert.show();
+
+      webhooksUrl[indexOfWebhookUrl].verify = statusOk;
+
+      if (statusOk) {
+        const data = await response.json();
 
         webhooksUrl[indexOfWebhookUrl].webHookInfo.name = data?.name;
-        webhooksUrl[indexOfWebhookUrl].webHookInfo.avatar = data?.avatar;
+        webhooksUrl[indexOfWebhookUrl].webHookInfo.avatar = data?.avatar !== null ?
+          `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.webp?size=512` : "https://cdn.discordapp.com/embed/avatars/0.png";
+
         verifyWebhookUrls();
 
         messages.forEach((mess) => {
           mess.refreshWebhookInfo();
           mess.checkReference();
         });
-      });
-  } else {
+
+        return;
+      }
+
+    } catch (e) {
+      return;
+    }
+
     webhooksUrl[indexOfWebhookUrl].webHookInfo.name = null;
     webhooksUrl[indexOfWebhookUrl].webHookInfo.name = null;
 
@@ -389,7 +432,7 @@ async function loadAllDataJSON(key) {
     }
 
     webhooksUrl[i].input.value = target.url;
-    checkWebhookUrl(i);
+    await checkWebhookUrl(i);
   }
   verifyWebhookUrls();
 
