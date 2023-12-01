@@ -23,5 +23,12 @@
   "bugs": {
     "url": "https://github.com/Nort1346/NortHook/issues"
   },
-  "homepage": "https://github.com/Nort1346/NortHook#readme"
+  "homepage": "https://github.com/Nort1346/NortHook#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "path": "^0.12.7",
+    "url": "^0.11.3"
+  }
 }
