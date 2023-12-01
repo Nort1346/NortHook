@@ -19,7 +19,7 @@ const storage = multer.memoryStorage();
 
 const upload = multer({ storage });
 
-app.get('/', async (req, res) => {
+app.get('/app', async (req, res) => {
     res.sendFile('public/html/index.html', { root: __dirname });
 });
 
