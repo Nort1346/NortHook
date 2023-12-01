@@ -242,8 +242,6 @@ export async function createEmbedInput(parentInputElement) {
   embedInput.innerHTML = templateHTML;
   embedInput.classList.add("py-1");
 
-  embedInput.querySelector(".embedName").innerHTML = "Embed";
-
   parentInputElement.querySelector(".embedsInput").appendChild(embedInput);
 
   return embedInput;
