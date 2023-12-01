@@ -3,7 +3,7 @@
     "builds": [
         {
             "src": "index.mjs",
-            "use": "@now/node"
+            "use": "@vercel/node"
         }
     ],
     "routes": [
@@ -12,7 +12,7 @@
         },
         {
             "src": "/(.*)",
-            "dest": "/index.mjs"
+            "dest": "index.mjs"
         }
     ]
 }
