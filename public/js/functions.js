@@ -45,34 +45,6 @@ export function generateUniqueId() {
   return Math.random().toString(36).substr(2, 9);
 }
 
-export async function getEmbedInput(parentInputElement) {
-  const response = await fetch('../html/embedInput.html');
-  const templateHTML = await response.text();
-
-  const embedInput = document.createElement('div');
-  embedInput.innerHTML = templateHTML;
-  embedInput.classList.add("py-1");
-
-  embedInput.querySelector(".embedName").innerHTML = "Embed";
-
-  parentInputElement.querySelector(".embedsInput").appendChild(embedInput);
-
-  return embedInput;
-}
-
-export async function getEmbedVisual(parentVisualElement) {
-  const response = await fetch('../html/embedVisual.html');
-  const templateHTML = await response.text();
-
-  const embedVisual = document.createElement('div');
-  embedVisual.innerHTML = templateHTML;
-  embedVisual.classList.add("py-1");
-
-  parentVisualElement.querySelector(".embedsView").appendChild(embedVisual);
-
-  return embedVisual;
-}
-
 export function insertAfter(newNode, referenceNode) {
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
@@ -128,14 +100,174 @@ export function formatText(text) {
   return tempDiv.innerHTML;
 }
 
+async function getEmbedInput() {
+  const cachedHTML = sessionStorage.getItem('embedInput');
+
+  if (cachedHTML) {
+    return cachedHTML;
+  } else {
+    const response = await fetch('../html/embedInput.html');
+    const html = await response.text();
+
+    sessionStorage.setItem('embedInput', html);
+
+    return html;
+  }
+}
+
+async function getEmbedVisual() {
+  const cachedHTML = sessionStorage.getItem('embedVisual');
+
+  if (cachedHTML) {
+    return cachedHTML;
+  } else {
+    const response = await fetch('../html/embedVisual.html');
+    const html = await response.text();
+
+    sessionStorage.setItem('embedVisual', html);
+
+    return html;
+  }
+}
+
+async function getMessageInput() {
+  const cachedHTML = sessionStorage.getItem('messageInput');
+
+  if (cachedHTML) {
+    return cachedHTML;
+  } else {
+    const response = await fetch('../html/messageInput.html');
+    const html = await response.text();
+
+    sessionStorage.setItem('messageInput', html);
+
+    return html;
+  }
+}
+
+async function getMessageVisual() {
+  const cachedHTML = sessionStorage.getItem('messageVisual');
+
+  if (cachedHTML) {
+    return cachedHTML;
+  } else {
+    const response = await fetch('../html/messageVisual.html');
+    const html = await response.text();
+
+    sessionStorage.setItem('messageVisual', html);
+
+    return html;
+  }
+}
+
+async function getWebhookUrlInput() {
+  const cachedHTML = sessionStorage.getItem('webhookUrlInput');
+
+  if (cachedHTML) {
+    return cachedHTML;
+  } else {
+    const response = await fetch('../html/webhookUrlInput.html');
+    const html = await response.text();
+
+    sessionStorage.setItem('webhookUrlInput', html);
+
+    return html;
+  }
+}
+
+export async function getSaveElement() {
+  const cachedHTML = sessionStorage.getItem('saveElement');
+
+  if (cachedHTML) {
+    return cachedHTML;
+  } else {
+    const response = await fetch('../html/saveElement.html');
+    const html = await response.text();
+
+    sessionStorage.setItem('saveElement', html);
+
+    return html;
+  }
+}
+
+export async function getFileVisual() {
+  const cachedHTML = sessionStorage.getItem('fileVisual');
+
+  if (cachedHTML) {
+    return cachedHTML;
+  } else {
+    const response = await fetch('../html/fileVisual.html');
+    const html = await response.text();
+
+    sessionStorage.setItem('fileVisual', html);
+
+    return html;
+  }
+}
+
+export async function getFieldInput() {
+  const cachedHTML = sessionStorage.getItem('fieldInput');
+
+  if (cachedHTML) {
+    return cachedHTML;
+  } else {
+    const response = await fetch('../html/fieldInput.html');
+    const html = await response.text();
+
+    sessionStorage.setItem('fieldInput', html);
+
+    return html;
+  }
+}
+
+export async function getFieldVisual() {
+  const cachedHTML = sessionStorage.getItem('fieldVisual');
+
+  if (cachedHTML) {
+    return cachedHTML;
+  } else {
+    const response = await fetch('../html/fieldVisual.html');
+    const html = await response.text();
+
+    sessionStorage.setItem('fieldVisual', html);
+
+    return html;
+  }
+}
+
+export async function createEmbedInput(parentInputElement) {
+  const templateHTML = await getEmbedInput();
+
+  const embedInput = document.createElement('div');
+  embedInput.innerHTML = templateHTML;
+  embedInput.classList.add("py-1");
+
+  embedInput.querySelector(".embedName").innerHTML = "Embed";
+
+  parentInputElement.querySelector(".embedsInput").appendChild(embedInput);
+
+  return embedInput;
+}
+
+export async function createEmbedVisual(parentVisualElement) {
+  const templateHTML = await getEmbedVisual();
+
+  const embedVisual = document.createElement('div');
+  embedVisual.innerHTML = templateHTML;
+  embedVisual.classList.add("py-1");
+
+  parentVisualElement.querySelector(".embedsView").appendChild(embedVisual);
+
+  return embedVisual;
+}
+
 /**
  * Create message input
  * @param {string} uniqueId Unique Id
  * @returns Message input element
  */
 export async function createMessageInput(uniqueId) {
-  const response = await fetch('../html/messageInput.html');
-  const templateHTML = await response.text();
+  const templateHTML = await getMessageInput();
 
   const messageInput = document.createElement('div');
   messageInput.innerHTML = templateHTML;
@@ -160,8 +292,7 @@ export async function createMessageInput(uniqueId) {
  * @returns Message visual element
  */
 export async function createMessageVisual(uniqueId) {
-  const response = await fetch('../html/messageVisual.html');
-  const templateHTML = await response.text();
+  const templateHTML = await getMessageVisual();
 
   const messageInput = document.createElement('div');
   messageInput.innerHTML = templateHTML;
@@ -174,8 +305,7 @@ export async function createMessageVisual(uniqueId) {
 }
 
 export async function createWebhookUrlInput(uniqueId) {
-  const response = await fetch('../html/webhookUrlInput.html');
-  const templateHTML = await response.text();
+  const templateHTML = await getWebhookUrlInput();
 
   const webhookUrlInput = document.createElement('div');
   webhookUrlInput.innerHTML = templateHTML;
@@ -185,28 +315,6 @@ export async function createWebhookUrlInput(uniqueId) {
   document.getElementById("webhookUrls").appendChild(webhookUrlInput);
 
   return webhookUrlInput;
-}
-
-/**
- * Get blob file
- * @param {string} fileLink Url File
- * @returns {Blob} Blob of file or null when error
- */
-export async function getFile(fileLink) {
-  const fileUrl = new FormData();
-  fileUrl.append("fileLink", fileLink);
-  try {
-    const response = await fetch("/getFile", {
-      method: "POST",
-      body: fileUrl,
-    });
-
-    const blob = await response.blob();
-    return blob;
-  } catch (error) {
-    console.error('Error:', error);
-    return null;
-  }
 }
 
 export function formatBytes(bytes, decimals = 2) {

@@ -1,4 +1,10 @@
-import { generateUniqueId, isImageURLValid, formatText } from './functions.js';
+import {
+    generateUniqueId,
+    isImageURLValid,
+    formatText,
+    getFieldInput,
+    getFieldVisual
+} from './functions.js';
 import { refreshTooltips } from './index.js';
 
 /**
@@ -235,7 +241,7 @@ export class Embed {
                 this.fields[i].fieldVisual.colElementInline.classList.add("col-12");
         }
     }
-    
+
     #addListeners() {
         this.inputEmbed.addEventListener("input", () => this.refreshEmbedVisual());
         this.addFieldButton.addEventListener("click", async () => this.addField());
@@ -260,8 +266,7 @@ export class Embed {
         const uniqueFieldId = generateUniqueId();
 
         //FIELD INPUT
-        const fieldInputFetch = await fetch('../html/fieldInput.html');
-        const fieldInputHTML = await fieldInputFetch.text();
+        const fieldInputHTML = await getFieldInput();
 
         const fieldInputElement = document.createElement('div');
         fieldInputElement.id = `fieldInput_${uniqueFieldId}`;
@@ -296,8 +301,7 @@ export class Embed {
         }
 
         //FIELD VISUAL
-        const fieldVisualFetch = await fetch('../html/fieldVisual.html');
-        const fieldVisualHTML = await fieldVisualFetch.text();
+        const fieldVisualHTML = await getFieldVisual();
 
         const fieldVisualElement = document.createElement('div');
         fieldVisualElement.id = `fieldVisual_${uniqueFieldId}`;

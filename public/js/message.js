@@ -1,11 +1,12 @@
 import {
     isImageURLValid,
     generateUniqueId,
-    getEmbedInput,
-    getEmbedVisual,
+    createEmbedInput,
+    createEmbedVisual,
     insertAfter,
     formatText,
     formatBytes,
+    getFileVisual
 } from './functions.js';
 import {
     TypeOfMessage
@@ -76,8 +77,8 @@ export class Message {
         this.clearFilesButton.addEventListener("click", async () => this.clearFiles());
         this.addEmbedButton
             .addEventListener("click", async () =>
-                this.addEmbed(await getEmbedInput(this.messageInputElement),
-                    await getEmbedVisual(this.messageVisualElement)));
+                this.addEmbed(await createEmbedInput(this.messageInputElement),
+                    await createEmbedVisual(this.messageVisualElement)));
         this.removeMessageButton.addEventListener("click", () => {
             removeMessage(this.id);
         });
@@ -124,7 +125,7 @@ export class Message {
         this.embeds.forEach(ele => ele.removeEmbed());
         this.embeds.splice(0, this.embeds.length);
         for (let i = 0; i < message.embeds.length && i < 10; i++) {
-            await this.addEmbed(await getEmbedInput(this.messageInputElement), await getEmbedVisual(this.messageVisualElement));
+            await this.addEmbed(await createEmbedInput(this.messageInputElement), await createEmbedVisual(this.messageVisualElement));
             await this.embeds[i].setEmbed(message.embeds[i]);
         }
 
@@ -148,7 +149,7 @@ export class Message {
         if (message.embeds !== null) {
             this.embeds.splice(0, this.embeds.length);
             for (let i = 0; i < message.embeds.length && i < 10; i++) {
-                await this.addEmbed(await getEmbedInput(this.messageInputElement), await getEmbedVisual(this.messageVisualElement));
+                await this.addEmbed(await createEmbedInput(this.messageInputElement), await createEmbedVisual(this.messageVisualElement));
                 await this.embeds[i].setEmbed(message.embeds[i]);
             }
         }
@@ -173,8 +174,8 @@ export class Message {
         if (data.data.embeds !== null) {
             this.embeds.splice(0, this.embeds.length);
             for (let i = 0; i < data.data.embeds.length && i < 10; i++) {
-                await this.addEmbed(await getEmbedInput(this.messageInputElement),
-                    await getEmbedVisual(this.messageVisualElement));
+                await this.addEmbed(await createEmbedInput(this.messageInputElement),
+                    await createEmbedVisual(this.messageVisualElement));
                 await this.embeds[i].setEmbed(data.data.embeds[i]);
             }
         }
@@ -297,8 +298,7 @@ export class Message {
 
                 divFile.appendChild(imgEmbed);
             } else {
-                const response = await fetch('../html/fileVisual.html');
-                const fileElementHTML = await response.text();
+                const fileElementHTML = await getFileVisual();
 
                 divFile.innerHTML = fileElementHTML;
                 divFile.querySelector(".fileName").innerHTML = file.name.substring(0, 30);
@@ -391,8 +391,8 @@ export class Message {
         const indexOfRemoveEmbed = this.embeds.findIndex(ele => ele.id == id);
 
         if (indexOfRemoveEmbed >= 0 && this.embeds.length < 10) {
-            const cloneEmbed = new Embed(await getEmbedInput(this.messageInputElement),
-                await getEmbedVisual(this.messageVisualElement),
+            const cloneEmbed = new Embed(await createEmbedInput(this.messageInputElement),
+                await createEmbedVisual(this.messageVisualElement),
                 generateUniqueId());
             await cloneEmbed.setEmbed(this.embeds[indexOfRemoveEmbed].getEmbed());
             await cloneEmbed.refreshEmbedVisual();

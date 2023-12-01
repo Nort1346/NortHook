@@ -5,7 +5,8 @@ import {
   createMessageVisual,
   createWebhookUrlInput,
   checkWebsiteSize,
-  refreshAllLocalTimers
+  refreshAllLocalTimers,
+  getSaveElement
 } from './functions.js';
 import {
   TypeOfMessage,
@@ -456,8 +457,7 @@ async function saveData(key) {
   saveNameInput.value = "";
   checkSaveButtonName();
 
-  const response = await fetch('../html/saveElement.html');
-  const templateHTML = await response.text();
+  const templateHTML = await getSaveElement();
 
   const div = generateSaveElement(key, templateHTML);
 
@@ -514,8 +514,7 @@ async function loadAllSaves() {
 
   if (checkEmptySaves()) {
     savesContent.innerHTML = "";
-    const response = await fetch('../html/saveElement.html');
-    const templateHTML = await response.text();
+    const templateHTML = await getSaveElement();
     for (const save of allSaves) {
       savesContent.appendChild(generateSaveElement(save.save.name, templateHTML));
     }
