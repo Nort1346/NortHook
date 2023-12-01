@@ -1,0 +1,26 @@
+{
+  "name": "northook",
+  "version": "1.0.0",
+  "description": "NortHook is a straightforward web application designed for the easy management of Discord Webhooks. It simplifies the process of sending and editing messages through Discord Webhooks with its intuitive user interface.",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nort1346/NortHook.git"
+  },
+  "keywords": [
+    "node.js",
+    "NortHook",
+    "Discord",
+    "Webhook"
+  ],
+  "author": "_nort_",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nort1346/NortHook/issues"
+  },
+  "homepage": "https://github.com/Nort1346/NortHook#readme"
+}
