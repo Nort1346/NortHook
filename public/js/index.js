@@ -65,7 +65,7 @@ window.addEventListener('resize', checkWebsiteSize);
 //Call functions
 checkWebsiteSize();
 createMessage();
-await loadAllSaves();
+loadAllSaves();
 refreshTooltips();
 
 async function send() {
@@ -521,7 +521,7 @@ async function loadAllSaves() {
     }
     refreshTooltips();
   }
-}
+};
 
 export function removeWebhook(uniqueId) {
   document.getElementById(`webhookUrl_${uniqueId}`).remove();
