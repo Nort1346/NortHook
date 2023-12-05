@@ -8,8 +8,8 @@
     ],
     "rewrites": [
         {
-            "source": "/dist/(.*)",
-            "destination": "/"
+            "source": "/(.*)",
+            "destination": "/dist"
         }
     ]
 }
